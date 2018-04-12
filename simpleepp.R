@@ -1,5 +1,7 @@
 library(rstan)
 library(splines)
+library(ggplot2)
+library(reshape2)
 
 expose_stan_functions("stan_files/simpleepp_expose.stan")
 
@@ -15,21 +17,25 @@ omega <- 0.7                             # Average effect of ART on reducing tra
 
 dt <- 0.1                                     # time step
 nsteps <- as.integer(50/dt)                   # number of steps
-xstart <- 1970
-xx <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
-xout <- c(xstart, xx)
+xstart <- 1970                                # the start of the epidemic
+step_vector <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
+xout <- c(xstart, step_vector)                #the vector of steps in total
 
 #' Simulation of EPP model with constant kappa = 0.3
-#' This assumes constant population size and intiailly a constant r
+#' This assumes constant population size and intiailly a constant r that can be changed. 
 #' This returns a matrix with r in first column, incidence in the second column and prevalence in the third column
 #' Iota refers to the initial proportion of the population infected. 
-mod <- simpleepp(kappa=rep(0.3, 500), iota=0.005, alpha=rep(0, nsteps), mu, sigma, mu_i, mu_a, omega, dt)
+mod <- simpleepp(kappa=rep(0.3, length(xout)), iota=0.005, alpha=rep(0, nsteps), mu, sigma, mu_i, mu_a, omega, dt)
 
 #' Simulation of EPP classic model
 
 mod_classic <- simpleepp_classic(r=1.5, f0=0.4, iota=0.0001, phi=0, mu, sigma, mu_i, dt, nsteps)
 
+############################################################################################################################
+## Now we are inputting prevalence and ART coverage data from which to create simulated data to fit the two models to ######
+############################################################################################################################
 #' # True prevalence and ART coverage
+#' 
 
 prev <- structure(c(0, 0, 1e-04, 2e-04, 4e-04, 7e-04, 0.0012, 0.002, 
                     0.0033, 0.0052, 0.0079, 0.0116, 0.0163, 0.0222, 0.0294, 0.0374, 
@@ -46,20 +52,23 @@ artcov <- structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                       0.5639, 0.6071, 0.687, 0.6818, 0.7223, 0.7621, 0.8009),
                     .Names=1970:2020)
 
-alpha <- approx(names(artcov), artcov, xx)$y
+alpha <- approx(names(artcov), artcov, step_vector)$y
 
 #' # Simulate some data from 1985 to 2015
 
 set.seed(12631569)
-t_obs <- as.character(1980:2015)
-n_obs <- rep(1500, length(t_obs))  
-x_obs <- rbinom(length(t_obs), n_obs, prev[t_obs])
-idx_obs <- match(t_obs, xout)
+t_obs <- as.character(1980:2015)                    ## This creates time of samples, realistically this would occur once a year
+n_obs <- rep(1500, length(t_obs))                   ## This samples 1500 people from the population every year         
+x_obs <- rbinom(length(t_obs), n_obs, prev[t_obs])  ## This creates our binomally sampled data given our prevalence data
+idx_obs <- match(t_obs, xout)                       ## This links back to our intial time series, giving us the row number of the model data that corresponds with the simulated data
+
 
 
 #' # Fit models
 
 #' Negative log likelihood
+#' nll is the function that we input initial paramter values into and for which it then runs the model and calcualtes the
+#' likelihood of those paramaters given our predicted data. 
 #' @param theta Vector of parameter values.
 #' @param simmod Function for simulating model given parameters
 #' @param ... Additional arguments to \code{simmod}
@@ -69,6 +78,8 @@ nll <- function(theta, simmod, ...){
 }
   
 #' ## Fit the EPP classic model
+#' in this case we are creating the simmod function with which to call the above nll function
+
 
 sim_classic <- function(theta){
   r <- exp(theta[1])
@@ -87,12 +98,34 @@ fit <- optim(theta0, nll, simmod=sim_classic, method="BFGS")
 fit$simmod <- sim_classic
 fit$mod <- fit$simmod(fit$par)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+## Creating a df of the maximum likelihood model output for easier plotting 
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
+plot_df<-fit$mod
+plot_df<-data.frame(plot_df)
+names(plot_df)<-c("Transmission_rate","Incidence","Prevalence")
+plot_df$prev_percent<-plot_df$Prevalence * 100
+plot_df$Time<-xout
 
+## creating df of the sampled data 
+sample_df<-data.frame(cbind(as.numeric(t_obs),as.numeric(x_obs)))
+names(sample_df)<-c("Time","Infected")
+sample_df$Prevalence<-(sample_df$Infected / n_obs) * 100
+
+prevalence_plot<- ggplot(data = plot_df) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "ML fitting of Classic EPP to simulated data")
+
+plot(prevalence_plot)
+
+### Plotting all the values output on the same graph, in this case prevalence is rescaled to a fraction
+
+melt_df<-plot_df[,-c(4)]
+melted_mod<-melt(melt_df,id="Time")
+
+incidence_and_rho_plot<-ggplot(data = melted_mod) + geom_line(aes(x=Time, y= value, colour=variable))+
+  labs(x="Year",title="ML fitting of Classic EPP")
+
+plot(incidence_and_rho_plot)
 
 #' ## Fit the rlogistic model
 
@@ -101,7 +134,7 @@ rlogistic <- function(t, p) {
 }
 
 sim_rlogistic <- function(theta){
-  kappa <- exp(rlogistic(xx, theta[1:4]))
+  kappa <- exp(rlogistic(step_vector, theta[1:4]))
   iota <- exp(theta[5])
   simpleepp(kappa, iota, alpha, mu, sigma, mu_i, mu_a, omega, dt)
 }
@@ -151,7 +184,7 @@ nlp_semipar <- function(theta, X, D){
 }
 
 #' ### First-order random walk (peicewise-linear)
-Xrw <- splineDesign(1969:2021, xx, ord=2)
+Xrw <- splineDesign(1969:2021, step_vector, ord=2)
 Drw1 <- diff(diag(ncol(Xrw)), diff=1)
 
 beta0 <- log(fit$mod[0:50*10+1, 1]) # use log kappa values from previous fit
@@ -204,7 +237,7 @@ nk <- 7 # number of splines
 dk <- diff(range(xout))/(nk-3)
 knots <- xstart + -3:nk*dk
 
-Xsp <- splineDesign(knots, xx, ord=4)
+Xsp <- splineDesign(knots, step_vector, ord=4)
 Dsp1 <- diff(diag(nk), diff=1)
 
 beta0 <- lm(log(fit_rlogistic$mod[-1,1]) ~ -1+Xsp)$coef
