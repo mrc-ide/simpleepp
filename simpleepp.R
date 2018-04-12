@@ -2,6 +2,7 @@ library(rstan)
 library(splines)
 library(ggplot2)
 library(reshape2)
+library(ggpubr)
 
 expose_stan_functions("stan_files/simpleepp_expose.stan")
 
@@ -68,7 +69,7 @@ idx_obs <- match(t_obs, xout)                       ## This links back to our in
 
 #' Negative log likelihood
 #' nll is the function that we input initial paramter values into and for which it then runs the model and calcualtes the
-#' likelihood of those paramaters given our predicted data. 
+#' likelihood of those paramaters given our predicted data. The transmission paramter is allowed to vary with time. 
 #' @param theta Vector of parameter values.
 #' @param simmod Function for simulating model given parameters
 #' @param ... Additional arguments to \code{simmod}
@@ -134,6 +135,10 @@ plot(incidence_and_rho_plot)
 
 
 #' ## Fit the rlogistic model
+#' ## The r_logistic function creates the logistic curve for the infection transmission parameter, has more of a biological 
+#' basis and can be more easily interpreted. 
+
+
 
 rlogistic <- function(t, p) {
   p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
@@ -145,7 +150,7 @@ sim_rlogistic <- function(theta){
   simpleepp(kappa, iota, alpha, mu, sigma, mu_i, mu_a, omega, dt)
 }
 
-theta0 <- c(log(0.5), log(0.1), 0.3, 1995, log(0.001))
+theta0 <- c(log(0.5), log(0.1), 0.3, 1995, log(0.001))   ## here the first four values are used in forming the logistic curve for the r and the last character is the new start infection number
 sim_rlogistic(theta0)
 nll(theta0, sim_rlogistic)
 
@@ -153,14 +158,35 @@ fit <- optim(theta0, nll, simmod=sim_rlogistic, method="BFGS")
 fit$simmod <- sim_rlogistic
 fit$mod <- fit$simmod(fit$par)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+############################################################################################################################
+## Now we have fitted the data using this method we can plot the results below #############################################
+############################################################################################################################
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
+log_plot_df<-data.frame(fit$mod)
+names(log_plot_df)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_df$prev_percent<-log_plot_df$Prevalence * 100
+log_plot_df$Time<-xout
+
+prevalence_plot_r_log<- ggplot(data = log_plot_df) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "R Logistic fitting of Classic EPP to simulated data")
+
+plot(prevalence_plot_r_log)
+
+melt_r_log_df<- log_plot_df[,-c(4)]
+melted_mod_log<-melt(melt_r_log_df,id="Time")
+
+incidence_and_rho_plot_r_log<-ggplot(data = melted_mod_log) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
+  labs(x="Year",title="Logistic curve fitting of R fitting of Classic EPP")
+
+plot(incidence_and_rho_plot_r_log)
+
 
 fit_rlogistic <- fit
 
+############################################################################################################################
+## Now moving on to fit the random walk model for the R paramter ###########################################################
+############################################################################################################################
 
 #' ## Fit random walk modeL
 
@@ -205,12 +231,30 @@ fit$X <- Xrw
 fit$D <- Drw1
 fit$mod <- fit$simmod(fit$par, Xrw)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+log_plot_rw_first<-data.frame(fit$mod)
+names(log_plot_rw_first)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_rw_first$prev_percent<-log_plot_rw_first$Prevalence * 100
+log_plot_rw_first$Time<-xout
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
 
+prevalence_plot_r_rw_first<- ggplot(data = log_plot_rw_first) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "R RW first order fitting of Classic EPP to simulated data")
+
+plot(prevalence_plot_r_rw_first)
+
+melt_r_rw_first_df<- log_plot_rw_first[,-c(4)]
+melted_mod_rw_first<-melt(melt_r_rw_first_df,id="Time")
+
+incidence_and_rho_plot_r_RW_plot<-ggplot(data = melted_mod_rw_first) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
+  labs(x="Year",title="RW First order fitting of R fitting of Classic EPP")
+
+plot(incidence_and_rho_plot_r_RW_plot)
+
+############################################################################################################################
+## Now moving on to fitting a RW based on second order differences, which will maintain previous curve value in absence of #
+## Data, so when predicting future incidence ###############################################################################
+############################################################################################################################
 
 #' ### Second order random walk
 
@@ -228,18 +272,36 @@ fit$X <- Xrw
 fit$D <- Drw2
 fit$mod <- fit$simmod(fit$par, Xrw)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+log_plot_rw_second<-data.frame(fit$mod)
+names(log_plot_rw_second)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_rw_second$prev_percent<-log_plot_rw_second$Prevalence * 100
+log_plot_rw_second$Time<-xout
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
+
+prevalence_plot_r_rw_second<- ggplot(data = log_plot_rw_second) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "R RW 2nd order fitting of Classic EPP to simulated data")
+
+plot(prevalence_plot_r_rw_second)
+
+melt_r_rw_second_df<- log_plot_rw_second[,-c(4)]
+melted_mod_rw_second<-melt(melt_r_rw_second_df,id="Time")
+
+incidence_and_rho_plot_r_RW_second_plot<-ggplot(data = melted_mod_rw_second) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
+  labs(x="Year",title="RW Second order fitting of R fitting of Classic EPP")
+
+plot(incidence_and_rho_plot_r_RW_second_plot)
+
+############################################################################################################################
+## Now we will model R with a spline function, firstly a first order penalized spline ######################################
+############################################################################################################################
 
 
 #' ## Fit spline model
 #'
 #' ### First order penalty
 #'
-nk <- 7 # number of splines
+nk <- 10 # number of splines
 dk <- diff(range(xout))/(nk-3)
 knots <- xstart + -3:nk*dk
 
@@ -258,11 +320,29 @@ fit$X <- Xsp
 fit$D <- Dsp1
 fit$mod <- fit$simmod(fit$par, Xsp)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+log_plot_spline_first_10_splines<-data.frame(fit$mod)
+names(log_plot_spline_first_10_splines)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_spline_first_10_splines$prev_percent<-log_plot_spline_first_10_splines$Prevalence * 100
+log_plot_spline_first_10_splines$Time<-xout
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
+
+prevalence_plot_spline_first_10<- ggplot(data = log_plot_spline_first_10_splines) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "R First Order Spline, 10 splines. Classic EPP to simulated data")
+
+plot(prevalence_plot_spline_first_10)
+
+melt_r_spline_first_10_df<- log_plot_spline_first_10_splines[,-c(4)]
+melted_mod_spline_first_10<-melt(melt_r_spline_first_10_df,id="Time")
+
+incidence_and_rho_plot_r_spline_first_10<-ggplot(data = melted_mod_spline_first_10) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
+  labs(x="Year",title="R spline 10 First Order fitting of R fitting of Classic EPP")
+
+plot(incidence_and_rho_plot_r_spline_first_10)
+
+############################################################################################################################
+## Now we will model with a second order penalized spline ##################################################################
+############################################################################################################################
 
 
 #' ### Second order penalty
@@ -281,12 +361,72 @@ fit$X <- Xsp
 fit$D <- Dsp2
 fit$mod <- fit$simmod(fit$par, Xsp)
 
-plot(xout, fit$mod[,3], type="l", lwd=3, col="blue") # prevlance
-points(t_obs, x_obs / n_obs, pch=19)
+log_plot_spline_second<-data.frame(fit$mod)
+names(log_plot_spline_second)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_spline_second$prev_percent<-log_plot_spline_second$Prevalence * 100
+log_plot_spline_second$Time<-xout
 
-plot(xout, fit$mod[,2], type="l", lwd=3, col="blue") # incidence
-plot(xout, fit$mod[,1], type="l", lwd=3, col="blue") # transmission rate
 
+prevalence_plot_spline_second<- ggplot(data = log_plot_spline_second) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+  geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
+  labs(x="Year",y="Prevalence (%)",title= "R Second Order Spline fitting of Classic EPP to simulated data")
+
+plot(prevalence_plot_spline_second)
+
+melt_r_spline_second_df<- log_plot_spline_second[,-c(4)]
+melted_mod_spline_second<-melt(melt_r_spline_second_df,id="Time")
+
+incidence_and_rho_plot_r_spline_second<-ggplot(data = melted_mod_spline_second) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
+  labs(x="Year",title="R spline Second Order fitting of R fitting of Classic EPP")
+
+plot(incidence_and_rho_plot_r_spline_second)
+
+############################################################################################################################
+## Now we will plot all these together in the same output for ease of comparison, we'll start by plotting the incidence, ###
+## prevalence and rho plots for each of the different methods together into one plot #######################################
+############################################################################################################################
+
+model_output_plot<-ggarrange(incidence_and_rho_plot,incidence_and_rho_plot_r_log,incidence_and_rho_plot_r_RW_plot,
+                             incidence_and_rho_plot_r_RW_second_plot,incidence_and_rho_plot_r_spline_first,
+                             incidence_and_rho_plot_r_spline_second,ncol = 3,nrow = 2)
+
+plot(model_output_plot)
+
+prevalence_output_plots<-ggarrange(prevalence_plot,prevalence_plot_r_log,prevalence_plot_r_rw_first,
+                                   prevalence_plot_r_rw_second,prevalence_plot_spline_first,prevalence_plot_spline_second)
+
+plot(prevalence_output_plots)
+
+## Now we will plot the transmission curves produced via the different methods together 
+
+ML_time_varying<-plot_df$Transmission_rate
+ml_varying<-cbind.data.frame(ML_time_varying,rep("ml_varying",nrow(plot_df)))
+names(ml_varying)<-c("rate","method")
+
+logistic_r_transmiss<-cbind.data.frame(log_plot_df$`Transmission rate`,rep("logistic_r_model",nrow(log_plot_df)))
+names(logistic_r_transmiss)<-c("rate","method")
+
+rw_first<-cbind.data.frame(log_plot_rw_first$`Transmission rate`,rep("RW first order",nrow(log_plot_rw_first)))
+names(rw_first)<-c("rate","method")
+
+rw_second<-cbind.data.frame(log_plot_rw_second$`Transmission rate`,rep("RW second order",nrow(log_plot_rw_second)))
+names(rw_second)<-c("rate","method")
+
+spline_first<-cbind.data.frame(log_plot_spline_first$`Transmission rate`,
+                               rep("Spline First Order",nrow(log_plot_spline_first)))
+names(spline_first)<-c("rate","method")
+
+spline_second<-cbind.data.frame(log_plot_spline_second$`Transmission rate`,
+                                rep("Spline Second Order",nrow(log_plot_spline_second)))
+names(spline_second)<-c("rate","method")
+
+transmission_rate_data<-rbind.data.frame(ml_varying,logistic_r_transmiss,rw_first,rw_second,spline_first,spline_second)
+time_for_transmission<-rep(xout,6)
+transmission_rate_data$time<-time_for_transmission
+
+transmission_rate_comparison_plot<-ggplot(transmission_rate_data)+geom_line(aes(x=time,y=rate,colour=method),size=1.05)+
+  labs(x="Year",y="Rate",title="Comparison of methods for estimating transmission rate")
+plot(transmission_rate_comparison_plot)
 
 #' ## r-trend model
 #'
