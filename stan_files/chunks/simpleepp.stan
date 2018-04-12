@@ -64,6 +64,7 @@ matrix simpleepp(vector kappa, real iota, vector alpha, real mu, vector sigma,
     rho[t+1] = 1.0 - S[t+1] / (S[t+1] + sum(I[ ,t+1]) + sum(A[ ,t+1]));
   }
   
+  
   return(append_col(append_row(kappa[1], kappa),
 		    append_col(lambda, rho)));
 }

@@ -122,10 +122,16 @@ plot(prevalence_plot)
 melt_df<-plot_df[,-c(4)]
 melted_mod<-melt(melt_df,id="Time")
 
-incidence_and_rho_plot<-ggplot(data = melted_mod) + geom_line(aes(x=Time, y= value, colour=variable))+
+incidence_and_rho_plot<-ggplot(data = melted_mod) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
   labs(x="Year",title="ML fitting of Classic EPP")
 
 plot(incidence_and_rho_plot)
+
+############################################################################################################################
+## So we have updated the plotting of the ML fitting methods, now we'll implement the r logisitic curve model for the ######
+## transmission rate paramter ##############################################################################################
+############################################################################################################################
+
 
 #' ## Fit the rlogistic model
 
