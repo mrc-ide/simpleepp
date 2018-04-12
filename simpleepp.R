@@ -20,6 +20,9 @@ xx <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
 xout <- c(xstart, xx)
 
 #' Simulation of EPP model with constant kappa = 0.3
+#' This assumes constant population size 
+#' This returns a matrix with r in first column, incidence in the second column and prevalence in the third column
+#' Iota refers to the initial proportion of the population infected. 
 mod <- simpleepp(kappa=rep(0.3, 500), iota=0.005, alpha=rep(0, nsteps), mu, sigma, mu_i, mu_a, omega, dt)
 
 #' Simulation of EPP classic model
