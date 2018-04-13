@@ -9,7 +9,7 @@
   real[] params,
   real[] x_r,
   int[] x_i) {
-  real dydt[4];
+  real dydt[9];
   
   dydt[1] = (params[1] * 5000) - (params[2] * y[6] * y[1] / y[7] ) - ( 0.02857 * y[1] ) ;
   
@@ -90,7 +90,7 @@ model {
   params ~ uniform(0, 1); //constrained at the lower limit of all the paramaters and the upper limit of the et paramter
   I0 ~ normal(0, 100 ); //constrained to be positive.
   
-  y ~ binomial(n_sample, y_hat[, 4]  ); //y_hat[,4] is the prevalence as a fraction of the total population
+  y ~ binomial(n_sample, y_hat[, 8]  ); //y_hat[,8] is the prevalence as a fraction of the total population
   
   }
 generated quantities {

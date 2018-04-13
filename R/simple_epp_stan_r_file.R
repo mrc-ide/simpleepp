@@ -10,6 +10,8 @@ require(ggpubr)
 require(deSolve)
 require(dplyr)
 require(rstan)
+require(gridExtra)
+require(grid)
 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
@@ -111,12 +113,8 @@ total_infected_plot<-ggplot(data = out_epp_cd4_hiv,aes(x=time,y=incidence))+geom
 total_pop_plot<-ggplot(data = out_epp_cd4_hiv,aes(x=time,y=n))+geom_line(colour="forest green")+
   labs(x="Time",y="Total Population size")
 
-require(gridExtra)
-require(grid)
-
 grid::grid.draw(rbind(ggplotGrob(prev_plot), ggplotGrob(total_infected_plot), ggplotGrob(total_pop_plot),  size = "last"))
 
-require(reshape2)
 melt_incidence_prev<-out_epp_cd4_hiv[,-c(2:8,11)]
 melted_incidence_prevalence<-melt(melt_incidence_prev,id="time")
 
@@ -128,34 +126,118 @@ plot(incidence_prevalence_plot)
 ## Now we will draw samples from our simulated epidemic to then fit our stan model to ##########################################
 ################################################################################################################################
 
-sample_years_hiv = 100 # number of days sampled throughout the epidemic
-sample_n = 100 # number of host individuals sampled per day
+sample_function<-function(number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id,t_max){
+  sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
+  sample_n <- people_t0_sample # number of host individuals sampled per day
+  
+  # Choose which days the samples were taken. 
+  # Ideally this would be daily, but we all know that is difficult.
+  sample_time_hiv = sort(sample(1:t_max, sample_years_hiv, replace=F))
+  
+  # Extract the "true" fraction of the population that is infected on each of the sampled days:
+  sample_propinf_hiv = simulated_df[simulated_df$time %in% sample_time_hiv, prevalence_column_id]
+  
+  ## this just samples our prevalence, to get a probability that the sample we take is HIV infected then we need to divide
+  ## by 100
+  
+  #sample_propinf_hiv<-sample_propinf_hiv/100
+  
+  # Generate binomially distributed data.
+  # So, on each day we sample a given number of people (sample_n), and measure how many are infected.
+  # We expect binomially distributed error in this estimate, hence the random number generation.
+  sample_y_hiv_prev = rbinom(sample_years_hiv, sample_n, sample_propinf_hiv)
+  sample_prev_hiv<-(sample_y_hiv_prev/sample_n)*100
+  
+  ## lets have a ggplot of the y (infected) and out sample of Y over time 
+  sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv))
+  return(sample_df_100)  
+}
+sample_df_100<-sample_function(100,25,simulated_df = out_epp_cd4_hiv,prevalence_column_id = 9,t_max = 100)
 
-# Choose which days the samples were taken. 
-# Ideally this would be daily, but we all know that is difficult.
-sample_time_hiv = sort(sample(1:t_max, sample_years_hiv, replace=F))
+plot_sample<-function(sample_df,simulated_df){
+a<-ggplot(data = simulated_df,aes(x=time,y=prev_percent))+geom_line(colour="midnightblue",size=1.2)+
+  geom_point(data=sample_df, aes(x=sample_time_hiv,y=sample_prev_hiv),colour="red",size=1)
 
-# Extract the "true" fraction of the population that is infected on each of the sampled days:
-sample_propinf_hiv = out_epp_cd4_hiv[out_epp_cd4_hiv$time %in% sample_time_hiv, 9]
+return(plot(a))
+}
 
-## this just samples our prevalence, to get a probability that the sample we take is HIV infected then we need to divide
-## by 100
+plot_sample(simulated_df = out_epp_cd4_hiv,sample_df = sample_df_100)
 
-#sample_propinf_hiv<-sample_propinf_hiv/100
 
-# Generate binomially distributed data.
-# So, on each day we sample a given number of people (sample_n), and measure how many are infected.
-# We expect binomially distributed error in this estimate, hence the random number generation.
-sample_y_hiv_prev = rbinom(sample_years_hiv, sample_n, sample_propinf_hiv)
-sample_prev_hiv<-(sample_y_hiv_prev/sample_n)*100
-
-## lets have a ggplot of the y (infected) and out sample of Y over time 
-sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv))
-sample_df_100
-
-ggplot(data = out_epp_cd4_hiv,aes(x=time,y=prev_percent))+geom_line(colour="midnightblue",size=1.2)+
-  geom_point(data=sample_df_100, aes(x=sample_df_100$sample_time_hiv,y=sample_df_100$sample_prev_hiv),colour="red",size=1)
 ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv))+geom_point(colour="red",size=1.5)
+
+################################################################################################################################
+## Now we have our sample data we can the data to a model in STAN ##############################################################
+################################################################################################################################
+
+stan_d_hiv_prev = list(n_obs = sample_years_hiv,
+                       n_params = 2,
+                       n_difeq = length(inits_hiv_cd4),
+                       n_sample = sample_n,
+                       n_fake = length(1:t_max),
+                       y = sample_y_hiv_prev,
+                       t0 = 0,
+                       ts = sample_time_hiv,
+                       fake_ts = c(1:t_max))
+
+# Which parameters to monitor in the model:
+params_monitor_hiv = c("y_hat", "y0", "params", "fake_I")
+
+# Test / debug the model:
+test_hiv_100_year = stan("hiv_project/simpleepp/stan_files/chunks/cd4_stan.stan",
+                                                             data = stan_d_hiv_prev,
+                                                             pars = params_monitor_hiv,
+                                                             chains = 1, iter = 10)
+
+## Run the model 
+
+mod_hiv_prev = stan(fit = test_hiv_100_year,data = stan_d_hiv_prev,pars = params_monitor,chains = 3,warmup = 500,iter = 1500,
+                                               control = list(adapt_delta = 0.85))
+# Extract the posterior samples to a structured list:
+posts_hiv <- extract(mod_hiv_prev)
+
+apply(posts_hiv$params, 2, median)
+
+
+apply(posts_hiv$y0, 2, median)[1:9]
+
+# These should match well. 
+
+#################
+# Plot model fit:
+
+# Proportion infected from the synthetic data:
+
+#sample_prop = sample_y / sample_n
+
+# Model predictions across the sampling time period.
+# These were generated with the "fake" data and time series.
+mod_median = apply(posts_hiv$fake_I[,,2], 2, median)
+mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
+mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
+mod_time = stan_d_hiv$fake_ts
+
+prev_median<-(apply(posts_hiv$fake_I[,,8],2,median))*100
+prev_low<-(apply(posts_hiv$fake_I[,,8],2,quantile,probs=c(0.025)))*100
+prev_high<-(apply(posts_hiv$fake_I[,,8],2,quantile,probs=c(0.975)))*100
+
+# Combine into two data frames for plotting
+#df_sample = data.frame(sample_prop, sample_time)
+df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, stan_d_hiv_prev$ts)
+names(df_fit_prevalence)<-c("median","low","high","time")
+
+# Plot the synthetic data with the model predictions
+# Median and 95% Credible Interval
+
+n_25_plot<-ggplot(sample_df_100, aes(x=sample_df_100$sample_time_hiv, y=sample_df_100$sample_prev_hiv)) +
+  geom_point(col="red", shape = 19, size = 1.5) +
+  geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
+              colour="midnightblue",alpha=0.2,fill="midnightblue")+
+  coord_cartesian(ylim = c(0,100),xlim=c(0,100))+labs(x="Time",y="Prevalence (%)", title="N = 25 plot")
+plot(n_25_plot)
+
+grid.arrange(rbind(ggplotGrob(n_25_plot),ggplotGrob(n_100_plot),ggplotGrob(n_200_plot), size="last"))
 
 
 
