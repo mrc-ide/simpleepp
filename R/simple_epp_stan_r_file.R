@@ -123,3 +123,41 @@ melted_incidence_prevalence<-melt(melt_incidence_prev,id="time")
 incidence_prevalence_plot<-ggplot(data = melted_incidence_prevalence)+geom_line(aes(x=time,y=value,colour=variable),size=1.1)+
   labs(x="Time")
 plot(incidence_prevalence_plot)
+
+################################################################################################################################
+## Now we will draw samples from our simulated epidemic to then fit our stan model to ##########################################
+################################################################################################################################
+
+sample_years_hiv = 100 # number of days sampled throughout the epidemic
+sample_n = 100 # number of host individuals sampled per day
+
+# Choose which days the samples were taken. 
+# Ideally this would be daily, but we all know that is difficult.
+sample_time_hiv = sort(sample(1:t_max, sample_years_hiv, replace=F))
+
+# Extract the "true" fraction of the population that is infected on each of the sampled days:
+sample_propinf_hiv = out_epp_cd4_hiv[out_epp_cd4_hiv$time %in% sample_time_hiv, 9]
+
+## this just samples our prevalence, to get a probability that the sample we take is HIV infected then we need to divide
+## by 100
+
+#sample_propinf_hiv<-sample_propinf_hiv/100
+
+# Generate binomially distributed data.
+# So, on each day we sample a given number of people (sample_n), and measure how many are infected.
+# We expect binomially distributed error in this estimate, hence the random number generation.
+sample_y_hiv_prev = rbinom(sample_years_hiv, sample_n, sample_propinf_hiv)
+sample_prev_hiv<-(sample_y_hiv_prev/sample_n)*100
+
+## lets have a ggplot of the y (infected) and out sample of Y over time 
+sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv))
+sample_df_100
+
+ggplot(data = out_epp_cd4_hiv,aes(x=time,y=prev_percent))+geom_line(colour="midnightblue",size=1.2)+
+  geom_point(data=sample_df_100, aes(x=sample_df_100$sample_time_hiv,y=sample_df_100$sample_prev_hiv),colour="red",size=1)
+ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv))+geom_point(colour="red",size=1.5)
+
+
+
+
+
