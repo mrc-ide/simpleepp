@@ -121,8 +121,8 @@ matrix simpleepp_classic(real r, real f0, real iota, real phi, real mu, vector s
     Nt = St + It;
 
     ft = exp(phi * X[t] / Nt - (1-f0)) / (exp(phi * X[t] / Nt - (1-f0)) - 1 + 1/f0);
-    lambda[t+1] = r * rho[t] * Z[t]/St;
-    kappa[t] = lambda[t+1] / rho[t];
+    lambda[t+1] = r * rho[t] * Z[t]/St;                                                 // Lambda in this sense is the proportion of the population moving to infected not the FOI
+    kappa[t] = lambda[t+1] / rho[t];                                                    // so kappa is r * S after cancelling terms. 
 
     deaths = mu * Nt + sum(mu_i .* I[,t]);
     X[t+1] = X[t] + dt*(-mu * X[t] + (1 - ft) * deaths);
