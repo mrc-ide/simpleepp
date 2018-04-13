@@ -301,7 +301,7 @@ plot(incidence_and_rho_plot_r_RW_second_plot)
 #'
 #' ### First order penalty
 #'
-nk <- 10 # number of splines
+nk <- 7 # number of splines
 dk <- diff(range(xout))/(nk-3)
 knots <- xstart + -3:nk*dk
 
@@ -320,19 +320,19 @@ fit$X <- Xsp
 fit$D <- Dsp1
 fit$mod <- fit$simmod(fit$par, Xsp)
 
-log_plot_spline_first_10_splines<-data.frame(fit$mod)
-names(log_plot_spline_first_10_splines)<-c("Transmission rate", "Incidence", "Prevalence")
-log_plot_spline_first_10_splines$prev_percent<-log_plot_spline_first_10_splines$Prevalence * 100
-log_plot_spline_first_10_splines$Time<-xout
+log_plot_spline_first_spline<-data.frame(fit$mod)
+names(log_plot_spline_first_spline)<-c("Transmission rate", "Incidence", "Prevalence")
+log_plot_spline_first_spline$prev_percent<-log_plot_spline_first_spline$Prevalence * 100
+log_plot_spline_first_spline$Time<-xout
 
 
-prevalence_plot_spline_first_10<- ggplot(data = log_plot_spline_first_10_splines) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
+prevalence_plot_spline_first_10<- ggplot(data = log_plot_spline_first_spline) + geom_line(aes(x=Time, y=prev_percent),colour="midnightblue",size=1.2)+
   geom_point(data = sample_df,aes(x=Time,y=Prevalence),colour="red",fill="red")+
-  labs(x="Year",y="Prevalence (%)",title= "R First Order Spline, 10 splines. Classic EPP to simulated data")
+  labs(x="Year",y="Prevalence (%)",title= "R First Order Spline . Classic EPP to simulated data")
 
 plot(prevalence_plot_spline_first_10)
 
-melt_r_spline_first_10_df<- log_plot_spline_first_10_splines[,-c(4)]
+melt_r_spline_first_10_df<- log_plot_spline_first_spline[,-c(4)]
 melted_mod_spline_first_10<-melt(melt_r_spline_first_10_df,id="Time")
 
 incidence_and_rho_plot_r_spline_first_10<-ggplot(data = melted_mod_spline_first_10) + geom_line(aes(x=Time, y= value, colour=variable),size=1.2)+
@@ -387,13 +387,13 @@ plot(incidence_and_rho_plot_r_spline_second)
 ############################################################################################################################
 
 model_output_plot<-ggarrange(incidence_and_rho_plot,incidence_and_rho_plot_r_log,incidence_and_rho_plot_r_RW_plot,
-                             incidence_and_rho_plot_r_RW_second_plot,incidence_and_rho_plot_r_spline_first,
+                             incidence_and_rho_plot_r_RW_second_plot,incidence_and_rho_plot_r_spline_first_10,
                              incidence_and_rho_plot_r_spline_second,ncol = 3,nrow = 2)
 
 plot(model_output_plot)
 
 prevalence_output_plots<-ggarrange(prevalence_plot,prevalence_plot_r_log,prevalence_plot_r_rw_first,
-                                   prevalence_plot_r_rw_second,prevalence_plot_spline_first,prevalence_plot_spline_second)
+                                   prevalence_plot_r_rw_second,prevalence_plot_spline_first_10,prevalence_plot_spline_second)
 
 plot(prevalence_output_plots)
 
@@ -427,6 +427,39 @@ transmission_rate_data$time<-time_for_transmission
 transmission_rate_comparison_plot<-ggplot(transmission_rate_data)+geom_line(aes(x=time,y=rate,colour=method),size=1.05)+
   labs(x="Year",y="Rate",title="Comparison of methods for estimating transmission rate")
 plot(transmission_rate_comparison_plot)
+
+################################################################################################################################
+## NOw we will plot the incidence curves produced via each method ##############################################################
+################################################################################################################################
+
+ml_incidence<-cbind.data.frame(plot_df$Incidence,rep("ML_varying",nrow(plot_df)))
+names(ml_incidence)<-c("incidence","method")
+
+logistic_incidence<-cbind.data.frame(log_plot_df$Incidence,rep("R Logistic",nrow(log_plot_df)))
+names(logistic_incidence)<-c("incidence","method")
+
+rw_first_incidence<-cbind.data.frame(log_plot_rw_first$Incidence,rep("RW first order",nrow(log_plot_rw_first)))
+names(rw_first_incidence)<-c("incidence","method")
+
+rw_second_inference<-cbind.data.frame(log_plot_rw_second$Incidence,rep("RW second order",nrow(log_plot_rw_second)))
+names(rw_second_inference)<-c("incidence","method")
+
+spline_first_incidence<-cbind.data.frame(log_plot_spline_first_spline$Incidence,
+                                         rep("Spline first order",nrow(log_plot_spline_first_spline)))
+names(spline_first_incidence)<-c("incidence","method")
+
+spline_second_incidence<-cbind.data.frame(log_plot_spline_second$Incidence,
+                                          rep("spline second order",nrow(log_plot_spline_second)))
+names(spline_second_incidence)<-c("incidence","method")
+
+incidence_rate_comparison_df<-rbind.data.frame(ml_incidence,logistic_incidence,rw_first_incidence,rw_second_inference,
+                                               spline_first_incidence,spline_second_incidence)
+incidence_time<-rep(xout,6)
+incidence_rate_comparison_df$time<-incidence_time
+
+incidence_comparion_plot<-ggplot(data = incidence_rate_comparison_df)+geom_line(aes(x=time,y=incidence,colour=method),size=1.05)+
+  labs(x="Year",y="incidence rate")
+plot(incidence_comparion_plot)
 
 #' ## r-trend model
 #'
