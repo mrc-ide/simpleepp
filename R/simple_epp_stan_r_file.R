@@ -1,4 +1,4 @@
-#' This script will implement a simple EPP model, with CD4 structure and a varying r paramter through time 
+#' This script will implement a simple EPP model, with CD4 structure and a constant r paramter through time 
 
 ################################################################################################################################
 ## Implement simple EPP structure in R to simulate data, then fit STAN Model to this simulated data ############################
