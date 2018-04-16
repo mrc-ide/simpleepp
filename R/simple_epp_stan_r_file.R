@@ -20,11 +20,13 @@ options(mc.cores = parallel::detectCores())
 ## Now lets set our initial conditions for the model ###########################################################################
 ################################################################################################################################
 
-cd4_1<-100                                  ## Initial number of the population infected with 500>cd4>350
-cd4_2<-0                                   ## Initial number of the population infected with 350>cd4>200
-cd4_3<-0                                   ## Initial number of the population infected with 200>cd4>50
-cd4_4<-0                                   ## Initial number of the population infected with cd4<50
-s0<-1000000-(cd4_1+cd4_2+cd4_3+cd4_4)      ## Initial susceptible proportion of the population
+hiv_ode_model<-function(init_conditions,params,times){
+
+cd4_1<-init_conditions$cd4[1]                                  ## Initial number of the population infected with 500>cd4>350
+cd4_2<-init_conditions$cd4[2]                                   ## Initial number of the population infected with 350>cd4>200
+cd4_3<-init_conditions$cd4[3]                   ## Initial number of the population infected with 200>cd4>50
+cd4_4<-init_conditions$cd4[4]                   ## Initial number of the population infected with cd4<50
+s0<-init_conditions$n_init[1]-(cd4_1+cd4_2+cd4_3+cd4_4)      ## Initial susceptible proportion of the population
 n0<-s0+cd4_1+cd4_2+cd4_3+cd4_4             ## Initial population size
 i0<-(cd4_1+cd4_2+cd4_3+cd4_4)              ## Initial infected size in total
 prev0<-i0/n0                               ## Initial Prevalence
@@ -36,11 +38,11 @@ inits_hiv_cd4<-c(s0,cd4_1,cd4_2,cd4_3,cd4_4,i0,n0,prev0,incide0)
 ## Now we will set up the intial paramter values for the model #################################################################
 ################################################################################################################################
 
-eta<- 20000                                ## The birth rate into the population
-kappa<- 0.3                                ## The transmission rate paramter
-sigma<-c(1/3.16,1/2.13,1/3.2)              ## Progression rates from each Cd4 class
-mu_i<-c(0.003,0.008,0.035,0.27)            ## Vector of death rates in each cd4 class         
-mu_s<-1/35                                 ## Normal population death rate 
+eta<- params$eta                                ## The birth rate into the population
+kappa<- params$kappa                                ## The transmission rate paramter
+sigma<-params$sigma              ## Progression rates from each Cd4 class
+mu_i<- params$mu_i  #c(0.003,0.008,0.035,0.27)            ## Vector of death rates in each cd4 class         
+mu_s<-params$mu_s                                 ## Normal population death rate 
 
 params_cd4_hiv<-list(et=et,kappa=kappa,sigma=sigma,mu_i=mu_i,mu_s=mu_s)
 
@@ -48,8 +50,8 @@ params_cd4_hiv<-list(et=et,kappa=kappa,sigma=sigma,mu_i=mu_i,mu_s=mu_s)
 ## Now we will create the time series over which to integrate the functions ####################################################
 ################################################################################################################################
 
-t_min<-0
-t_max<-100
+t_min<-times[1]
+t_max<-times[2]
 times<-t_min:t_max
 
 ################################################################################################################################
@@ -98,33 +100,52 @@ names(out_epp_cd4_hiv)<-c("time","susceptible","cd4 > 500","500 > cd4 > 350",
                           "350 > cd4 > 200", "200 > cd4", "infected", "n", "prevalence","incidence")
 out_epp_cd4_hiv$prev_percent<-out_epp_cd4_hiv$prevalence * 100
 
-out_epp_cd4_hiv
+return(list(sample_df=out_epp_cd4_hiv,inits_length=length(inits_hiv_cd4)))
 
+}
+
+inits_for_model<-list(cd4=c(100,0,0,0),n_init=1000000)
+params_for_model<-list(eta=2000,kappa=0.3,mu_i=c(0.003, 0.008, 0.035, 0.27),sigma=1/c(3.16, 2.13, 3.20),mu_s=1/35)
+times_for_model<-c(0,100)
+
+out_epp_cd4_hiv<-hiv_ode_model(init_conditions = inits_for_model,params = params_for_model,times = times_for_model)
 ################################################################################################################################
 ## Now we have some data we can plot our prevalence curve and incidence curve ##################################################
 ################################################################################################################################
 
-prev_plot<-ggplot(data = out_epp_cd4_hiv, aes(x=time,y=prev_percent))+geom_line(colour="blue")+
+plot_model_output<-function(model_df){
+
+prev_plot<-ggplot(data = model_df, aes(x=time,y=prev_percent))+geom_line(colour="blue")+
   labs(x="Time",y="Prevalence (%)")
 
-total_infected_plot<-ggplot(data = out_epp_cd4_hiv,aes(x=time,y=incidence))+geom_line(colour="red")+
+total_infected_plot<-ggplot(data = model_df,aes(x=time,y=incidence))+geom_line(colour="red")+
   labs(x="Time",y="Incidence rate")
 
-total_pop_plot<-ggplot(data = out_epp_cd4_hiv,aes(x=time,y=n))+geom_line(colour="forest green")+
+total_pop_plot<-ggplot(data = model_df,aes(x=time,y=n))+geom_line(colour="forest green")+
   labs(x="Time",y="Total Population size")
 
-grid::grid.draw(rbind(ggplotGrob(prev_plot), ggplotGrob(total_infected_plot), ggplotGrob(total_pop_plot),  size = "last"))
+return(grid::grid.draw(rbind(ggplotGrob(prev_plot), ggplotGrob(total_infected_plot), ggplotGrob(total_pop_plot),  size = "last")))
+}
 
-melt_incidence_prev<-out_epp_cd4_hiv[,-c(2:8,11)]
+plot_model_output(out_epp_cd4_hiv$sample_df)
+
+incidence_prevalence_plotter<-function(model_df){
+
+melt_incidence_prev<-model_df[,-c(2:8,11)]
 melted_incidence_prevalence<-melt(melt_incidence_prev,id="time")
 
 incidence_prevalence_plot<-ggplot(data = melted_incidence_prevalence)+geom_line(aes(x=time,y=value,colour=variable),size=1.1)+
-  labs(x="Time")
-plot(incidence_prevalence_plot)
+  labs(x="Time",y="incidence / prevalence")
+return(plot(incidence_prevalence_plot))
+}
+
+incidence_prevalence_plotter(out_epp_cd4_hiv$sample_df)
 
 ################################################################################################################################
 ## Now we will draw samples from our simulated epidemic to then fit our stan model to ##########################################
 ################################################################################################################################
+sample_years<- 75
+sample_n<-50
 
 sample_function<-function(number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id,t_max){
   sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
@@ -149,10 +170,10 @@ sample_function<-function(number_of_years_to_sample,people_t0_sample,simulated_d
   sample_prev_hiv<-(sample_y_hiv_prev/sample_n)*100
   
   ## lets have a ggplot of the y (infected) and out sample of Y over time 
-  sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv))
+  sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv,sample_y_hiv_prev,sample_time_hiv))
   return(sample_df_100)  
 }
-sample_df_100<-sample_function(100,25,simulated_df = out_epp_cd4_hiv,prevalence_column_id = 9,t_max = 100)
+sample_df_100<-sample_function(sample_years,sample_n,simulated_df = out_epp_cd4_hiv$sample_df,prevalence_column_id = 9,t_max = 100)
 
 plot_sample<-function(sample_df,simulated_df){
 a<-ggplot(data = simulated_df,aes(x=time,y=prev_percent))+geom_line(colour="midnightblue",size=1.2)+
@@ -161,7 +182,7 @@ a<-ggplot(data = simulated_df,aes(x=time,y=prev_percent))+geom_line(colour="midn
 return(plot(a))
 }
 
-plot_sample(simulated_df = out_epp_cd4_hiv,sample_df = sample_df_100)
+plot_sample(simulated_df = out_epp_cd4_hiv$sample_df,sample_df = sample_df_100)
 
 
 ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv))+geom_point(colour="red",size=1.5)
@@ -170,15 +191,15 @@ ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv))+geom_point
 ## Now we have our sample data we can the data to a model in STAN ##############################################################
 ################################################################################################################################
 
-stan_d_hiv_prev = list(n_obs = sample_years_hiv,
+stan_d_hiv_prev = list(n_obs = sample_years,
                        n_params = 2,
-                       n_difeq = length(inits_hiv_cd4),
+                       n_difeq = out_epp_cd4_hiv$inits_length,
                        n_sample = sample_n,
-                       n_fake = length(1:t_max),
-                       y = sample_y_hiv_prev,
+                       n_fake = length(1:times_for_model[2]),
+                       y = sample_df_100$sample_y_hiv_prev,
                        t0 = 0,
-                       ts = sample_time_hiv,
-                       fake_ts = c(1:t_max))
+                       ts = sample_df_100$sample_time_hiv.1,
+                       fake_ts = c(1:times_for_model[2]))
 
 # Which parameters to monitor in the model:
 params_monitor_hiv = c("y_hat", "y0", "params", "fake_I")
@@ -194,12 +215,19 @@ test_hiv_100_year = stan("hiv_project/simpleepp/stan_files/chunks/cd4_stan.stan"
 mod_hiv_prev = stan(fit = test_hiv_100_year,data = stan_d_hiv_prev,pars = params_monitor,chains = 3,warmup = 500,iter = 1500,
                                                control = list(adapt_delta = 0.85))
 # Extract the posterior samples to a structured list:
-posts_hiv <- extract(mod_hiv_prev)
 
-apply(posts_hiv$params, 2, median)
+########################################################################################################################################
+## Now we will extract the model output from mod_hiv_prev ##############################################################################
+########################################################################################################################################
+
+plot_stan_model_fit<-function(model_output,sampled_df,plot_name,stan_data){
+
+posts_hiv <- extract(model_output)
+
+params<-apply(posts_hiv$params, 2, median)
 
 
-apply(posts_hiv$y0, 2, median)[1:9]
+inits<-apply(posts_hiv$y0, 2, median)[1:9]
 
 # These should match well. 
 
@@ -212,10 +240,10 @@ apply(posts_hiv$y0, 2, median)[1:9]
 
 # Model predictions across the sampling time period.
 # These were generated with the "fake" data and time series.
-mod_median = apply(posts_hiv$fake_I[,,2], 2, median)
-mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
-mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
-mod_time = stan_d_hiv$fake_ts
+#mod_median = apply(posts_hiv$fake_I[,,2], 2, median)
+#mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
+#mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
+mod_time = stan_data$fake_ts
 
 prev_median<-(apply(posts_hiv$fake_I[,,8],2,median))*100
 prev_low<-(apply(posts_hiv$fake_I[,,8],2,quantile,probs=c(0.025)))*100
@@ -223,22 +251,36 @@ prev_high<-(apply(posts_hiv$fake_I[,,8],2,quantile,probs=c(0.975)))*100
 
 # Combine into two data frames for plotting
 #df_sample = data.frame(sample_prop, sample_time)
-df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, stan_d_hiv_prev$ts)
+df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, stan_data$fake_ts)
 names(df_fit_prevalence)<-c("median","low","high","time")
 
 # Plot the synthetic data with the model predictions
 # Median and 95% Credible Interval
 
-n_25_plot<-ggplot(sample_df_100, aes(x=sample_df_100$sample_time_hiv, y=sample_df_100$sample_prev_hiv)) +
-  geom_point(col="red", shape = 19, size = 1.5) +
+
+plotter<-ggplot(sample_df_100) +
+  geom_point(aes(x=sample_df_100$sample_time_hiv.1, y=sample_df_100$sample_prev_hiv),col="red", shape = 19, size = 1.5) +
   geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
               colour="midnightblue",alpha=0.2,fill="midnightblue")+
-  coord_cartesian(ylim = c(0,100),xlim=c(0,100))+labs(x="Time",y="Prevalence (%)", title="N = 25 plot")
-plot(n_25_plot)
+  coord_cartesian(ylim = c(0,100),xlim=c(0,100))+labs(x="Time",y="Prevalence (%)", title=plot_name)
 
-grid.arrange(rbind(ggplotGrob(n_25_plot),ggplotGrob(n_100_plot),ggplotGrob(n_200_plot), size="last"))
+return(list(plot=(plotter),param_values=params,inits=inits,df_output=df_fit_prevalence))
 
+
+}
+
+stan_output<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_50",stan_data = stan_d_hiv_prev)
+
+plot(stan_output$plot)
+
+n_50_plot<-stan_output$plot
+
+sampling_number_plot<-ggarrange(n_25_plot,n_50_plot,n_100_plot,n_200_plot,ncol = 2,nrow = 2)
+
+plot(sampling_number_plot)
+
+class(stan_d_hiv_prev$fake_ts)
 
 
 

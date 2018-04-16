@@ -63,9 +63,8 @@ parameters {
   
 transformed parameters{
   real y_hat[n_obs, n_difeq]; // Output from the ODE solver
-  real y0[n_difeq]; // Initial conditions for both S and I
-  real y_prevalence[n_obs, 1]; // This is a relic from when I didn't explicitly model prevalence.
-
+  real y0[n_difeq]; // Initial conditions for the system 
+  
 y0[1] = 1000000 - I0;      // initial susceptible population
 y0[2] = I0;              // initial number with >500 CD4
 y0[3] = 0;               // initial number with 500>cd4>350
@@ -78,11 +77,6 @@ y0[9] = I0 / 1000000;  //This is the starting incidence in the system
 
 y_hat = integrate_ode_rk45(hiv_SI, y0, t0, ts, params, x_r, x_i);
 
-for (t in 1:n_obs){
-
-y_prevalence[t,1] = y_hat[t, 2] / y_hat[t, 3];
-
-}
 
 }
 
