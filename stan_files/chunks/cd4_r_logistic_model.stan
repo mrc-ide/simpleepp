@@ -11,7 +11,7 @@
   int[] x_i) {
   real dydt[10];
   
-  dydt[1] =  10.0 ^ ( log(params[2]) - (log(params[2] - log(params[3])) / (1 + exp( - params[4] * (t - (25 * params[5])))))) - y[1];     // This is our kappa parameter changing through time 
+  dydt[1] =  exp(( log(params[2]) - (log(params[2] - log(params[3])) / (1 + exp( - params[4] * (t - (25 * params[5]))))))) - y[1];     // This is our kappa parameter changing through time 
   
   dydt[2] = (params[1] * 5000) - (y[1] * y[7] * y[2] / y[8] ) - ( 0.02857 * y[2] ) ;                                                     // This is our susceptible population
   

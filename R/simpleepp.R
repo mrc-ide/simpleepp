@@ -145,7 +145,7 @@ rlogistic <- function(t, p) {
 }
 
 sim_rlogistic <- function(theta){
-  kappa <- exp(rlogistic(step_vector, theta0[1:4]))
+  kappa <- exp(rlogistic(step_vector, theta[1:4]))
   iota <- exp(theta[5])
   simpleepp(kappa, iota, alpha, mu, sigma, mu_i, mu_a, omega, dt)
 }
