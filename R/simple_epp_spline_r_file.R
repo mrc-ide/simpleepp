@@ -1,54 +1,51 @@
 #######################################################################################################################################
-## Now we will work to create a first and second order Random walk discrete time model to solve from STAN #############################
+## Implemenitng a spline model of the transmission paramter R #########################################################################
 #######################################################################################################################################
-require(splines)
-require(ggplot2)
-require(dplyr)
-require(reshape2)
+
 require(rstan)
-require(ggpubr)
-require(gridExtra)
+require(ggplot2)
+require(reshape2)
 require(grid)
 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-expose_stan_functions("stan_files/chunks/cd4_matrix_random_walk.stan")
+  expose_stan_functions("stan_files/chunks/cd4_spline_model.stan")
 
 #######################################################################################################################################
 ## Now I'll create the R script which to call the stan script for sampling with a first order random walk value #######################
 #######################################################################################################################################
 
 run_simulated_model<-function(params,times){
-
-mu <- params$mu                               # Non HIV mortality / exit from population
-sigma <- params$sigma           # Progression from stages of infection
-mu_i <- params$mu_i                                   #c(0.003, 0.008, 0.035, 0.27)     # Mortality by stage, no ART
-iota<-params$iota
-
-
-dt <- times$dt                                     # time step
-nsteps <- as.integer(times$years/dt)                   # number of steps
-xstart <- times$start                                # the start of the epidemic
-step_vector <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
-xout <- c(xstart, step_vector)    
-
-rlogistic <- function(t, p) {
-  p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
-}
-
-kappa_params<-c(log(params$kappa[1]),log(params$kappa[2]),params$kappa[3],params$kappa[4])
-kappa<-exp(rlogistic(step_vector,kappa_params))
-
-mod<-simpleepp_no_art(kappa = kappa,iota,mu,sigma,mu_i,dt)
-sim_mod<-data.frame(mod)
-names(sim_mod)<-c("kappa","lambda","prevalence")
-sim_mod$prev_percent<-sim_mod$prevalence * 100
-sim_mod$time<-c(xstart,step_vector)
-
-return(list(sim_df=sim_mod,kappa_values=kappa))
-
-
+  
+  mu <- params$mu                               # Non HIV mortality / exit from population
+  sigma <- params$sigma           # Progression from stages of infection
+  mu_i <- params$mu_i                                   #c(0.003, 0.008, 0.035, 0.27)     # Mortality by stage, no ART
+  iota<-params$iota
+  
+  
+  dt <- times$dt                                     # time step
+  nsteps <- as.integer(times$years/dt)                   # number of steps
+  xstart <- times$start                                # the start of the epidemic
+  step_vector <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
+  xout <- c(xstart, step_vector)    
+  
+  rlogistic <- function(t, p) {
+    p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
+  }
+  
+  kappa_params<-c(log(params$kappa[1]),log(params$kappa[2]),params$kappa[3],params$kappa[4])
+  kappa<-exp(rlogistic(step_vector,kappa_params))
+  
+  mod<-simpleepp_no_art(kappa = kappa,iota,mu,sigma,mu_i,dt)
+  sim_mod<-data.frame(mod)
+  names(sim_mod)<-c("kappa","lambda","prevalence")
+  sim_mod$prev_percent<-sim_mod$prevalence * 100
+  sim_mod$time<-c(xstart,step_vector)
+  
+  return(list(sim_df=sim_mod,kappa_values=kappa))
+  
+  
 }
 
 mu <- 1/35                               # Non HIV mortality / exit from population
@@ -101,8 +98,9 @@ plot(plotted_sim$whole)
 
 sample_range<-1970:2015
 sample_years<-46
-sample_n<-100
-
+sample_n<-500
+  
+  
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
   sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
   sample_n <- people_t0_sample # number of host individuals sampled per day
@@ -154,22 +152,40 @@ ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
 ###################################################################################################################################
 
-spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
-penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
-rows_to_evaluate<-0:45*10+1
+splines_creator<-function(knot_number,penalty_order){
 
+nk <- knot_number # number of knots
+dk <- diff(range(xout))/(nk-3)
+knots <- xstart + -3:nk*dk
+spline_matrix<- splineDesign(knots, step_vector, ord=4)
+penalty_matrix <- diff(diag(nk), diff=penalty_order)
+
+return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
+
+}
+
+knot_number= 7
+penalty_order= 2
+
+splines_matrices<-splines_creator(knot_number,penalty_order)
+
+
+#spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
+#penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
+rows_to_evaluate<-0:45*10+1
 
 
 stan_data_discrete<-list(
   n_obs = sample_years,
   n_sample = sample_n,
   y = as.array(sample_df_100$sample_y_hiv_prev),
-  time_steps_euler = 501,
-  penalty_order = 2,
-  estimate_period = 5,
+  time_steps_euler = length(xout),
+  penalty_order = penalty_order,
+  knot_number = knot_number,
+  estimate_years = 5,
   time_steps_year = 51,
-  X_design = spline_matrix,
-  D_penalty = penalty_matrix,
+  X_design = splines_matrices$spline_matrix,
+  D_penalty = splines_matrices$penalty_matrix,
   mu = mu,
   sigma = sigma,
   mu_i = mu_i,
@@ -177,18 +193,18 @@ stan_data_discrete<-list(
   dt_2 = 0.1,
   rows_to_interpret = as.array(rows_to_evaluate)
 )
-  
-params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
-  
-test_stan_hiv<- stan("stan_files/chunks/cd4_matrix_random_walk.stan",
-                                        data = stan_data_discrete,
-                                        pars = params_monitor_hiv,
-                                        chains = 1, iter = 10)  
-  
 
-mod_hiv_prev <- stan("stan_files/chunks/cd4_matrix_random_walk.stan", data = stan_data_discrete,
+params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
+
+test_stan_hiv<- stan("stan_files/chunks/cd4_spline_model.stan",
+                     data = stan_data_discrete,
+                     pars = params_monitor_hiv,
+                     chains = 1, iter = 10)  
+
+
+mod_hiv_prev <- stan("stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                    control = list(adapt_delta = 0.8))
+                     control = list(adapt_delta = 0.85))
 
 
 
@@ -229,6 +245,14 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
   #mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
   #mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
   mod_time = xout
+  
+  beta_median<-apply(posts_hiv$beta,2,median)
+  beta_low<-apply(posts_hiv$beta,2,quantile,probs=c(0.025))
+  beta_high<-apply(posts_hiv$beta,2,quantile,probs=c(0.975))
+  beta_df<-rbind.data.frame(beta_low,beta_median,beta_high)
+  names(beta_df)<-c("1","2","3","4","5","6","7")
+  
+  
   
   prev_median<-(apply(posts_hiv$fitted_output[,,3],2,median))*100
   prev_low<-(apply(posts_hiv$fitted_output[,,3],2,quantile,probs=c(0.025)))*100
@@ -275,12 +299,12 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
   
   return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
               r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
-              iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist))
+              iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist,beta_values=beta_df))
   
   
 }
 
-xout<-seq(1970,2020.1,0.1)
+xout<-seq(1970,2020,0.1)
 
 
 stan_output<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_100",xout = xout)
