@@ -166,7 +166,7 @@ incidence_prevalence_plotter(out_epp_cd4_hiv$sample_df)
 ## Now we will draw samples from our simulated epidemic to then fit our stan model to ##########################################
 ################################################################################################################################
 sample_years<- 100
-sample_n<-500
+sample_n<-50
 
 sample_function<-function(number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id,t_max){
   sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
@@ -287,6 +287,7 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,stan_data){
   #df_sample = data.frame(sample_prop, sample_time)
   df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, stan_data$fake_ts)
   names(df_fit_prevalence)<-c("median","low","high","time")
+  df_fit_prevalence$credible_skew<-(df_fit_prevalence$high - df_fit_prevalence$median) - (df_fit_prevalence$median - df_fit_prevalence$low)
   
   df_fit_incidence<-data.frame(incidence_low,incidence_median,incidence_high,stan_data$fake_ts)
   names(df_fit_incidence)<-c("low","median","high","time")
@@ -318,11 +319,13 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,stan_data){
   
 }
 
-stan_output<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_200",stan_data = stan_d_hiv_prev)
+stan_output<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_50",stan_data = stan_d_hiv_prev)
 
 plot(stan_output$prevalence_plot)
 
 n_200_plot<-stan_output$plot
+
+n_50<-stan_output
 
 sampling_number_plot<-ggarrange(n_25_plot,n_50_plot,n_100_plot,n_200_plot,ncol = 2,nrow = 2)
 

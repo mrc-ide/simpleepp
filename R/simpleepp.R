@@ -211,19 +211,21 @@ nlp_semipar <- function(theta, X, D){
   beta <- theta[1:ncol(X)]
   sigma_pen <- exp(theta[ncol(X)+1])
 
-  log_penalty <- sum(dnorm(D %*% beta, 0, sigma_pen, log=TRUE))
-  nll(theta, sim_semipar, X) - log_penalty
-}
+  log_penalty <- sum(dnorm(D %*% beta, 0, sigma_pen, log=TRUE)) ## Very clever way of working out the difference between the kappa values,
+  nll(theta, sim_semipar, X) - log_penalty                      ## Matrix multiplication means equates i as a minus and i+1 as positive
+                                                                ## Then if this value is 0 higher density so higher log, meaning 
+}                                                               ##  parameter likelihood overall is higher. 
 
 #' ### First-order random walk (peicewise-linear)
-Xrw <- splineDesign(1969:2021, step_vector, ord=2)
-Drw1 <- diff(diag(ncol(Xrw)), diff=1)
+Xrw <- splineDesign(1969:2021, step_vector, ord=2)             ## This is your spline design matrix 
+Drw1 <- diff(diag(ncol(Xrw)), diff=1)                          ## This matrix creates the differences between your kappa values 
 
 beta0 <- log(fit$mod[0:50*10+1, 1]) # use log kappa values from previous fit
 theta0 <- c(beta = beta0, sigma_pen = log(0.1), iota = log(0.004))
-sim_semipar(theta0, Xrw)
-nll(theta0, sim_semipar, Xrw)
+sim_semipar(theta0, Xrw)                                                       ## These three lines are just to test if the functions 
+nll(theta0, sim_semipar, Xrw)                                                  ## work, no actual fitting here
 nlp_semipar(theta0, Xrw, Drw1)
+
             
 fit <- optim(theta0, nlp_semipar, X=Xrw, D=Drw1, method="BFGS")
 fit$simmod <- sim_semipar
