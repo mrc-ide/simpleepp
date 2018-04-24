@@ -1,20 +1,19 @@
-#######################################################################################################################################
-## Implemenitng a spline model of the transmission paramter R #########################################################################
-#######################################################################################################################################
-require(splines)
+###########################################################################################################################################
+## Modelling th r trend model in a fairly hacky way #######################################################################################
+###########################################################################################################################################
+
 require(rstan)
 require(ggplot2)
 require(reshape2)
-require(grid)
 
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-expose_stan_functions("stan_files/chunks/cd4_spline_model.stan")
+expose_stan_functions("stan_files/chunks/r_trend_model_in_stan.stan")
 
-#######################################################################################################################################
-## Now I'll create the R script which to call the stan script for sampling with a first order random walk value #######################
-#######################################################################################################################################
+###########################################################################################################################################
+## Run the model to create a simulated data set ###########################################################################################
+###########################################################################################################################################
 
 run_simulated_model<-function(params,times){
   
@@ -99,8 +98,8 @@ plot(plotted_sim$whole)
 sample_range<-1970:2015
 sample_years<-46
 sample_n<-1000
-  
-  
+
+
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
   sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
   sample_n <- people_t0_sample # number of host individuals sampled per day
@@ -148,62 +147,73 @@ plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_100)
 
 ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
 
-###################################################################################################################################
-## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
-###################################################################################################################################
+######################################################################################################################################
+## Now creating our linear prevelnce trend to feed into the model ####################################################################
+######################################################################################################################################
 
-splines_creator<-function(knot_number,penalty_order){
 
-nk <- knot_number # number of knots
-dk <- diff(range(xout))/(nk-3)
-knots <- xstart + -3:nk*dk
-spline_matrix<- splineDesign(knots, step_vector, ord=4)
-penalty_matrix <- diff(diag(nk), diff=penalty_order)
-
-return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
-
+linear_prev_from_sample<-function(prev_sample){
+  
+  prev_461<-NULL
+  
+  for(i in 2:length(prev_sample)){
+    prev_diff<-(prev_sample[i] - prev_sample[i-1]) / 10
+    
+    prev_start<-prev_sample[i-1]
+    
+    prev_values<-NULL
+    for (k in 1:10){
+      prev_intermediae<-prev_start + (k * prev_diff)
+      
+      prev_values<-c(prev_values,prev_intermediae)
+      
+    }
+    
+    prev_461<-c(prev_461,prev_values)
+  }
+  length(prev_461)
+  prev_461<-c(prev_sample[1],prev_461)
+  
+  return(prev_461)
+  
 }
 
-knot_number= 7
-penalty_order= 1
+prev_sample_linear<-linear_prev_from_sample(prev_sample = sample_df_100$sample_propinf_hiv)
 
-splines_matrices<-splines_creator(knot_number,penalty_order)
+#######################################################################################################################################
+## Now we will run the stan model to fit to this data #################################################################################
+#######################################################################################################################################
 
-
-#spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
-#penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
 rows_to_evaluate<-0:45*10+1
-
+xout<-seq(1970,2015,0.1)
 
 stan_data_discrete<-list(
   n_obs = sample_years,
   n_sample = sample_n,
   y = as.array(sample_df_100$sample_y_hiv_prev),
   time_steps_euler = length(xout),
-  penalty_order = penalty_order,
-  knot_number = knot_number,
-  estimate_years = 5,
-  time_steps_year = 51,
-  X_design = splines_matrices$spline_matrix,
-  D_penalty = splines_matrices$penalty_matrix,
+  time_steps_year = 46,
+  sample_step_euler = length(xout),
+  xout = xout,
+  estimate_years = 0,
   mu = mu,
   sigma = sigma,
   mu_i = mu_i,
   dt = 1,
   dt_2 = 0.1,
-  rows_to_interpret = as.array(rows_to_evaluate)
+  rows_to_interpret = as.array(rows_to_evaluate),
+  rho = prev_sample_linear,
+  beta_points = 4
 )
 
-params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
+params_monitor_hiv<-c("y_hat","iota","fitted_model","beta","time_param")  
 
-test_stan_hiv<- stan("stan_files/chunks/cd4_spline_model.stan",
+test_stan_hiv<- stan("stan_files/chunks/r_trend_model_in_stan.stan",
                      data = stan_data_discrete,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
-
-mod_hiv_prev <- stan("stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
-                     
+mod_hiv_prev <- stan("stan_files/chunks/r_trend_model_in_stan.stan", data = stan_data_discrete,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
 
