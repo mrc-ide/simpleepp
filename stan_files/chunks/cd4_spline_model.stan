@@ -62,14 +62,14 @@ data {
  int penalty_order;                                                     // This is the degree of penalty we place on the 
  int knot_number;                                                       // Number of knots, our length of beta         
  int estimate_years;                                                    // This is the number of years we predict data for
- matrix[time_steps_euler - 1 , knot_number  ] X_design;                    // This is our spline design matirx that we are modelling kappa with. 
- matrix[knot_number - penalty_order , knot_number ] D_penalty;                        // This is our penalty matrix, can be first or second order depending on the R code 
+ matrix[time_steps_euler - 1 , knot_number  ] X_design;                 // This is our spline design matirx that we are modelling kappa with. 
+ matrix[knot_number - penalty_order , knot_number ] D_penalty;          // This is our penalty matrix, can be first or second order depending on the R code 
  real mu;                                                               // This is our population level death rate
  vector[3] sigma;                                                       // This is our vector of transition rates
  vector[4] mu_i;                                                        // This is our vector of death rates
  real dt;                                                               // This is our time step
  real dt_2;                                                             // this is our second time step
- int rows_to_interpret[time_steps_year - estimate_years ];                             // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
+ int rows_to_interpret[time_steps_year - estimate_years ];              // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
  
 }
  

@@ -130,7 +130,7 @@ sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,
 
 
 
-sample_df_100<-sample_function(sample_range,sample_years,sample_n,
+sample_df_1000_second<-sample_function(sample_range,sample_years,sample_n,
                                simulated_df = sim_model_output$sim_df,prevalence_column_id = 3)
 
 
@@ -143,10 +143,10 @@ plot_sample<-function(sample_df,simulated_df){
   return(plot(a))
 }
 
-plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_100)
+plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_1000_second)
 
 
-ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
+ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
 
 ###################################################################################################################################
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
@@ -165,7 +165,7 @@ return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
 }
 
 knot_number= 7
-penalty_order= 1
+penalty_order= 2
 
 splines_matrices<-splines_creator(knot_number,penalty_order)
 
@@ -178,7 +178,7 @@ rows_to_evaluate<-0:45*10+1
 stan_data_discrete<-list(
   n_obs = sample_years,
   n_sample = sample_n,
-  y = as.array(sample_df_100$sample_y_hiv_prev),
+  y = as.array(sample_df_1000_second$sample_y_hiv_prev),
   time_steps_euler = length(xout),
   penalty_order = penalty_order,
   knot_number = knot_number,
@@ -209,7 +209,8 @@ mod_hiv_prev <- stan("stan_files/chunks/cd4_spline_model.stan", data = stan_data
 
 
 
-plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
+
+plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output){
   
   posts_hiv <- rstan::extract(model_output)
   
@@ -283,19 +284,22 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
   # Median and 95% Credible Interval
   
   
-  plotter<-ggplot(sample_df_100) +
-    geom_point(aes(x=sample_df_100$sample_time_hiv.1, y=sample_df_100$sample_prev_hiv_percentage),col="red", shape = 19, size = 1.5) +
+  plotter<-ggplot(sim_sample) +
+    geom_point(aes(x=sample_time_hiv.1, y=sample_prev_hiv_percentage),col="red", shape = 19, size = 1.5) +
     geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
     geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
                 colour="midnightblue",alpha=0.2,fill="midnightblue")+
+    geom_line(data = sim_output,aes(x=time,y=prev_percent),colour="yellow",size=1)+
     coord_cartesian(xlim=c(1965,2025))+labs(x="Time",y="Prevalence (%)", title=plot_name)
   
   incidence_plot<-ggplot(data=df_fit_incidence)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
     geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",alpha=0.2,colour="midnightblue")+
+    geom_line(data = sim_output,aes(x=time,y=lambda),colour="yellow",size=1)+
     labs(x="time",y="incidence",title="incidence_plot")
   
   r_plot<-ggplot(data = r_fit)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
     geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
+    geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
     labs(x="Time",y="r value through time",title="R logistic through time")
   
   return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
@@ -308,11 +312,60 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
 xout<-seq(1970,2020,0.1)
 
 
-stan_output_first_order<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_100",xout = xout)
+stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev,
+                                                   sim_sample = sample_df_1000_second,plot_name = "Spline Second order, n = 1000",xout = xout,
+                                                   sim_output = sim_model_output$sim_df)
 
-plot(stan_output_first_order$prevalence_plot)
 
-plot(stan_output_second_order$r_plot)
+#######################################################################################################################################
+## Now we'll start plotting the output from these stan runs ###########################################################################
+#######################################################################################################################################
+plot(stan_output_first_order_n_1000$prevalence_plot)
+plot(stan_output_first_order_n_500$prevalence_plot)
+plot(stan_output_first_order_n_100$prevalence_plot)
+
+plot(stan_output_second_order_n_100$prevalence_plot)
+plot(stan_output_second_order_n_500$prevalence_plot)
+plot(stan_output_second_order_n_1000$prevalence_plot)
+
+Im_a_treeplay_plot_second_order_spline<-ggarrange(stan_output_second_order_n_100$prevalence_plot,
+                                                  stan_output_second_order_n_500$prevalence_plot,
+                                                  stan_output_second_order_n_1000$prevalence_plot,ncol = 3)
+
+Im_a_triple_plot<-ggarrange(stan_output_first_order_n_100$prevalence_plot,stan_output_first_order_n_500$prevalence_plot,
+                            stan_output_first_order_n_1000$prevalence_plot,ncol = 3)
+
+plot(Im_a_triple_plot)
+
+plot(Im_a_treeplay_plot_second_order_spline)
+
+
+sextuple_prev<-ggarrange(stan_output_first_order_n_100$prevalence_plot,stan_output_first_order_n_500$prevalence_plot,
+                         stan_output_first_order_n_1000$prevalence_plot,stan_output_second_order_n_100$prevalence_plot,
+                         stan_output_second_order_n_500$prevalence_plot,stan_output_second_order_n_1000$prevalence_plot,
+                         ncol = 3,nrow = 2)
+
+
+plot(sextuple_prev)
+
+#######################################################################################################################################
+#######################################################################################################################################
+#######################################################################################################################################
+
+
+
+treeplay_r<-ggarrange(stan_output_first_order_n_100$r_plot,stan_output_first_order_n_500$r_plot,
+                      stan_output_first_order_n_1000$r_plot,ncol = 3)
+plot(treeplay_r)
+
+
+plot(stan_output_first_order_n_100$r_plot)
+
+save(stan_output_second_order_n_1000,file = "../stan_objects_from_simpleepp_R/n_1000_7_knot_second_order_spline")
+
+
+
+
 
 plot(stan_output_first_order$r_plot)
 plot(stan_output_first_order$incidence_plot)

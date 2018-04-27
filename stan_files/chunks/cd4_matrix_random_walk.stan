@@ -82,7 +82,7 @@ data {
  
  real dt_2;                                                             // this is our second time step for generating the output from the fitted beta parameters
   
- int rows_to_interpret[time_steps_year - estimate_period];                             // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
+ int rows_to_interpret[n_obs];                             // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
  
   }
  

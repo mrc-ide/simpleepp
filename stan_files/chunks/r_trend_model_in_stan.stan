@@ -78,7 +78,7 @@ data {
 parameters{
  
  real<lower = 0, upper=1> iota;                                         // The proportion of the population initially infected 
- vector<lower = 0>[beta_points] beta;                                   // This is the knot point values
+ vector<lower = -1, upper = 1>[beta_points] beta;                                   // This is the knot point values
  real<lower = 0, upper = 30> time_param;                            // This is the years it takes to stabilise the epidemic
  real<lower = 0, upper = 5> r_init;                                     // This is the R0 of the epidemic 
  

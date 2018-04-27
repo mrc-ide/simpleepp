@@ -129,7 +129,7 @@ sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,
 
 
 
-sample_df_100<-sample_function(sample_range,sample_years,sample_n,
+sample_df_1000<-sample_function(sample_range,sample_years,sample_n,
                                simulated_df = sim_model_output$sim_df,prevalence_column_id = 3)
 
 
@@ -142,10 +142,10 @@ plot_sample<-function(sample_df,simulated_df){
   return(plot(a))
 }
 
-plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_100)
+plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_1000)
 
 
-ggplot(data = sample_df_100,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
+ggplot(data = sample_df_1000,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
 
 ######################################################################################################################################
 ## Now creating our linear prevelnce trend to feed into the model ####################################################################
@@ -232,12 +232,12 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
   params_df<-rbind.data.frame(params_low,params,params_high)
   names(params_df)<-c("iota")
   
-  sigma_pen_dist<-posts_hiv$sigma_pen
-  sigma_values<-median(posts_hiv$sigma_pen)
-  sigma_low<-quantile(posts_hiv$sigma_pen,c(0.025))
-  sigma_high<-quantile(posts_hiv$sigma_pen,probs=c(0.975))
-  sigma_df<-rbind.data.frame(sigma_low,sigma_values,sigma_high)
-  names(sigma_df)<-c("sigma_pen")
+  time_param<-posts_hiv$sigma_pen
+  time_values<-median(posts_hiv$sigma_pen)
+  time_low<-quantile(posts_hiv$sigma_pen,c(0.025))
+  time_high<-quantile(posts_hiv$sigma_pen,probs=c(0.975))
+  time_df<-rbind.data.frame(time_low,time_values,time_high)
+  names(time_df)<-c("time_param")
   
   
   
@@ -261,22 +261,22 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
   beta_low<-apply(posts_hiv$beta,2,quantile,probs=c(0.025))
   beta_high<-apply(posts_hiv$beta,2,quantile,probs=c(0.975))
   beta_df<-rbind.data.frame(beta_low,beta_median,beta_high)
-  names(beta_df)<-c("1","2","3","4","5","6","7")
+  names(beta_df)<-c("1","2","3","4")
   
   
   
-  prev_median<-(apply(posts_hiv$fitted_output[,,3],2,median))*100
-  prev_low<-(apply(posts_hiv$fitted_output[,,3],2,quantile,probs=c(0.025)))*100
-  prev_high<-(apply(posts_hiv$fitted_output[,,3],2,quantile,probs=c(0.975)))*100
+  prev_median<-(apply(posts_hiv$fitted_model[,,3],2,median))*100
+  prev_low<-(apply(posts_hiv$fitted_model[,,3],2,quantile,probs=c(0.025)))*100
+  prev_high<-(apply(posts_hiv$fitted_model[,,3],2,quantile,probs=c(0.975)))*100
   
   
-  incidence_median<-apply(posts_hiv$fitted_output[,,2],2,median)
-  incidence_low<-apply(posts_hiv$fitted_output[,,2],2,quantile,probs=c(0.025))
-  incidence_high<-apply(posts_hiv$fitted_output[,,2],2,quantile,probs=c(0.975))
+  incidence_median<-apply(posts_hiv$fitted_model[,,2],2,median)
+  incidence_low<-apply(posts_hiv$fitted_model[,,2],2,quantile,probs=c(0.025))
+  incidence_high<-apply(posts_hiv$fitted_model[,,2],2,quantile,probs=c(0.975))
   
-  r_median<-apply(posts_hiv$fitted_output[,,1],2,median)
-  r_low<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.025))
-  r_high<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.975))
+  r_median<-apply(posts_hiv$fitted_model[,,1],2,median)
+  r_low<-apply(posts_hiv$fitted_model[,,1],2,quantile,probs=c(0.025))
+  r_high<-apply(posts_hiv$fitted_model[,,1],2,quantile,probs=c(0.975))
   
   # Combine into two data frames for plotting
   #df_sample = data.frame(sample_prop, sample_time)
@@ -308,23 +308,23 @@ plot_stan_model_fit<-function(model_output,sampled_df,plot_name,xout){
     geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
     labs(x="Time",y="r value through time",title="R logistic through time")
   
-  return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
-              r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
-              iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist,beta_values=beta_df))
+  return(list(prevalence_plot=(plotter),df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
+              r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,time_param=time_df,iota_value=params_df,
+              iota_dist=iota_dist,beta_values=beta_df))
   
   
 }
 
-xout<-seq(1970,2020,0.1)
+xout<-seq(1970,2015,0.1)
 
 
-stan_output_first_order<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_100",xout = xout)
+stan_output_bounded_beta<-plot_stan_model_fit(model_output = mod_hiv_prev,sampled_df = sample_df_100,plot_name = "n_100",xout = xout)
 
-plot(stan_output_first_order$prevalence_plot)
+plot(stan_output_bounded_beta$prevalence_plot)
 
-plot(stan_output_second_order$r_plot)
+plot(stan_output_negative_beta$r_plot)
 
-plot(stan_output_first_order$r_plot)
+plot(stan_output_negative_beta$incidence_plot)
 plot(stan_output_first_order$incidence_plot)
 plot(stan_output_second_order$incidence_plot)
 
