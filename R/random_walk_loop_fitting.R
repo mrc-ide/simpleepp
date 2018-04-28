@@ -112,13 +112,13 @@ exponential_decay_function<-function(N0,t,lambda){
   return(nt)
 }
 
-decay<-exponential_decay_function(N0 = 90,t=(seq(0,50,0.1)),lambda = 0.05) # Must be put to equal 0 for no underreporting
+decay<- 0  #exponential_decay_function(N0 = 90,t=(seq(0,50,0.1)),lambda = 0.05) # Must be put to equal 0 for no underreporting
 
 penalty_order<-1
 
-time_points_to_sample<-seq(1970,2015,3)                                   ## Must also be equal to 0 for complete reporting 
+time_points_to_sample<- 0 #seq(1970,2015,3)                                   ## Must also be equal to 0 for complete reporting 
 
-rows_to_evaluate<-(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
+rows_to_evaluate<- 0:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
 
 sample_years<-length(rows_to_evaluate)
 
@@ -132,7 +132,7 @@ iota_values_tot<-NULL
 
 sample_df_tot<-NULL
 
-iterations<-3
+iterations<-100
 
 for(i in 1:iterations){
 
@@ -329,19 +329,74 @@ sample_df_100_random_second$iteration<-rep(i,nrow(sample_df_100_random_second))
 
 sample_df_tot<-rbind(sample_df_tot,sample_df_100_random_second)
 
+plot(sample_df_100_random_second$sample_prev_hiv_percentage,colour="red")
+lines(prev_df$median,colour="midnightblue")
+
 second_timo<-Sys.time()
+
+print( )
 
 print((i/iterations)*100)
 
-print("length of this iteration:")
+print("length of this iteration:",quote = F)
 
 print(second_timo-timo)
 
-print("How Long to go:")
+print("How Long to go:",quote = F)
+
+timo_diff<-second_timo - timo
+
+total_timo<-c(total_timo,timo_diff)
+
+if(i <= 20){
 
 print((second_timo-timo) * (iterations - i))
+}
 
+if(i > 20){
+  
+  print(mean(total_timo) * (iterations - i) )
+}
 
 
 }
 
+random_walk_first_order_n_100_complete<-list(prev=prev_df_tot,incidence=incidence_df_tot,
+                                             kappa=kappa_df_tot,sampled=sample_df_tot,iota=iota_values_tot)
+
+
+save(random_walk_first_order_n_100_complete,file = "../stan_objects_from_simpleepp_R/loop_RW_first_n_100_complete")
+
+prev_df_tot$time[503]
+
+mean_value_function<-function(iterations,nrow_per_iteration,data_frame){
+data_prev<-NULL
+iter_value<-iterations - 1
+nrow_value<-nrow_per_iteration
+for(i in 1:nrow_value){
+  values<-data_frame$median[0:iter_value*nrow_value+i]
+  low<-data_frame$low[0:iter_value*nrow_value+i]
+  high<-data_frame$high[0:iter_value*nrow_value+i]
+  time_of_values<-data_frame$time[0:iter_value*nrow_value+i]
+  
+  row<-cbind(mean(low),mean(values),mean(high),mean(time_of_values))
+  
+  data_prev<-rbind.data.frame(data_prev,row)
+  
+}
+
+names(data_prev)<-c("low","median","high","time")
+
+return(data_prev)
+
+}
+
+a<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = prev_df_tot)
+plot(a$median)
+
+
+prev_df_tot$median[0:99*502+502]
+prev_df_tot[0:99*502+502,]
+
+plot(data_prev[,2])
+lines(sim_model_output$sim_df$prev_percent,col="red")
