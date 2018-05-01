@@ -15,8 +15,8 @@ context::context_log_start()
 root <- "contexts"
 
 ctx<- context::context_save(root,packages = c("rstan","ggplot2","splines"),sources = "simpleepp/R/loop_functions_random_walk.R")
-
-obj <- didehpc::queue_didehpc(ctx)
+config <- didehpc::didehpc_config(cores = 3, parallel = FALSE)
+obj <- didehpc::queue_didehpc(ctx,config)
 
 t <- obj$enqueue(make_true_epidemic())
 
@@ -32,13 +32,13 @@ params<-list(mu=mu,mu_i=mu_i,sigma=sigma)
 params
 
 sample_range<-1970:2015
-sample_n<-100
+sample_n<-500
 penalty_order<-1
 rows_to_evaluate<- 0:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
 
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
 
-test_fit_loop<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_100_complete_data,
+n_500_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_500_complete_data,
                                             data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
                                             simulated_true_df = sim_model_output$sim_df))
 obj$cluster_load()
