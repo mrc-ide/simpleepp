@@ -132,59 +132,16 @@ iota_values_tot<-NULL
 
 sample_df_tot<-NULL
 
+total_timo<-NULL
+
 iterations<-100
 
 for(i in 1:iterations){
 
 timo<-Sys.time()
   
-sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id,decay=0,time_points_to_sample=0){
-  sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
-  sample_n <- people_t0_sample # number of host individuals sampled per day
-  
-  # Choose which days the samples were taken. 
-  # Ideally this would be daily, but we all know that is difficult.
-  
-  sample_time_hiv<-time_points_to_sample
-  
-  if(time_points_to_sample[1] == 0){
-  sample_time_hiv = sort(sample(year_range, sample_years_hiv, replace=F))
-  }
-  # Extract the "true" fraction of the population that is infected on each of the sampled days:
-  sample_propinf_hiv = simulated_df[simulated_df$time %in% sample_time_hiv, prevalence_column_id]
-  
-  ## this just samples our prevalence, to get a probability that the sample we take is HIV infected then we need to divide
-  ## by 100
-  
-  #sample_propinf_hiv<-sample_propinf_hiv/100
-  
-  # Generate binomially distributed data.
-  # So, on each day we sample a given number of people (sample_n), and measure how many are infected.
-  # We expect binomially distributed error in this estimate, hence the random number generation.
-  sample_y_hiv_prev = rbinom(length(sample_time_hiv), sample_n, sample_propinf_hiv)
-  
-  if(decay[1] != 0){
-    proportion_reported= 1 - (decay/100)
-    times_to_sample<-(sample_time_hiv - 1970) * 10 + 1
-    proportion_reported = proportion_reported[times_to_sample]
-    
-    sample_y_hiv_prev = round(proportion_reported * sample_y_hiv_prev) 
-  }
-    
-  
-  
-  sample_prev_hiv_percentage<-(sample_y_hiv_prev/sample_n)*100
-  
-  ## lets have a ggplot of the y (infected) and out sample of Y over time 
-  sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv_percentage,sample_y_hiv_prev,sample_propinf_hiv))
-  return(sample_df_100)  
-}
 
-
-
-sample_df_100_random_second<-sample_function(sample_range,sample_years,sample_n,
-                                             simulated_df = sim_model_output$sim_df,prevalence_column_id = 3,decay = decay,
-                                             time_points_to_sample = time_points_to_sample)
+sample_df_100_random_second<-sampled_n_100_complete_data[sampled_n_100_complete_data$iteration==i,]
 
 
 
@@ -329,12 +286,10 @@ sample_df_100_random_second$iteration<-rep(i,nrow(sample_df_100_random_second))
 
 sample_df_tot<-rbind(sample_df_tot,sample_df_100_random_second)
 
-plot(sample_df_100_random_second$sample_prev_hiv_percentage,colour="red")
-lines(prev_df$median,colour="midnightblue")
+plot(sample_df_100_random_second$sample_prev_hiv_percentage)
+lines(prev_df$median[0:45*10+1])
 
 second_timo<-Sys.time()
-
-print( )
 
 print((i/iterations)*100)
 
@@ -361,11 +316,11 @@ if(i > 20){
 
 }
 
-random_walk_first_order_n_100_complete<-list(prev=prev_df_tot,incidence=incidence_df_tot,
+random_walk_first_order_n_1000_complete<-list(prev=prev_df_tot,incidence=incidence_df_tot,
                                              kappa=kappa_df_tot,sampled=sample_df_tot,iota=iota_values_tot)
 
 
-save(random_walk_first_order_n_100_complete,file = "../stan_objects_from_simpleepp_R/loop_RW_first_n_100_complete")
+save(random_walk_first_order_n_1000_complete,file = "../stan_objects_from_simpleepp_R/random_walk_loops/loop_RW_first_n_1000_complete")
 
 prev_df_tot$time[503]
 
@@ -391,12 +346,27 @@ return(data_prev)
 
 }
 
-a<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = prev_df_tot)
-plot(a$median)
+a<-mean_value_function(iterations = 55,nrow_per_iteration = 502,data_frame = prev_df_tot)
 
+ggplot(data=a)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")
+
+
+load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/loop_RW_first_n_100_complete")
+
+b<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = random_walk_first_order_n_100_complete$prev)
+
+ggplot(data=b)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")
+
+plot(a$median)
+b<-mean_value_function(iterations = 100,nrow_per_iteration = 46,data_frame = sample_df_tot)
 
 prev_df_tot$median[0:99*502+502]
 prev_df_tot[0:99*502+502,]
 
 plot(data_prev[,2])
 lines(sim_model_output$sim_df$prev_percent,col="red")
+mean(iota_values_tot[0:99*3+2,1])
