@@ -345,18 +345,18 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
                                                             sim_output = simulated_true_df$sim_df)
   
   prev_df<-stan_output_random_walk_second_n_100$df_output
-  prev_df$iteration<-rep(iteration_number,nrow(prev_df))
+  prev_df$iteration<-rep(i,nrow(prev_df))
   
   incidence_df<-stan_output_random_walk_second_n_100$incidence_df
-  incidence_df$iteration<-rep(iteration_number,nrow(incidence_df))
+  incidence_df$iteration<-rep(i,nrow(incidence_df))
   
   
   kappa_df<-stan_output_random_walk_second_n_100$r_fit_df
-  kappa_df$iteration<-rep(iteration_number,nrow(kappa_df))
+  kappa_df$iteration<-rep(i,nrow(kappa_df))
   
   
   iota_value<-stan_output_random_walk_second_n_100$iota_value
-  iota_value$iteration<-rep(iteration_number,nrow(iota_value))
+  iota_value$iteration<-rep(i,nrow(iota_value))
   
   
   prev_df_tot<-rbind(prev_df_tot,prev_df)
