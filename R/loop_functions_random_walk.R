@@ -210,13 +210,10 @@ return(list(prevalence_df = prev_df, incidence_df = incidence_df, transmission_p
 
 fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_about_sampling,params,simulated_true_df){
   
-  rstan::rstan_options(auto_write = TRUE)
+  rstan::rstan_options(auto_write = TRUE)                               ## Need these options like this for parrallel going
   options(mc.cores = parallel::detectCores())
-  
  
-  
-  
-  
+ 
   xout<-seq(1970,2020,0.1)
   spline_matrix<-splines::splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
   penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=data_about_sampling$penalty_order)        ## This matrix creates the differences between your kappa values 
@@ -365,12 +362,212 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
   iota_values_tot <- rbind(iota_values_tot,iota_value)
   }
   
-  return(list(prev=prev_df_tot,incidence=incidence_df_tot,kappa=kappa_df_tot,iota_values=iota_values_tot))
+  data_about_sampling$simul_type<-"Random_Walk"
+  
+  return(list(prev=prev_df_tot,incidence=incidence_df_tot,kappa=kappa_df_tot,iota_values=iota_values_tot,
+              data_about_run = data_about_sampling))
   
 }
 
+fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,data_about_sampling,params,simulated_true_df){
+  
+  steppy<-seq(1970.1,by=0.1,length.out = 500)
+  
+  splines_creator<-function(knot_number,penalty_order,step_vector){
+    
+    nk <- knot_number # number of knots
+    dk <- diff(range(xout))/(nk-3)
+    knots <- samples_data_frame$sample_time_hiv[1] + -3:nk*dk
+    spline_matrix<- splineDesign(knots, step_vector, ord=4)
+    penalty_matrix <- diff(diag(nk), diff=penalty_order)
+    
+    return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
+    
+  }                                   ## This creates our spline matrix
+  
+  knot_number= data_about_sampling$knot_number                                                ## Our number of knots
+  penalty_order= data_about_sampling$penalty_order                                            ## Our penalty order defined on input
+  
+  xout<-seq(1970,2020,0.1)
+  
+  splines_matrices<-splines_creator(knot_number,penalty_order,steppy)                                ## Creates the penalty and the spline matrix
+  
+  rows_to_evaluate<-data_about_sampling$rows_to_evaluate                                      ## Rows for y_hat to fit to
+  
+  plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output){
+    
+    posts_hiv <- rstan::extract(model_output)
+    
+    
+    iota_dist<-posts_hiv$iota
+    params<-median(posts_hiv$iota)
+    params_low<-quantile(posts_hiv$iota,c(0.025))
+    params_high<-quantile(posts_hiv$iota,c(0.975))
+    
+    params_df<-rbind.data.frame(params_low,params,params_high)
+    names(params_df)<-c("iota")
+    
+    sigma_pen_dist<-posts_hiv$sigma_pen
+    sigma_values<-median(posts_hiv$sigma_pen)
+    sigma_low<-quantile(posts_hiv$sigma_pen,c(0.025))
+    sigma_high<-quantile(posts_hiv$sigma_pen,probs=c(0.975))
+    sigma_df<-rbind.data.frame(sigma_low,sigma_values,sigma_high)
+    names(sigma_df)<-c("sigma_pen")
+    
+    
+    
+    # These should match well. 
+    
+    #################
+    # Plot model fit:
+    
+    # Proportion infected from the synthetic data:
+    
+    #sample_prop = sample_y / sample_n
+    
+    # Model predictions across the sampling time period.
+    # These were generated with the "fake" data and time series.
+    #mod_median = apply(posts_hiv$fake_I[,,2], 2, median)
+    #mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
+    #mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
+    mod_time = xout
+    
+    beta_median<-apply(posts_hiv$beta,2,median)
+    beta_low<-apply(posts_hiv$beta,2,quantile,probs=c(0.025))
+    beta_high<-apply(posts_hiv$beta,2,quantile,probs=c(0.975))
+    beta_df<-rbind.data.frame(beta_low,beta_median,beta_high)
+    names(beta_df)<-c("1","2","3","4","5","6","7")
+    
+    
+    
+    prev_median<-(apply(posts_hiv$fitted_output[,,3],2,median))*100
+    prev_low<-(apply(posts_hiv$fitted_output[,,3],2,quantile,probs=c(0.025)))*100
+    prev_high<-(apply(posts_hiv$fitted_output[,,3],2,quantile,probs=c(0.975)))*100
+    
+    
+    incidence_median<-apply(posts_hiv$fitted_output[,,2],2,median)
+    incidence_low<-apply(posts_hiv$fitted_output[,,2],2,quantile,probs=c(0.025))
+    incidence_high<-apply(posts_hiv$fitted_output[,,2],2,quantile,probs=c(0.975))
+    
+    r_median<-apply(posts_hiv$fitted_output[,,1],2,median)
+    r_low<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.025))
+    r_high<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.975))
+    
+    # Combine into two data frames for plotting
+    #df_sample = data.frame(sample_prop, sample_time)
+    df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, xout )
+    names(df_fit_prevalence)<-c("median","low","high","time")
+    df_fit_prevalence$credible_skew<-(df_fit_prevalence$high - df_fit_prevalence$median) - (df_fit_prevalence$median - df_fit_prevalence$low)
+    
+    df_fit_incidence<-data.frame(incidence_low,incidence_median,incidence_high,xout)
+    names(df_fit_incidence)<-c("low","median","high","time")
+    
+    r_fit<-data.frame(r_low,r_median,r_high,xout)
+    names(r_fit)<-c("low","median","high","time")
+    # Plot the synthetic data with the model predictions
+    # Median and 95% Credible Interval
+    
+    
+    plotter<-ggplot(sim_sample) +
+      geom_point(aes(x=sample_time_hiv.1, y=sample_prev_hiv_percentage),col="red", shape = 19, size = 1.5) +
+      geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
+      geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
+                  colour="midnightblue",alpha=0.2,fill="midnightblue")+
+      geom_line(data = sim_output,aes(x=time,y=prev_percent),colour="yellow",size=1)+
+      coord_cartesian(xlim=c(1965,2025))+labs(x="Time",y="Prevalence (%)", title=plot_name)
+    
+    incidence_plot<-ggplot(data=df_fit_incidence)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+      geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",alpha=0.2,colour="midnightblue")+
+      geom_line(data = sim_output,aes(x=time,y=lambda),colour="yellow",size=1)+
+      labs(x="time",y="incidence",title="incidence_plot")
+    
+    r_plot<-ggplot(data = r_fit)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+      geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
+      geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
+    labs(x="Time",y="r value through time",title="R logistic through time")
+    
+    return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
+                r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
+                iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist,beta_values=beta_df))
+    
+    
+  }       ## Extracts the results from stan fit
+  
+  
+  
+  prev_df_tot <- NULL                                                                         ## INitialize the data frames to take loop results into
+  incidence_df_tot <- NULL                                                                   
+  kappa_df_tot<-NULL
+  iota_values_tot<-NULL
+  beta_values_tot<-NULL
+  
+  for(i in 1:iteration_number){
+    
+    sample_df_1000_second<-samples_data_frame[samples_data_frame$iteration==i,]               ## Change the dataset each iteration
+  
+  stan_data_discrete<-list(
+    n_obs = data_about_sampling$sample_years,
+    n_sample = data_about_sampling$sample_n ,
+    y = as.array(sample_df_1000_second$sample_y_hiv_prev),
+    time_steps_euler = length(xout),
+    penalty_order = data_about_sampling$penalty_order ,
+    knot_number = knot_number,
+    estimate_years = 5,
+    time_steps_year = 51,
+    X_design = splines_matrices$spline_matrix,
+    D_penalty = splines_matrices$penalty_matrix,
+    mu = params$mu,
+    sigma = params$sigma,
+    mu_i = params$mu_i,
+    dt = 1,
+    dt_2 = 0.1,
+    rows_to_interpret = as.array(rows_to_evaluate)
+  )
+  
+  params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
+  
 
+  mod_hiv_prev <- stan("simpleepp/stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
+                       pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
+                       control = list(adapt_delta = 0.85))
+  
+  
+  stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev,
+                                                       sim_sample = sample_df_1000_second,plot_name = "Spline Second order, n = 1000",xout = xout,
+                                                       sim_output = simulated_true_df)
+  
+  
 
-
-
+  prev_df<-stan_output_second_order_n_1000$df_output
+  prev_df$iteration<-rep(i,nrow(prev_df))
+  
+  incidence_df<-stan_output_second_order_n_1000$incidence_df
+  incidence_df$iteration<-rep(i,nrow(incidence_df))
+  
+  
+  kappa_df<-stan_output_second_order_n_1000$r_fit_df
+  kappa_df$iteration<-rep(i,nrow(kappa_df))
+  
+  
+  iota_value<-stan_output_second_order_n_1000$iota_value
+  iota_value$iteration<-rep(i,nrow(iota_value))
+  
+  beta_values<-stan_output_second_order_n_1000$beta_values
+  beta_values$iteration<-rep(i,nrow(beta_values))
+  
+  
+  
+  prev_df_tot<-rbind(prev_df_tot,prev_df)
+  incidence_df_tot <- rbind(incidence_df_tot,incidence_df)
+  kappa_df_tot <- rbind(kappa_df_tot,kappa_df)
+  iota_values_tot <- rbind(iota_values_tot,iota_value)
+  beta_values_tot <- rbind(beta_values_tot, beta_values)
+  }
+  
+  data_about_sampling$simul_type<-"Spline"
+  
+  return(list(prev=prev_df_tot,incidence=beta_values_tottot,kappa=kappa_df_tot,iota_values=iota_values_tot,beta_vals=beta_values_tot,
+              data_about_run = data_about_sampling))
+  
+}
 

@@ -11,7 +11,7 @@ didehpc::didehpc_config(cores = 3,parallel = FALSE)
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
 ## !!!!!!!!!!!!!!!!!!!!!!!! Remember to turn on pulse secure at this point !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
-
+didehpc::didehpc_config()
 
 context::context_log_start()
 
@@ -25,8 +25,8 @@ obj <- didehpc::queue_didehpc(ctx,config)
 ## So the above lines of code give me access to the cluster, with the obj object giving me queue functionalaity, I've also #####
 ## asked for three cores for stan to use for each of the chains ################################################################
 ################################################################################################################################
-
-
+obj$cluster_load()
+obj$task_status()
 
 t <- obj$enqueue(make_true_epidemic())
 
@@ -42,7 +42,7 @@ params<-list(mu=mu,mu_i=mu_i,sigma=sigma)
 params
 
 sample_range<-1970:2015
-sample_n<-1000                            ##### !!!!!!!!!!!!!!!!!!!!!! Remember to change this for when you sample
+sample_n<-100                            ##### !!!!!!!!!!!!!!!!!!!!!! Remember to change this for when you sample
 penalty_order<-1
 rows_to_evaluate<- 0:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
 
@@ -75,10 +75,15 @@ n_500_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_f
                                                                   simulated_true_df = sim_model_output$sim_df))
 
 n_100_RW_first_order_loop$status()
-n_500_RW_first_order_loop$status()
+n_500_RW_first_order_loop<-obj$task_get(obj$task_list()[7])
 n_1000_RW_first_order_loop$status()
-n_5000_RW_first_order_loop$status()
+n_5000_RW_first_order_loop<-obj$task_get(obj$task_list()[5])
 
+n_500_or_5k<-obj$task_get(obj$task_list()[6])
+n_5k_o_500<-obj$task_get(obj$task_list()[4])
+
+n_500_or_5k$status()
+n_5k_o_500$status()
 
 for (i in 1:100){
   RW_first_order_n_100$prev$iteration[1:502+((i-1)*502)]<-i
@@ -96,13 +101,151 @@ save(RW_first_order_n_100,
 save(RW_first_order_n_1000,
      file="C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_1000")
 
+save(RW_first_order_n_5000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_5000")
+
+save(RW_first_order_n_500,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_500")
+
+##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##
+## That is the sending off of the first order jobs to the cluster, now we will send off the second order RW jobs %%%%%%%%%%%%%##
+##%%%%%%%%%%%%%%%%%%%&&&&&&&&&&&%%%%%%%%%%%%%%&&&&&&&&&&&&&&&%%%%%%%%%%%%%%%%%*************%%%%%%%%&&&&&&&^^^^^^££££££££££££££##
+
+penalty_order<-2
+sample_n<-100
+data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+rw_second_n_100<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_100_complete_data,
+                                                       data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                       simulated_true_df = sim_model_output$sim_df))
+
+
+sample_n <- 500
+data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+rw_second_n_500<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_500_complete_data,
+                                                       data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                       simulated_true_df = sim_model_output$sim_df))
+
+sample_n<-1000
+data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+rw_second_n_1000<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_1000_complete_data,
+                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                        simulated_true_df = sim_model_output$sim_df))
+
+sample_n<-5000
+data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+rw_second_n_5000<-obj$enqueue(fitting_data_function_loop(samples_data_frame = sampled_n_5000_complete_data,
+                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                        simulated_true_df = sim_model_output$sim_df))
+
+
+
+rw_second_n_100$status()
+rw_second_n_500$status()
+rw_second_n_1000$status()
+rw_second_n_5000$status()
+
+
+##***************************************************************************************************************************##
+## Now we will run the spline functions on the cluster ########################################################################
+###############################################################################################################################
+
+knot_number <- 7
+penalty_order <- 1
+sample_n<-100
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+
+spline_first_order_n_100<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_100_complete_data,
+                                  data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                  simulated_true_df = sim_model_output$sim_df))
+
+sample_n <- 500
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+spline_first_order_n_500<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_500_complete_data,
+                                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                        simulated_true_df = sim_model_output$sim_df))
+
+sample_n <- 1000
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+spline_first_order_n_1000<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_1000_complete_data,
+                                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                        simulated_true_df = sim_model_output$sim_df))
+
+sample_n <- 5000
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+spline_first_order_n_5000<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_5000_complete_data,
+                                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                        simulated_true_df = sim_model_output$sim_df))
+
+
+
+spline_first_order_n_100$status()
+spline_first_order_n_500$status()
+spline_first_order_n_1000$status()
+spline_first_order_n_5000$status()
+
+################################################################################################################################
+## Now we'll go for the second order work ######################################################################################
+################################################################################################################################
+
+knot_number <- 7
+penalty_order <- 2
+sample_n<-100
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+spline_second_order_n_100<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_100_complete_data,
+                                                                        data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                        simulated_true_df = sim_model_output$sim_df))
+
+sample_n<-500
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+spline_second_order_n_500<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_500_complete_data,
+                                                                         data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                         simulated_true_df = sim_model_output$sim_df))
+
+sample_n<-1000
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+spline_second_order_n_1000<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_1000_complete_data,
+                                                                         data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                         simulated_true_df = sim_model_output$sim_df))
+
+sample_n<-5000
+data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
+
+spline_second_order_n_5000<-obj$enqueue(fitting_data_function_spline_loop(samples_data_frame = sampled_n_5000_complete_data,
+                                                                         data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                                                         simulated_true_df = sim_model_output$sim_df))
+
+
+spline_second_order_n_100$status()
+spline_second_order_n_500$status()
+spline_second_order_n_1000$status()
+spline_second_order_n_5000$status()
+
+
+
+
+
+blab<-fitting_data_function_loop(samples_data_frame = sampled_n_500_complete_data,
+                                 data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+                                 simulated_true_df = sim_model_output$sim_df)
+
+rw_seond_n_100$status()
+obj$task_status()
+
 
 
 obj$unsubmit(n_1000_RW_first_order_loop$id)
 obj$unsubmit(n_5000_RW_first_order_loop$id)
 
 
-
+load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_100")
 
 
 
@@ -121,7 +264,10 @@ n_100_RW_first_order$status()
 obj$task_list()
 obj$task_status(n_500_id)
 
-a<-fitting_data_function_loop(samples_data_frame = sampled_n_500_complete_data,
+data_about_sampling$knot_number<-7
+data_about_sampling$sample_n<-500
+
+a<-fitting_data_function_spline_loop(samples_data_frame = sampled_n_500_complete_data,
                               data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
                               simulated_true_df = sim_model_output$sim_df)
 
