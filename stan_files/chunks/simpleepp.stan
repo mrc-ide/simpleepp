@@ -15,20 +15,30 @@
  * @return An array with columns transmission rate, incidence, and prevalence.
  */
 
-matrix simpleepp(vector kappa, real iota, vector alpha, real mu, vector sigma,
-		 vector mu_i, vector mu_a, real omega, real dt){
+matrix simpleepp(vector f_t, real iota, vector alpha, real mu, vector sigma,
+		 vector mu_i, vector mu_a, real omega, real dt, int foi_flag){
 
   vector[rows(kappa)+1] S;
   matrix[rows(mu_i), rows(kappa)+1] I;
   matrix[rows(mu_i), rows(kappa)+1] A;
   vector[rows(kappa)+1] rho;
+  vector[rows(kappa)+1] kappa;
   vector[rows(kappa)+1] lambda;
   int DS;
   DS = rows(mu_i);
 
   // initial values
-  S[1] = 1000 * (1 - iota);
-  I[1, 1] = 1000 * iota;
+
+  if(foi_flag == 0) {
+    kappa[1] = f_t[1];
+    S[1] = 1000 * (1 - iota);
+    I[1, 1] = 1000 * iota;
+  } else if(foi_flag == 1) {
+    kappa[1] = 0;
+    S[1] = 1000;
+    I[1, 1] = 0;
+  }
+    
   for(m in 2:DS)
     I[m, 1] = 0;
   for(m in 1:DS)
@@ -48,7 +58,13 @@ matrix simpleepp(vector kappa, real iota, vector alpha, real mu, vector sigma,
     At = sum(A[,t]);
 
     artcov = At / (It + At);
-    lambda[t+1] = kappa[t] * rho[t] * (1 - omega * artcov);
+    if(foi_flag == 0){
+      kappa[t+1] = f_t[t];
+      lambda[t+1] = kappa[t+1] * rho[t] * (1 - omega * artcov);
+    } else if(foi_flag == 1) {
+      lambda[t+1] = f_t[t];
+      kappa[t+1] = lambda[t+1] / (rho[t] * (1 - omega * artcov));
+    }
 
     deaths = mu * (S[t] + It + At) + sum(mu_i .* I[,t]);
     S[t+1] = S[t] + dt*(-lambda[t+1] * S[t] - mu * S[t] + deaths);
