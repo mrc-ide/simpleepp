@@ -371,6 +371,9 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
 
 fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,data_about_sampling,params,simulated_true_df){
   
+  rstan::rstan_options(auto_write = TRUE)                               ## Need these options like this for parrallel going
+  options(mc.cores = parallel::detectCores())
+  
   steppy<-seq(1970.1,by=0.1,length.out = 500)
   
   splines_creator<-function(knot_number,penalty_order,step_vector){
@@ -467,27 +470,10 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
     # Plot the synthetic data with the model predictions
     # Median and 95% Credible Interval
     
+
     
-    plotter<-ggplot(sim_sample) +
-      geom_point(aes(x=sample_time_hiv.1, y=sample_prev_hiv_percentage),col="red", shape = 19, size = 1.5) +
-      geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
-      geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
-                  colour="midnightblue",alpha=0.2,fill="midnightblue")+
-      geom_line(data = sim_output,aes(x=time,y=prev_percent),colour="yellow",size=1)+
-      coord_cartesian(xlim=c(1965,2025))+labs(x="Time",y="Prevalence (%)", title=plot_name)
-    
-    incidence_plot<-ggplot(data=df_fit_incidence)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-      geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",alpha=0.2,colour="midnightblue")+
-      geom_line(data = sim_output,aes(x=time,y=lambda),colour="yellow",size=1)+
-      labs(x="time",y="incidence",title="incidence_plot")
-    
-    r_plot<-ggplot(data = r_fit)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-      geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
-      geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
-    labs(x="Time",y="r value through time",title="R logistic through time")
-    
-    return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
-                r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
+    return(list(df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
+                r_fit_df=r_fit,sigma_pen_values=sigma_df,iota_value=params_df,
                 iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist,beta_values=beta_df))
     
     
@@ -566,7 +552,7 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
   
   data_about_sampling$simul_type<-"Spline"
   
-  return(list(prev=prev_df_tot,incidence=beta_values_tottot,kappa=kappa_df_tot,iota_values=iota_values_tot,beta_vals=beta_values_tot,
+  return(list(prev=prev_df_tot,incidence=incidence_df_tot,kappa=kappa_df_tot,iota_values=iota_values_tot,beta_vals=beta_values_tot,
               data_about_run = data_about_sampling))
   
 }

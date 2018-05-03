@@ -148,6 +148,17 @@ rw_second_n_500$status()
 rw_second_n_1000$status()
 rw_second_n_5000$status()
 
+RW_second_order_n_100<-rw_second_n_100$result()
+RW_second_order_n_1000<-rw_second_n_500$result()
+RW_second_order_n_500<-rw_second_n_1000$result()
+RW_second_order_n_5000<-rw_second_n_5000$result()
+
+save(RW_second_order_n_5000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_5000")
+save(RW_second_order_n_100,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_100")
+
+
 
 ##***************************************************************************************************************************##
 ## Now we will run the spline functions on the cluster ########################################################################
@@ -232,6 +243,9 @@ spline_second_order_n_5000$status()
 
 
 
+save.image(file = "C:/Users/josh/Dropbox/.RData")
+
+
 blab<-fitting_data_function_loop(samples_data_frame = sampled_n_500_complete_data,
                                  data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
                                  simulated_true_df = sim_model_output$sim_df)
@@ -265,10 +279,10 @@ obj$task_list()
 obj$task_status(n_500_id)
 
 data_about_sampling$knot_number<-7
-data_about_sampling$sample_n<-500
+data_about_sampling$sample_n<-100
 
-a<-fitting_data_function_spline_loop(samples_data_frame = sampled_n_500_complete_data,
-                              data_about_sampling = data_about_sampling,iteration_number = 100,params = params,
+a<-fitting_data_function_spline_loop(samples_data_frame = sampled_n_100_complete_data,
+                              data_about_sampling = data_about_sampling,iteration_number = 1,params = params,
                               simulated_true_df = sim_model_output$sim_df)
 
 
