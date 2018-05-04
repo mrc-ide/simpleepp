@@ -500,12 +500,63 @@ plot(total_plots_by_n_kappa)
 ## the association between the produced lines and the actual lines #############################################################
 ################################################################################################################################
 
+root_mean_error_function<-function(true_data,fitted_data,metric="prevalence",time_period=seq(1970,2020,0.1)){
+  
+  if(metric=="prevalence"){
+    true_metric <- true_data$prevalence
+    fitted_metric <- fitted_data$prev
+    
+  }
+  
+  if(metric=="incidence"){
+    
+    true_metric <- true_data$lambda
+    fitted_metric <- fitted_data$incidence
+  }
+  
+  if(metric == "kappa"){
+    true_metric <- true_data$kapp
+    fitted_metric <- fitted_data$kappa
+  }
+  
+  
+ time_to_test<-seq((time_period[1]-1970)*10+1,(time_period[length(time_period)]-2020)*10+501,1)
+  
+ mean_rmse_tot<-NULL
+ 
+  for (i in 1:100){
+    
+    
+    fitted_metric_iter <- fitted_metric[fitted_metric$iteration == i,]
+    
+    error <- (fitted_metric_iter$median[time_to_test] /100) - true_metric[time_to_test]
+    
+    rmse <- sqrt(error^2)
+    
+    mean_rmse <- mean(rmse)
+    iter <- i
+    
+    mean_rmse <- cbind(mean_rmse,iter)
+    
+    mean_rmse_tot <- rbind(mean_rmse_tot,mean_rmse)
+  }
+  
+ mean_overall_rmse <- mean(mean_rmse_tot[,1])
+ 
+ 
+  return(list(mean_rmse=mean_overall_rmse,rmse_df=mean_rmse_tot))
+  
+  
+  
+}
 
-
-
-
-
-
+rw_first_order_rmse_n_100<-root_mean_error_function(sim_model_output$sim_df,fitted_data = RW_first_order_n_100)
+rw_first_order_rmse_n_100_inc<-root_mean_error_function(sim_model_output$sim_df,
+                                                        metric = "incidence",fitted_data = RW_first_order_n_100)
+rw_first_order_rmse_n_100_inc
+rw_first_order_rmse_n_100$mean_rmse
+rw_first_order_rmse_n_5000<-root_mean_error_function(sim_model_output$sim_df,fitted_data = RW_first_order_n_5000)
+rw_first_order_rmse_n_5000$mean_rmse
 
 
 
