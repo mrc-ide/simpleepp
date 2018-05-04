@@ -169,5 +169,347 @@ second_order_RW<-ggarrange(RW_second_n_100,RW_second_n_500,RW_second_n_1000,RW_s
 plot(second_order_RW)
 
 
+total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
+plot(total_plots)
+
+total_plots_by_n<-ggarrange(spline_first_n_100,spline_first_n_500,spline_first_n_1000,spline_first_n_5000,
+                            spline_second_n_100,spline_second_n_500,spline_second_n_1000,spline_second_n_5000,
+                            RW_first_n_100,RW_first_n_500,RW_first_n_1000,RW_first_n_5000,
+                            RW_second_n_100,RW_second_n_500,RW_second_n_1000,RW_second_n_5000,
+                            nrow = 4,ncol = 4)
+plot(total_plots_by_n)
+
+################################################################################################################################
+## So thats our eyeball test of the fit by each method we will now do the same for incidence and transmission parameter ########
+################################################################################################################################
+
+spline_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_100$incidence)
+
+spline_first_n_100_inc<-ggplot(data=spline_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 incidence")
+
+spline_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$incidence)
+
+spline_first_n_500_inc<-ggplot(data=spline_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 500 incidence")
+
+spline_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_1000$incidence)
+
+spline_first_n_1000_inc<-ggplot(data=spline_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 1000 incidence")
+
+spline_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_5000$incidence)
+
+spline_first_n_5000_inc<-ggplot(data=spline_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 5000 incidence")
+
+first_order_splines_inc<-ggarrange(spline_first_n_100_inc,spline_first_n_500_inc,spline_first_n_1000_inc,spline_first_n_5000_inc,
+                                   ncol = 2,nrow = 2)
+plot(first_order_splines_inc)
+
+#################################################################################################################################
+## Now lets plot the second order splines average fits to the data ##############################################################
+#################################################################################################################################
+
+spline_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_100$incidence)
+
+spline_second_n_100_inc<-ggplot(data=spline_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="Spline Second Order n = 100 incidence")
+
+spline_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_500$incidence)
+
+spline_second_n_500_inc<-ggplot(data=spline_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="Spline Second Order n = 500 incidence")
+
+spline_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_1000$incidence)
+
+spline_second_n_1000_inc<-ggplot(data=spline_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="Spline Second Order n = 1000 incidence")
+
+spline_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_5000$incidence)
+
+spline_second_n_5000_inc<-ggplot(data=spline_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="Spline Second Order n = 5000 incidence")
+
+second_order_splines_inc<-ggarrange(spline_second_n_100_inc,spline_second_n_500_inc,
+                                spline_second_n_1000_inc,spline_second_n_5000_inc,ncol = 2,nrow = 2)
+plot(second_order_splines_inc)
+
+################################################################################################################################
+## Now lets do random walk #####################################################################################################
+################################################################################################################################
+
+RW_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_first_order_n_100$incidence)
+
+RW_first_n_100_inc<-ggplot(data=RW_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW First Order n = 100 incidence")
+
+RW_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$incidence)
+
+RW_first_n_500_inc<-ggplot(data=RW_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW First Order n = 500 incidence")
+
+RW_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_1000$incidence)
+
+RW_first_n_1000_inc<-ggplot(data=RW_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW First Order n = 1000 incidence")
+
+RW_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_5000$incidence)
+
+RW_first_n_5000_inc<-ggplot(data=RW_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW First Order n = 5000 incidence")
+
+first_order_RW_inc<-ggarrange(RW_first_n_100_inc,RW_first_n_500_inc,RW_first_n_1000_inc,RW_first_n_5000_inc,ncol = 2,nrow = 2)
+plot(first_order_RW_inc)
+
+################################################################################################################################
+## Now lets do random walk Second order ########################################################################################
+################################################################################################################################
+RW_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_second_order_n_100$incidence)
+
+RW_second_n_100_inc<-ggplot(data=RW_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW Second Order n = 100 incidence")
+
+RW_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_500$incidence)
+
+RW_second_n_500_inc<-ggplot(data=RW_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW Second Order n = 500 incidence")
+
+RW_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_1000$incidence)
+
+RW_second_n_1000_inc<-ggplot(data=RW_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW Second Order n = 1000 incidence")
+
+RW_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_5000$incidence)
+
+RW_second_n_5000_inc<-ggplot(data=RW_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
+  labs(x="Time",y="incidence",title="RW Second Order n = 5000 incidence")
+
+second_order_RW_inc<-ggarrange(RW_second_n_100_inc,RW_second_n_500_inc,RW_second_n_1000_inc,RW_second_n_5000_inc,
+                               ncol = 2,nrow = 2)
+plot(second_order_RW_inc)
+
+
+total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
+plot(total_plots)
+
+total_plots_by_n_inc<-ggarrange(spline_first_n_100_inc,spline_first_n_500_inc,spline_first_n_1000_inc,spline_first_n_5000_inc,
+                            spline_second_n_100_inc,spline_second_n_500_inc,spline_second_n_1000_inc,spline_second_n_5000_inc,
+                            RW_first_n_100_inc,RW_first_n_500_inc,RW_first_n_1000_inc,RW_first_n_5000_inc,
+                            RW_second_n_100_inc,RW_second_n_500_inc,RW_second_n_1000_inc,RW_second_n_5000_inc,
+                            nrow = 4,ncol = 4)
+plot(total_plots_by_n_inc)
+
+
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!~~~!~~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+#|-|-|-|-|-|-|-|-|-|-|/-\|
+
+################################################################################################################################
+## Now lets go for the kappa parameter and see what fit that has to the data ###################################################
+################################################################################################################################
+
+
+
+spline_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_100$kappa)
+
+spline_first_n_100_kappa<-ggplot(data=spline_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 kappa")
+
+spline_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$kappa)
+
+spline_first_n_500_kappa<-ggplot(data=spline_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 500 kappa")
+
+spline_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_1000$kappa)
+
+spline_first_n_1000_kappa<-ggplot(data=spline_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 1000 kappa")
+
+spline_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_5000$kappa)
+
+spline_first_n_5000_kappa<-ggplot(data=spline_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 5000 kappa")
+
+first_order_splines_kappa<-ggarrange(spline_first_n_100_kappa,spline_first_n_500_kappa,spline_first_n_1000_kappa,spline_first_n_5000_kappa,
+                                   ncol = 2,nrow = 2)
+plot(first_order_splines_kappa)
+
+#################################################################################################################################
+## Now lets plot the second order splines average fits to the data ##############################################################
+#################################################################################################################################
+
+spline_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_100$kappa)
+
+spline_second_n_100_kappa<-ggplot(data=spline_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="Spline Second Order n = 100 kappa")
+
+spline_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_500$kappa)
+
+spline_second_n_500_kappa<-ggplot(data=spline_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="Spline Second Order n = 500 kappa")
+
+spline_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_1000$kappa)
+
+spline_second_n_1000_kappa<-ggplot(data=spline_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="Spline Second Order n = 1000 kappa")
+
+spline_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_5000$kappa)
+
+spline_second_n_5000_kappa<-ggplot(data=spline_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="Spline Second Order n = 5000 kappa")
+
+second_order_splines_kappa<-ggarrange(spline_second_n_100_kappa,spline_second_n_500_kappa,
+                                    spline_second_n_1000_kappa,spline_second_n_5000_kappa,ncol = 2,nrow = 2)
+plot(second_order_splines_kappa)
+
+################################################################################################################################
+## Now lets do random walk #####################################################################################################
+################################################################################################################################
+
+RW_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_first_order_n_100$kappa)
+
+RW_first_n_100_kappa<-ggplot(data=RW_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW First Order n = 100 kappa")
+
+RW_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$kappa)
+
+RW_first_n_500_kappa<-ggplot(data=RW_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW First Order n = 500 kappa")
+
+RW_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_1000$kappa)
+
+RW_first_n_1000_kappa<-ggplot(data=RW_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW First Order n = 1000 kappa")
+
+RW_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_5000$kappa)
+
+RW_first_n_5000_kappa<-ggplot(data=RW_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW First Order n = 5000 kappa")
+
+first_order_RW_kappa<-ggarrange(RW_first_n_100_kappa,RW_first_n_500_kappa,RW_first_n_1000_kappa,RW_first_n_5000_kappa,ncol = 2,nrow = 2)
+plot(first_order_RW_kappa)
+
+################################################################################################################################
+## Now lets do random walk Second order ########################################################################################
+################################################################################################################################
+RW_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_second_order_n_100$kappa)
+
+RW_second_n_100_kappa<-ggplot(data=RW_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW Second Order n = 100 kappa")
+
+RW_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_500$kappa)
+
+RW_second_n_500_kappa<-ggplot(data=RW_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW Second Order n = 500 kappa")
+
+RW_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_1000$kappa)
+
+RW_second_n_1000_kappa<-ggplot(data=RW_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW Second Order n = 1000 kappa")
+
+RW_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_5000$kappa)
+
+RW_second_n_5000_kappa<-ggplot(data=RW_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
+  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
+  labs(x="Time",y="kappa",title="RW Second Order n = 5000 kappa")
+
+second_order_RW_kappa<-ggarrange(RW_second_n_100_kappa,RW_second_n_500_kappa,RW_second_n_1000_kappa,RW_second_n_5000_kappa,
+                               ncol = 2,nrow = 2)
+plot(second_order_RW_kappa)
+
+
+total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
+plot(total_plots)
+
+total_plots_by_n_kappa<-ggarrange(spline_first_n_100_kappa,spline_first_n_500_kappa,spline_first_n_1000_kappa,spline_first_n_5000_kappa,
+                                spline_second_n_100_kappa,spline_second_n_500_kappa,spline_second_n_1000_kappa,spline_second_n_5000_kappa,
+                                RW_first_n_100_kappa,RW_first_n_500_kappa,RW_first_n_1000_kappa,RW_first_n_5000_kappa,
+                                RW_second_n_100_kappa,RW_second_n_500_kappa,RW_second_n_1000_kappa,RW_second_n_5000_kappa,
+                                nrow = 4,ncol = 4)
+plot(total_plots_by_n_kappa)
+
+
+################################################################################################################################
+## So that's our eyeball tests performed for each metric we're interested in, now we need to do some more formal testing of ####
+## the association between the produced lines and the actual lines #############################################################
+################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
 
 
