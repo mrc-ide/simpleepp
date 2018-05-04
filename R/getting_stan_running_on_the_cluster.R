@@ -149,16 +149,18 @@ rw_second_n_1000$status()
 rw_second_n_5000$status()
 
 RW_second_order_n_100<-rw_second_n_100$result()
-RW_second_order_n_1000<-rw_second_n_500$result()
-RW_second_order_n_500<-rw_second_n_1000$result()
+RW_second_order_n_1000<-rw_second_n_1000$result()
+RW_second_order_n_500<-rw_second_n_500$result()
 RW_second_order_n_5000<-rw_second_n_5000$result()
 
 save(RW_second_order_n_5000,
      file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_5000")
 save(RW_second_order_n_100,
      file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_100")
-
-
+save(RW_second_order_n_1000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_1000")
+save(RW_second_order_n_500,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_500")
 
 ##***************************************************************************************************************************##
 ## Now we will run the spline functions on the cluster ########################################################################
@@ -199,6 +201,21 @@ spline_first_order_n_500$status()
 spline_first_order_n_1000$status()
 spline_first_order_n_5000$status()
 
+first_order_spline_n_100<-spline_first_order_n_100$result()
+first_order_spline_n_500<-spline_first_order_n_500$result()
+first_order_spline_n_1000<-spline_first_order_n_1000$result()
+first_order_spline_n_5000<-spline_first_order_n_5000$result()
+
+save(first_order_spline_n_100,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_100")
+save(first_order_spline_n_500,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_500")
+save(first_order_spline_n_1000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_1000")
+save(first_order_spline_n_5000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_5000")
+
+
 ################################################################################################################################
 ## Now we'll go for the second order work ######################################################################################
 ################################################################################################################################
@@ -238,6 +255,20 @@ spline_second_order_n_100$status()
 spline_second_order_n_500$status()
 spline_second_order_n_1000$status()
 spline_second_order_n_5000$status()
+
+second_order_spline_n_100<-spline_second_order_n_100$result()
+second_order_spline_n_500<-spline_second_order_n_500$result()
+second_order_spline_n_1000<-spline_second_order_n_1000$result()
+second_order_spline_n_5000<-spline_second_order_n_5000$result()
+
+save(second_order_spline_n_100,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_100")
+save(second_order_spline_n_500,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_500")
+save(second_order_spline_n_1000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_1000")
+save(second_order_spline_n_5000,
+     file = "C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_5000")
 
 
 
