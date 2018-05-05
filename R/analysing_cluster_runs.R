@@ -920,32 +920,78 @@ if(metric == "prevalence"){
 
 prev_mean_complete_df<-RMSE_dataset_extraction()
 
+inc_mean_complete_df<-RMSE_dataset_extraction(metric = "incidence")
 
-
-
+kappa_mean_complete_df<-RMSE_dataset_extraction(metric = "kappa")
 
 
 overall_fitting_analysis$mean_rmse_tot
 
 
+################################################################################################################################
+## Now lets come up with a function that can do all the above rmse stuff, just for the prediction period #######################
+################################################################################################################################
 
-rw_first_order_rmse_n_100<-root_mean_error_function(sim_model_output$sim_df,fitted_data = RW_first_order_n_100)
-rw_first_order_rmse_n_100_inc<-root_mean_error_function(sim_model_output$sim_df,
-                                                        metric = "incidence",fitted_data = RW_first_order_n_100)
-rw_first_order_rmse_n_100_inc
-rw_first_order_rmse_n_100$mean_rmse
-rw_first_order_rmse_n_5000<-root_mean_error_function(sim_model_output$sim_df,fitted_data = RW_first_order_n_5000)
-rw_first_order_rmse_n_5000$mean_rmse
-
-
-spline_rmse_first_order_kappa_n_100 <- root_mean_error_function(sim_model_output$sim_df,
-                                                                fitted_data = first_order_spline_n_100,
-                                                                metric="incidence")
-#spline_rmse_first_order_kappa_n_100
-spline_rmse_first_order_kappa_n_100$mean_rmse
+overall_fitted<-list(spline_first_100=first_order_spline_n_100,spline_first_500=first_order_spline_n_500,
+                     spline_first_1k=first_order_spline_n_1000,spline_first_5k=first_order_spline_n_5000,
+                     spline_second_100=second_order_spline_n_100,spline_second_500=second_order_spline_n_500,
+                     spline_second_1000=second_order_spline_n_1000,spline_second_5000=second_order_spline_n_5000,
+                     RW_first_100=RW_first_order_n_100,RW_first_500=RW_first_order_n_500,
+                     RW_first_1k=RW_first_order_n_1000,RW_first_5k=RW_first_order_n_5000,
+                     RW_second_100=RW_second_order_n_100,RW_second_500=RW_second_order_n_500,
+                     RW_second_1k=RW_second_order_n_1000,RW_second_5k=RW_second_order_n_5000)
 
 
+getting_overall_rmse_for_data<-function(list_of_fitted_outputs,true_df,time_period_to_test_over=seq(1970,2020,0.1)){
+  
+  prev_col<-NULL
+  inc_col <- NULL
+  kappa_col <- NULL
+  
+  for(i in 1:length(list_of_fitted_outputs)){
+  
+  sp_1_100<-root_mean_error_function(true_data = true_df,fitted_data = list_of_fitted_outputs[[i]],
+                                     time_period = time_period_to_test_over)
+  sp_1_100_inc<-root_mean_error_function(true_data = true_df,fitted_data = list_of_fitted_outputs[[i]],
+                                         metric = "incidence",time_period = time_period_to_test_over)
+  sp_1_100_kappa<-root_mean_error_function(true_data = true_df,fitted_data = list_of_fitted_outputs[[i]],
+                                           metric = "kappa",time_period = time_period_to_test_over)
+  
+  prev_col<-c(prev_col,sp_1_100[[1]])
+  inc_col<-c(inc_col,sp_1_100_inc[[1]])
+  kappa_col<-c(kappa_col,sp_1_100_kappa[[1]])
+  test_stat<-ncol(sp_1_100[[3]])
+  }
 
+  spline_first_prev<-prev_col[1:4]
+  spline_second_prev<-prev_col[5:8]
+  rw_first_prev<-prev_col[9:12]
+  rw_sec_prev<-prev_col[13:16]
+  
+  spline_first_inc<-inc_col[1:4]
+  spline_sec_inc<-inc_col[5:8]
+  rw_first_inc<-inc_col[9:12]
+  rw_sec_inc<-inc_col[13:16]
+  
+  spline_first_kappa<-kappa_col[1:4]
+  spline_sec_kappa<-kappa_col[5:8]
+  rw_first_kappa<-kappa_col[9:12]
+  rw_sec_kappa<-kappa_col[13:16]
+  
+  prev_df<-cbind.data.frame(spline_first_prev,spline_second_prev,rw_first_prev,rw_sec_prev)
+  names(prev_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  
+  inc_df<-cbind.data.frame(spline_first_inc,spline_sec_inc,rw_first_inc,rw_sec_inc)
+  names(inc_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  
+  kappa_df<-cbind.data.frame(spline_first_kappa,spline_sec_kappa,rw_first_kappa,rw_sec_kappa)
+  names(kappa_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  
+  return(list(prevalence=prev_df,incidence=inc_df,kappa=kappa_df,test_stat=test_stat))
+}
 
-
-
+prediction_period_rmse<-getting_overall_rmse_for_data(list_of_fitted_outputs = overall_fitted,true_df = sim_model_output$sim_df,
+                                                      time_period_to_test_over = seq(2015.1,2020,0.1))
+prediction_period_rmse$prevalence
+prediction_period_rmse$incidence
+prediction_period_rmse$kappa
