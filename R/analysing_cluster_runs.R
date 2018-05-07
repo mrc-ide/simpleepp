@@ -188,7 +188,9 @@ spline_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration
 spline_first_n_100_inc<-ggplot(data=spline_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 incidence")
+  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 incidence")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.15))
+
 
 spline_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$incidence)
 
@@ -260,7 +262,9 @@ RW_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 5
 RW_first_n_100_inc<-ggplot(data=RW_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 100 incidence")
+  labs(x="Time",y="incidence",title="RW First Order n = 100 incidence")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.15))
+
 
 RW_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$incidence)
 
@@ -537,12 +541,11 @@ root_mean_error_function<-function(true_data,fitted_data,metric="prevalence",tim
     
     error <- (fitted_metric_iter$median[time_to_test]) - true_metric[time_to_test]
     
-    rmse <- sqrt(error^2)
+    rmse <- sqrt(mean(error^2))
     
-    mean_rmse <- mean(rmse)
     iter <- i
     
-    mean_rmse <- cbind(mean_rmse,iter)
+    mean_rmse <- cbind(rmse,iter)
     
     error_tot <- rbind(error,error_tot)
     
@@ -822,7 +825,7 @@ names(mean_rmse_data_frame)<-c("Spline First Order","Spline Second Order","RW fi
 
 
 overall_fitting_analysis<-list(sp_first_100=spline_first_order_analysis_n_100,sp_first_500=spline_first_order_analysis_n_500,
-                               sp_first_1000=spline_first_order_analysis_n_1000,sp_first_1k=spline_first_order_analysis_n_5000,
+                               sp_first_1000=spline_first_order_analysis_n_1000,sp_first_5k=spline_first_order_analysis_n_5000,
                                sp_sec_100=spline_second_order_analysis_n_100,sp_sec_500=spline_second_order_analysis_n_500,
                                sp_sec_1k=spline_second_order_analysis_n_1000,sp_sec_5k=spline_second_order_analysis_n_5000,
                                rw_first_100=RW_first_order_analysis_n_100,rw_first_500=RW_first_order_analysis_n_500,
@@ -980,12 +983,16 @@ getting_overall_rmse_for_data<-function(list_of_fitted_outputs,true_df,time_peri
   
   prev_df<-cbind.data.frame(spline_first_prev,spline_second_prev,rw_first_prev,rw_sec_prev)
   names(prev_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  prev_df$n<-c(100,500,1000,5000)
+  
   
   inc_df<-cbind.data.frame(spline_first_inc,spline_sec_inc,rw_first_inc,rw_sec_inc)
   names(inc_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  inc_df$n<-c(100,500,1000,5000)
   
   kappa_df<-cbind.data.frame(spline_first_kappa,spline_sec_kappa,rw_first_kappa,rw_sec_kappa)
   names(kappa_df)<-c("Spline First Order","Spline Second Order","RW first order","RW second order")
+  kappa_df$n<-c(100,500,1000,5000)
   
   return(list(prevalence=prev_df,incidence=inc_df,kappa=kappa_df,test_stat=test_stat))
 }
@@ -995,3 +1002,66 @@ prediction_period_rmse<-getting_overall_rmse_for_data(list_of_fitted_outputs = o
 prediction_period_rmse$prevalence
 prediction_period_rmse$incidence
 prediction_period_rmse$kappa
+
+plot(overall_fitting_analysis$sp_first_100$inc_mean_plot)
+
+peak_epidemic_period<-getting_overall_rmse_for_data(list_of_fitted_outputs = overall_fitted,true_df = sim_model_output$sim_df,
+                                                    time_period_to_test_over = seq(1990,2000,0.1))
+peak_epidemic_period$prevalence
+peak_epidemic_period$incidence
+peak_epidemic_period$kappa
+
+###############################################################################################################################
+## Now we will plot a graph of the mean error for each iteration for each of the 100 datasets #################################
+###############################################################################################################################
+
+error_df_prev<-cbind.data.frame(overall_fitting_analysis$sp_first_100$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_first_500$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_first_1000$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_first_5k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_sec_100$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_sec_500$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_sec_1k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$sp_sec_5k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_first_100$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_first_500$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_first_1k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_first_5k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_sec_100$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_sec_500$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_sec_1k$rmse_prev$rmse_df[,1],
+                                overall_fitting_analysis$rw_sec_5k$rmse_prev$rmse_df[,1])
+names(error_df_prev)<-c("spline_first_100","spline_first_500","spline_first_1k","spline_first_5k",
+                        "spline_sec_100","spline_sec_500","spline_sec_1k","spline_sec_5k",
+                        "rw_first_100","rw_first_500","rw_first_1k","rw_first_5k",
+                        "rw_sec_100","rw_sec_500","rw_sec_1k","rw_sec_5k")
+error_df_prev$iteration<-seq(1,100,1)
+
+melted_data_prev_error<-melt(error_df_prev,id="iteration")
+
+error_plot<-ggplot(data = melted_data_prev_error)+geom_line(aes(x=iteration,y=value,colour=variable),size=1)+
+  labs(x="iteration",y="RMSE value",title="RMSE over 100 different datasets for prevalence")+
+  coord_cartesian(ylim = c())
+
+error_df_prev_100<-cbind.data.frame(overall_fitting_analysis$sp_first_100$rmse_prev$rmse_df[,1],
+                                    overall_fitting_analysis$sp_sec_100$rmse_prev$rmse_df[,1],
+                                    overall_fitting_analysis$rw_first_100$rmse_prev$rmse_df[,1],
+                                    overall_fitting_analysis$rw_sec_100$rmse_prev$rmse_df[,1])
+names(error_df_prev_100)<-c("spline_first_100",
+                        "spline_sec_100",
+                        "rw_first_100",
+                        "rw_sec_100")
+error_df_prev_100$iteration<-seq(1,100,1)
+
+melted_prev_100<-melt(error_df_prev_100,id="iteration")
+
+error_plot_prev_100<-ggplot(data = melted_prev_100)+geom_line(aes(x=iteration,y=value,colour=variable),size=1)+
+  labs(x="iteration",y="RMSE value",title="RMSE over 100 different datasets for prevalence")+
+  coord_cartesian(ylim = c())
+
+
+
+mean_error<-sqrt(mean((spline_firsty_n_100_inc$median[200:301] - sim_model_output$sim_df$lambda[200:301])^2))  
+mean_ezza<-sqrt(mean((RW_firsty_n_100_inc$median[200:301] - sim_model_output$sim_df$lambda[200:301])^2))
+
+
