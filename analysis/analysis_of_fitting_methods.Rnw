@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+%\renewcommand{\rmdefault}{phv}
+%\renewcommand{\sfdefault}{phv}
+
+\usepackage{fontspec}
+\setmainfont{Tahoma} % {contains only what is common among all file names (usually basename of font family)}
+
+
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[margin=2cm]{geometry}
+\usepackage{multicol}
+
+%\renewcommand{\familydefault}{\sfdefault}
+%\author{Joshua D'Aeth}
+%\date{12th March 2018}
+%\title {
+%{Population genomics of multidrug resistance in \textit{Streptococcus pneumoniae}}\\
+%{\large Joshua D'Aeth}\\
+%{\large Supervisor: Dr. N Croucher}\\
+%\vfill
+%\includegraphics[width=\textwidth]{./figures/imp_logo.png}
+%\vfill
+%}
+\newlength{\drop}
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+\begin{doublespacing}
+%\setmainfont[Ligatures=Tex]{Verdana}
+%\SweaveOpts{concordance=TRUE}
+\begin{titlepage}
+    \drop=0.1\textheight
+    \centering
+    \vspace*{\baselineskip}
+    \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+    \rule{\textwidth}{0.4pt}\\[\baselineskip]
+    {\LARGE Analysis of modelling techniques used in the HIV epidemic\\}\\[0.2\baselineskip]
+    \rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+    \rule{\textwidth}{1.6pt}\\[\baselineskip]
+    \scshape
+    Mres in Biomedical research \\
+    Department of Surgery and Cancer\\
+    Imperial College London \\
+    \par
+    \vspace*{2\baselineskip}
+    
+    { Joshua D'Aeth \\ Supervisors: Dr. Jeff Eaton, Dr. Tara Mangal \& Prof. Tim Hallet \par}
+    \vfill
+    \includegraphics[width=0.4\textwidth]{./imp_crest.png}
+    \vfill
+    {\scshape 10\textsuperscript{th} May 2018} \\
+    
+  \end{titlepage}
+ 
+\pagenumbering{gobble}
+\newpage
+\pagenumbering{arabic}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+UNAIDS currently uses the Estimation and projection package (EPP) to evaluate and predict trends in HIV incidence and prevalence within countries. This model has evolved markedly over the years, incorporating Bayesian melding for parameter estimation and using various techniques to estimate the transmission parameter.
+\par
+ In this report we aim to compare two of the most commonly used methods for modelling the transmission parameter and incidence: penalized B splines and the gaussian random walk. We systematically evaluate how each technique performs under different data configurations, to better inform future modelling directions for the EPP package.
+
+\section{Methods}
+
+We will simulate data for a HIV epidemic from our deterministic simple EPP model. This models the transmission parameter as a logistic curve through time and we can incorporate ART treatment into this framework. 
+\par
+We will initially test the goodness of fit to simulated data, from our deterministic model, of both first order and second penalized splines, and first and second order penalized gaussian random walks, with complete data for prevalence from the beginning of the epidemic. This will be performed over a set of different sample sizes from the population: 100, 500, 1,000 and 5,000 people. These random samples from the population will be repeated 100 times in each case.
+
+
+\end{document}
