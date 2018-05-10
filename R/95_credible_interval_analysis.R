@@ -97,7 +97,7 @@ rw_secondo_95<-c(RW_95_second_order_100$overall,RW_95_second_order_500$overall,
                  RW_95_second_order_1000$overall,RW_95_second_order_5000$overall)
 
 overall_stats<-cbind.data.frame(splino_firsto_95,splino_secondo_95,rw_firsto_95,rw_secondo_95)
-
+overall_stats
 #########################################################################################################################################
 ## So that's our test of whether prevalence is within the 95% confidence intervals or not, now we will test incidence ###################
 #########################################################################################################################################
