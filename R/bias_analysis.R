@@ -278,3 +278,6 @@ overall_ratio<-cbind.data.frame(spline_first_overfit_ratio,spline_second_overfit
 
 overall_ratio
 
+overfit_tests<-list(ratio=overall_ratio,initial_test_stat=overfit_satas)
+
+save(overfit_tests,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/overfit_analyses/overfit_list")

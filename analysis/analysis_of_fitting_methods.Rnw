@@ -1,11 +1,9 @@
-\documentclass[11pt]{article}
-%\renewcommand{\rmdefault}{phv}
-%\renewcommand{\sfdefault}{phv}
+\documentclass[10pt]{article}
+
 
 \usepackage{fontspec}
-\setmainfont{Calibri} % {contains only what is common among all file names (usually basename of font family)}
-
-% taking this list of required packages for the kable package from https://haozhu233.github.io/kableExtra/awesome_table_in_pdf.pdf
+\setmainfont{Calibri} 
+% taking this list of required packages for the kable package from https://haozhu233.github.io/kableExtra/awesome_table_in_pdf%%.pdf
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -22,32 +20,17 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 
-%%
-%\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{cite}
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage[margin=2cm]{geometry}
 \usepackage{multicol}
 
-%\renewcommand{\familydefault}{\sfdefault}
-%\author{Joshua D'Aeth}
-%\date{12th March 2018}
-%\title {
-%{Population genomics of multidrug resistance in \textit{Streptococcus pneumoniae}}\\
-%{\large Joshua D'Aeth}\\
-%{\large Supervisor: Dr. N Croucher}\\
-%\vfill
-%\includegraphics[width=\textwidth]{./figures/imp_logo.png}
-%\vfill
-%}
+%%%%%% Now we begin the document
+
 \newlength{\drop}
 \begin{document}
-%\SweaveOpts{concordance=TRUE}
-%\SweaveOpts{concordance=TRUE}
 \begin{doublespacing}
-%\setmainfont[Ligatures=Tex]{Verdana}
-%\SweaveOpts{concordance=TRUE}
 \begin{titlepage}
     \drop=0.1\textheight
     \centering
@@ -80,551 +63,25 @@
 \newpage
 
 \section{Introduction}
-UNAIDS currently uses the Estimation and projection package (EPP) to evaluate and predict trends in HIV incidence and prevalence within countries. This model has evolved markedly over the years, incorporating Bayesian melding for parameter estimation and using various techniques to estimate the transmission parameter.
+UNAIDS currently uses the Estimation and projection package (EPP) to evaluate and predict trends in HIV incidence and prevalence within countries. This model has evolved markedly over the years, incorporating Bayesian melding for parameter estimation and using various techniques to estimate the transmission parameter kappa.
 \par
- In this report we aim to compare two of the most commonly used methods for modelling the transmission parameter and incidence: penalized B splines and the gaussian random walk. We systematically evaluate how each technique performs under different data configurations, to better inform future modelling directions for the EPP package.
+ In this report we aim to compare two of the most commonly used methods for modelling the kappa parameter and incidence: penalized B splines and the gaussian random walk (RW). We systematically evaluate how each technique performs under different data configurations, to better inform future modelling directions for the EPP package.
 
 \section{Methods}
 
 We will simulate data for a HIV epidemic from our deterministic simple EPP model. This models the transmission parameter as a logistic curve through time and we can incorporate ART treatment into this framework. 
 \par
-We will initially test the goodness of fit to simulated data, from our deterministic model, of both first order and second penalized splines, and first and second order penalized gaussian random walks, with complete data for prevalence from the beginning of the epidemic. This will be performed over a set of different sample sizes from the population: 100, 500, 1,000 and 5,000 people. These random samples from the population will be repeated 100 times in each case and each of the four technqiues wil fit to the same set of four samples. 
+We will initially test the goodness of fit to simulated data, from our deterministic model, of both first order and second penalized splines, and first and second order penalized RW, with complete data for prevalence from the beginning of the epidemic. This will be performed over a set of different sample sizes from the population: 100, 500, 1,000 and 5,000 people. These random samples from the population will be repeated 100 times in each case and each of the four technqiues wil fit to the same set of four samples. 
 \par
-We will test how well our modelled fitted values match the true epidemic curve via a comparison of the root meas sqaured error (RMSE) of the true epidemic to the fitted values. This will be compared for the three output curves from our model representing: prevalence, incidence and the transmission parameter kappa. We will compare this over the whole time period of the epidemic and specifically in the last 5 years of the epidemic when we have no sample data, to assess which methods if likely best for predicting future trends. 
+We will test how well our modelled fitted values match the true epidemic curve via a comparison of the root mean sqaured error (RMSE) of the true epidemic to the fitted values. This will be compared for the three output curves from our model representing: prevalence, incidence and kappa. We will compare this over the whole time period of the epidemic and specifically in the last 5 years of the epidemic when we have no sample data, to assess which modelling technqiue is best for predicting future trends, and we will look at the fit during the peak epidemic years, to gauge which technqiue can assess this peak and decline best. 
 \par
-Furthermore we will evaluate how often the true values for the epidemic parameters fall within our 95\% confidence interval produced from the model fitting, again this will be performed for each of the three parameters: Prevalence, incidence and the transmission rate.
+Furthermore we will evaluate how often the true values for the epidemic parameters fall within our 95\% confidence interval produced from the model fitting, again this will be performed for each of the three parameters: Prevalence, incidence and the kappa parameter.
 \par
-Finally we will also attempt to understand how the four different models maybe overfitting to the data. We attempt to understand this via a comparison of the RMSE between the model fitted values and the true epidemic values, and the RMSE between the model fitted values and the values of the prevalence used in the sample to fit the data with. 
+Finally we will also assess how the four different models maybe overfitting to the data. We attempt to understand this via a comparison of the RMSE between the model fitted values and the true epidemic values, and the RMSE between the model fitted values and the values of the prevalence used in the sample to fit the data with. 
 
 \section{Results}
 \subsection{Plots of mean results}
-First we will plot the mean output over the 100 runs of the sampled data for each of the four techniques for the model fitting, below is the mean fit with respect to prevalence, the red line represents the true epidemic and the blue line represents the fitted values with their 95\% confidence intervals in shaded blue.
-
-<<prev_total_plot, echo = FALSE,eval=FALSE,fig=TRUE,out.width='\\textwidth'>>= 
-require(ggplot2)
-require(reshape2)
-require(ggpubr)
-
-load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_100_complete_data_no_art")
-load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_500_complete_data_no_art")
-load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_1000_complete_data_no_art")
-load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_5000_complete_data_no_art")
-load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/true_epidemic_data")
-
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_100")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_500")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_1000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_5000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_100")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_500")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_1000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_5000")
-
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_100")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_500")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_1000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_5000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_100")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_500")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_1000")
-load("C:/Users/josh/Dropbox/hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_5000")
-
-###################################################################################################################################
-## Lets do some plotting of the mean results over the range of 100 different datasets #############################################
-###################################################################################################################################
-
-mean_value_function<-function(iterations,nrow_per_iteration,data_frame){
-  data_prev<-NULL
-  iter_value<-iterations - 1
-  nrow_value<-nrow_per_iteration
-  for(i in 1:nrow_value){
-    values<-data_frame$median[0:iter_value*nrow_value+i]
-    low<-data_frame$low[0:iter_value*nrow_value+i]
-    high<-data_frame$high[0:iter_value*nrow_value+i]
-    time_of_values<-data_frame$time[0:iter_value*nrow_value+i]
-    
-    row<-cbind(mean(low),mean(values),mean(high),mean(time_of_values))
-    
-    data_prev<-rbind.data.frame(data_prev,row)
-    
-  }
-  
-  names(data_prev)<-c("low","median","high","time")
-  
-  return(data_prev)
-  
-}
-
-spline_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_100$prev)
-
-spline_first_n_100<-ggplot(data=spline_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 100")
-
-spline_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$prev)
-
-spline_first_n_500<-ggplot(data=spline_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 500")
-
-spline_firsty_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_1000$prev)
-
-spline_first_n_1000<-ggplot(data=spline_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 1000")
-
-spline_firsty_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_5000$prev)
-
-spline_first_n_5000<-ggplot(data=spline_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 5000")
-
-first_order_splines<-ggarrange(spline_first_n_100,spline_first_n_500,spline_first_n_1000,spline_first_n_5000,ncol = 2,nrow = 2)
-#plot(first_order_splines)
-
-#################################################################################################################################
-## Now lets plot the second order splines average fits to the data ##############################################################
-#################################################################################################################################
-
-spline_secondy_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_100$prev)
-
-spline_second_n_100<-ggplot(data=spline_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline Second Order n = 100")
-
-spline_secondy_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_500$prev)
-
-spline_second_n_500<-ggplot(data=spline_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline Second Order n = 500")
-
-spline_secondy_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_1000$prev)
-
-spline_second_n_1000<-ggplot(data=spline_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline Second Order n = 1000")
-
-spline_secondy_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_5000$prev)
-
-spline_second_n_5000<-ggplot(data=spline_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline Second Order n = 5000")
-
-second_order_splines<-ggarrange(spline_second_n_100,spline_second_n_500,
-                                spline_second_n_1000,spline_second_n_5000,ncol = 2,nrow = 2)
-#plot(second_order_splines)
-
-################################################################################################################################
-## Now lets do random walk #####################################################################################################
-################################################################################################################################
-
-RW_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_first_order_n_100$prev)
-
-RW_first_n_100<-ggplot(data=RW_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW First Order n = 100")
-
-RW_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$prev)
-
-RW_first_n_500<-ggplot(data=RW_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW First Order n = 500")
-
-RW_firsty_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_1000$prev)
-
-RW_first_n_1000<-ggplot(data=RW_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW First Order n = 1000")
-
-RW_firsty_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_5000$prev)
-
-RW_first_n_5000<-ggplot(data=RW_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW First Order n = 5000")
-
-first_order_RW<-ggarrange(RW_first_n_100,RW_first_n_500,RW_first_n_1000,RW_first_n_5000,ncol = 2,nrow = 2)
-#plot(first_order_RW)
-
-################################################################################################################################
-## Now lets do random walk Second order ########################################################################################
-################################################################################################################################
-RW_secondy_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_second_order_n_100$prev)
-
-RW_second_n_100<-ggplot(data=RW_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW Second Order n = 100")
-
-RW_secondy_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_500$prev)
-
-RW_second_n_500<-ggplot(data=RW_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW Second Order n = 500")
-
-RW_secondy_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_1000$prev)
-
-RW_second_n_1000<-ggplot(data=RW_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW Second Order n = 1000")
-
-RW_secondy_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_5000$prev)
-
-RW_second_n_5000<-ggplot(data=RW_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=prev_percent),colour="red")+
-  labs(x="Time",y="Prevalence",title="RW Second Order n = 5000")
-
-second_order_RW<-ggarrange(RW_second_n_100,RW_second_n_500,RW_second_n_1000,RW_second_n_5000,ncol = 2,nrow = 2)
-#plot(second_order_RW)
-
-
-total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
-#plot(total_plots)
-
-total_plots_by_n<-ggarrange(spline_first_n_100,spline_first_n_500,spline_first_n_1000,spline_first_n_5000,
-                            spline_second_n_100,spline_second_n_500,spline_second_n_1000,spline_second_n_5000,
-                            RW_first_n_100,RW_first_n_500,RW_first_n_1000,RW_first_n_5000,
-                            RW_second_n_100,RW_second_n_500,RW_second_n_1000,RW_second_n_5000,
-                            nrow = 4,ncol = 4)
-plot(total_plots_by_n)
-
-################################################################################################################################
-## So thats our eyeball test of the fit by each method we will now do the same for incidence and transmission parameter ########
-################################################################################################################################
-
-spline_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_100$incidence)
-
-spline_first_n_100_inc<-ggplot(data=spline_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 incidence")+
-  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.15))
-
-
-spline_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$incidence)
-
-spline_first_n_500_inc<-ggplot(data=spline_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 500 incidence")
-
-spline_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_1000$incidence)
-
-spline_first_n_1000_inc<-ggplot(data=spline_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 1000 incidence")
-
-spline_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_5000$incidence)
-
-spline_first_n_5000_inc<-ggplot(data=spline_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 5000 incidence")
-
-first_order_splines_inc<-ggarrange(spline_first_n_100_inc,spline_first_n_500_inc,spline_first_n_1000_inc,spline_first_n_5000_inc,
-                                   ncol = 2,nrow = 2)
-plot(first_order_splines_inc)
-
-#################################################################################################################################
-## Now lets plot the second order splines average fits to the data ##############################################################
-#################################################################################################################################
-
-spline_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_100$incidence)
-
-spline_second_n_100_inc<-ggplot(data=spline_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 100 incidence")
-
-spline_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_500$incidence)
-
-spline_second_n_500_inc<-ggplot(data=spline_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 500 incidence")
-
-spline_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_1000$incidence)
-
-spline_second_n_1000_inc<-ggplot(data=spline_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 1000 incidence")
-
-spline_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_5000$incidence)
-
-spline_second_n_5000_inc<-ggplot(data=spline_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 5000 incidence")
-
-second_order_splines_inc<-ggarrange(spline_second_n_100_inc,spline_second_n_500_inc,
-                                spline_second_n_1000_inc,spline_second_n_5000_inc,ncol = 2,nrow = 2)
-plot(second_order_splines_inc)
-
-################################################################################################################################
-## Now lets do random walk #####################################################################################################
-################################################################################################################################
-
-RW_firsty_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_first_order_n_100$incidence)
-
-RW_first_n_100_inc<-ggplot(data=RW_firsty_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 100 incidence")+
-  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.15))
-
-
-RW_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$incidence)
-
-RW_first_n_500_inc<-ggplot(data=RW_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 500 incidence")
-
-RW_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_1000$incidence)
-
-RW_first_n_1000_inc<-ggplot(data=RW_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 1000 incidence")
-
-RW_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_5000$incidence)
-
-RW_first_n_5000_inc<-ggplot(data=RW_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 5000 incidence")
-
-first_order_RW_inc<-ggarrange(RW_first_n_100_inc,RW_first_n_500_inc,RW_first_n_1000_inc,RW_first_n_5000_inc,ncol = 2,nrow = 2)
-plot(first_order_RW_inc)
-
-################################################################################################################################
-## Now lets do random walk Second order ########################################################################################
-################################################################################################################################
-RW_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_second_order_n_100$incidence)
-
-RW_second_n_100_inc<-ggplot(data=RW_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 100 incidence")
-
-RW_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_500$incidence)
-
-RW_second_n_500_inc<-ggplot(data=RW_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 500 incidence")
-
-RW_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_1000$incidence)
-
-RW_second_n_1000_inc<-ggplot(data=RW_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 1000 incidence")
-
-RW_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_5000$incidence)
-
-RW_second_n_5000_inc<-ggplot(data=RW_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 5000 incidence")
-
-second_order_RW_inc<-ggarrange(RW_second_n_100_inc,RW_second_n_500_inc,RW_second_n_1000_inc,RW_second_n_5000_inc,
-                               ncol = 2,nrow = 2)
-plot(second_order_RW_inc)
-
-
-total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
-plot(total_plots)
-
-total_plots_by_n_inc<-ggarrange(spline_first_n_100_inc,spline_first_n_500_inc,spline_first_n_1000_inc,spline_first_n_5000_inc,
-                            spline_second_n_100_inc,spline_second_n_500_inc,spline_second_n_1000_inc,spline_second_n_5000_inc,
-                            RW_first_n_100_inc,RW_first_n_500_inc,RW_first_n_1000_inc,RW_first_n_5000_inc,
-                            RW_second_n_100_inc,RW_second_n_500_inc,RW_second_n_1000_inc,RW_second_n_5000_inc,
-                            nrow = 4,ncol = 4)
-plot(total_plots_by_n_inc)
-
-
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!~~~!~~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-##\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-#|-|-|-|-|-|-|-|-|-|-|/-\|
-
-################################################################################################################################
-## Now lets go for the kappa parameter and see what fit that has to the data ###################################################
-################################################################################################################################
-
-
-
-spline_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_100$kappa)
-
-spline_first_n_100_kappa<-ggplot(data=spline_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 100 kappa")
-
-spline_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_500$kappa)
-
-spline_first_n_500_kappa<-ggplot(data=spline_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 500 kappa")
-
-spline_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_1000$kappa)
-
-spline_first_n_1000_kappa<-ggplot(data=spline_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 1000 kappa")
-
-spline_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = first_order_spline_n_5000$kappa)
-
-spline_first_n_5000_kappa<-ggplot(data=spline_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Prevalence",title="Spline First Order n = 5000 kappa")
-
-first_order_splines_kappa<-ggarrange(spline_first_n_100_kappa,spline_first_n_500_kappa,spline_first_n_1000_kappa,spline_first_n_5000_kappa,
-                                   ncol = 2,nrow = 2)
-plot(first_order_splines_kappa)
-
-#################################################################################################################################
-## Now lets plot the second order splines average fits to the data ##############################################################
-#################################################################################################################################
-
-spline_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_100$kappa)
-
-spline_second_n_100_kappa<-ggplot(data=spline_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="Spline Second Order n = 100 kappa")
-
-spline_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_500$kappa)
-
-spline_second_n_500_kappa<-ggplot(data=spline_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="Spline Second Order n = 500 kappa")
-
-spline_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_1000$kappa)
-
-spline_second_n_1000_kappa<-ggplot(data=spline_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="Spline Second Order n = 1000 kappa")
-
-spline_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = second_order_spline_n_5000$kappa)
-
-spline_second_n_5000_kappa<-ggplot(data=spline_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="Spline Second Order n = 5000 kappa")
-
-second_order_splines_kappa<-ggarrange(spline_second_n_100_kappa,spline_second_n_500_kappa,
-                                    spline_second_n_1000_kappa,spline_second_n_5000_kappa,ncol = 2,nrow = 2)
-plot(second_order_splines_kappa)
-
-################################################################################################################################
-## Now lets do random walk #####################################################################################################
-################################################################################################################################
-
-RW_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_first_order_n_100$kappa)
-
-RW_first_n_100_kappa<-ggplot(data=RW_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW First Order n = 100 kappa")
-
-RW_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_500$kappa)
-
-RW_first_n_500_kappa<-ggplot(data=RW_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW First Order n = 500 kappa")
-
-RW_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_1000$kappa)
-
-RW_first_n_1000_kappa<-ggplot(data=RW_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW First Order n = 1000 kappa")
-
-RW_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_first_order_n_5000$kappa)
-
-RW_first_n_5000_kappa<-ggplot(data=RW_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW First Order n = 5000 kappa")
-
-first_order_RW_kappa<-ggarrange(RW_first_n_100_kappa,RW_first_n_500_kappa,RW_first_n_1000_kappa,RW_first_n_5000_kappa,ncol = 2,nrow = 2)
-plot(first_order_RW_kappa)
-
-################################################################################################################################
-## Now lets do random walk Second order ########################################################################################
-################################################################################################################################
-RW_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = RW_second_order_n_100$kappa)
-
-RW_second_n_100_kappa<-ggplot(data=RW_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW Second Order n = 100 kappa")
-
-RW_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_500$kappa)
-
-RW_second_n_500_kappa<-ggplot(data=RW_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW Second Order n = 500 kappa")
-
-RW_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_1000$kappa)
-
-RW_second_n_1000_kappa<-ggplot(data=RW_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW Second Order n = 1000 kappa")
-
-RW_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,RW_second_order_n_5000$kappa)
-
-RW_second_n_5000_kappa<-ggplot(data=RW_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
-  geom_line(data=sim_model_output$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="kappa",title="RW Second Order n = 5000 kappa")
-
-second_order_RW_kappa<-ggarrange(RW_second_n_100_kappa,RW_second_n_500_kappa,RW_second_n_1000_kappa,RW_second_n_5000_kappa,
-                               ncol = 2,nrow = 2)
-plot(second_order_RW_kappa)
-
-
-total_plots<-ggarrange(first_order_splines,second_order_splines,first_order_RW,second_order_RW,ncol = 2,nrow = 2)
-plot(total_plots)
-
-total_plots_by_n_kappa<-ggarrange(spline_first_n_100_kappa,spline_first_n_500_kappa,spline_first_n_1000_kappa,spline_first_n_5000_kappa,
-                                spline_second_n_100_kappa,spline_second_n_500_kappa,spline_second_n_1000_kappa,spline_second_n_5000_kappa,
-                                RW_first_n_100_kappa,RW_first_n_500_kappa,RW_first_n_1000_kappa,RW_first_n_5000_kappa,
-                                RW_second_n_100_kappa,RW_second_n_500_kappa,RW_second_n_1000_kappa,RW_second_n_5000_kappa,
-                                nrow = 4,ncol = 4)
-plot(total_plots_by_n_kappa)
-
-
-
-
-@
+First we will plot the mean output over the 100 runs of the sampled data for each of the four techniques for the model fitting, below in figure (\ref{fig:prev_plots}) is the mean fit with respect to prevalence, the red line represents the true epidemic and the blue line represents the fitted values with their 95\% confidence intervals in shaded blue.
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./prevalence_no_art_16_plots.png}
@@ -632,9 +89,9 @@ plot(total_plots_by_n_kappa)
 \label{fig:prev_plots}
 \end{figure}
 
-From this plot we can initially see that all the different fitting methods capture the prevalence of the true epidemic very well during the phase from 1970 to 2015 when we have data to fit to. All models also have a narrowing of their credibility bounds as the sample size goes up from left to right. During the prediction period however the models differ in how well they seem to match the true epidemic. Both spline models seem to predict a levelling off of the prevalence or a slight uptick depending on their sample sizes, whereas in reality the prevalence is seen to decrease during this period. The RW models begin to more closely match the epidemic qualitatively with larger sample sizes, with the RW second order model at sample size 5000 very similar indeed. 
+From figure(\ref{fig:prev_plots}) we can initially see that all the different fitting methods capture the prevalence of the true epidemic very well during the phase from 1970 to 2015 when we have data to fit to. All models also have a narrowing of their credibility bounds as the sample size goes up from left to right. During the prediction period however the models differ in how well they seem to match the true epidemic. Both spline models seem to predict a levelling off of the prevalence or a slight uptick depending on their sample sizes, whereas in reality the prevalence is seen to decrease during this period. The RW models begin to more closely match the epidemic qualitatively with larger sample sizes, with the RW second order model at sample size 5000 very similar indeed. 
 \par
-The mean values over the 100 runs on the different data sets are depicted below, again the blue line is the fitted data while the red line indicates the true value from the simulated epidemic.
+The mean values over the 100 runs on the different data sets are depicted below in figure(\ref{fig:inc_plots}), again the blue line is the fitted data while the red line indicates the true value from the simulated epidemic.
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./incidence_no_art_16_plots.png}
@@ -642,9 +99,9 @@ The mean values over the 100 runs on the different data sets are depicted below,
 \label{fig:inc_plots}
 \end{figure}
 
-From this we see that all four methods generally fit well to the true epidemic. Both spline methods however seem to underestimate the peak incidence reached during the early to mid 1990s. The credibility intervals for the RW methods also remain fairly constant, especially for the first order RW, despite an increae in sample size from the population. Once again the RW methods also seem to more closely match the true epidemic incidence during our prediction period from 2015 to 2020. The Second order RW again matches most closely the slight decline seen in the true simulated epidemic. 
+From this we see that all four methods generally fit well to the true epidemic. Both spline methods however seem to underestimate the peak incidence reached during the early to mid 1990s. The credibility intervals for the RW methods also remain fairly constant, especially for the first order RW, despite an increase in sample size from the population. Once again the RW methods also seem to more closely match the true epidemic incidence during our prediction period from 2015 to 2020. The Second order RW again matches most closely the slight decline seen in the true simulated epidemic. 
 \par
-Finally the transmission parameter, here descirbed as kappa, plots are seen below. Again the red line indicates the true value and the blue line the fitted value with assoicated shaded region the 95\% credible interval.
+Finally the mean kappa values are seen in figure (\ref{fig:kappa_plots}) below. Again the red line indicates the true value and the blue line the fitted value with assoicated shaded region the 95\% credible interval.
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./kappa_no_art_16_plots.png}
@@ -657,7 +114,7 @@ The fitted values from the model produced for kappa are much less accurate than 
 \subsection{Quantitative measures of fit}
 \subsubsection{RMSE to true values}
 
-Below in table (\ref{tab:rmse_total_data}) is the RMSE values for prevalence of the true epidemic against the fitted median values for the whole data series, averaged over 100 iterations. One broad trend is that as the sample size increases, we see a better fit to the true epidemic as witnessed by a decrease in RMSE. In general at lower sample sizes we see the first order penalized splines and RW outperform their second order versions, while at higher sample sizes both RW techniques fitting better to the true epidemic than the spline methods, with second order RW fitted with a sample size of 5,000 having the lowest RMSE value.
+Below in table (\ref{tab:rmse_total_data}) is the RMSE values for prevalence of the true epidemic against the fitted median values for the whole data series, averaged over 100 iterations. One broad trend is that as the sample size increases, we see a better fit to the true epidemic as witnessed by a decrease in RMSE. In general at lower sample sizes we see the first order penalized splines and RW outperform their second order versions, while at higher sample sizes both RW techniques fit better to the true epidemic than the spline methods, with second order RW fitted with a sample size of 5,000 having the lowest RMSE value.
 \par
 
 <<rmse_total_data, echo=FALSE, message=FALSE,warning=FALSE,fig.lp='tab:' >>=
@@ -680,7 +137,7 @@ kable(complete_rmse_data$prev,caption = "The complete RMSE for prevalence",forma
 
 @
 
-In table (\ref{tab:rmse_tot_inc}) we see the RMSE values over the whole course of the epidemic for the true incidence value against the fitted incidence values averaged over 100 iterations. Similar to for prevalence we see that the first order methods are slightly better at fitting with lower sample sizes, while at the highest sample sizes, RW methods fit to true incidence better, while the best fit to incidence is the RW second order at a sample size of 5,000. 
+In table (\ref{tab:rmse_tot_inc}) we see the RMSE values over the whole course of the epidemic for the true incidence value against the fitted incidence values averaged over 100 iterations. Similar to what we see for prevalence, the first order methods are slightly better at fitting with lower sample sizes, while at the highest sample sizes, RW methods fit to true incidence better, with the best fit to incidence produced by the second order penalized RW at a sample size of 5,000. 
 
 <<rmse_tot_inc, echo= FALSE, fig.lp='tab:' >>=
 
@@ -691,7 +148,7 @@ kable(complete_rmse_data$inc,caption = "The complete RMSE for incidence",format 
       booktabs=T,align = "C") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1,border_right = T)
 @
 
-For the transmission parameter, kappa, the RMSE values for the whole time series of the epidemic averaged over 100 iterations are seen in table (\ref{tab:rmse_tot_kappa}). This is an interesting set of results, for both splines we see no real decrease in RMSE with an increae in sample size, as we had seen for both incidence and prevalence. Indeed if anything first order splines decrease in predictive power with increasing sample size. With RW there is a clear improvement with increasing sample size, with the best fit to the true value being the First order RW with a sample size of 5000. These values though are still the same order of magnitude as the values Spline results for RMSE. 
+For  kappa, the RMSE values for the whole time series of the epidemic averaged over 100 iterations are seen in table (\ref{tab:rmse_tot_kappa}). This is an interesting set of results, for both splines we see no real decrease in RMSE with an increase in sample size, unlike the trend seen previously for both incidence and prevalence. Indeed if anything first order splines decrease in their predictive power with increasing sample size. With RW there is a clear improvement with increasing sample size, with the best fit to the true value being the First order RW with a sample size of 5000. These values though are still the same order of magnitude as the values Splines produce for RMSE. 
 
 <<rmse_tot_kappa, echo=FALSE,fig.lp='tab:' >>=
 complete_rmse_data$kappa$sample_size<-c(100,500,1000,5000)
@@ -735,6 +192,115 @@ kable(prediction_period_rmse$kappa,caption = "RMSE of Kappa for fitted against t
 @
 
 
-\end{doublespacing}
+\subsubsection{RMSE during peak epidemic years}
 
+The peak years of this simulated epidemic, both in terms of prevalence and incidence, were during the 1990s. To gauge how sensitive each of our modelling techniques were to detecting this peak and decline we evaluate the goodness of fit for the prevalence, incidence and kappa values below in tables (\ref{tab:rmse_peak_prev} : \ref{tab:rmse_peak_kappa}) for this period.
+
+<<rmse_peak_prev, echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/rmse_datasets/1990_2000_peak_epidemic_period_rmse")
+
+peak_epidemic_period$prevalence<-peak_epidemic_period$incidence[,c(5,1,2,3,4)]
+
+names(peak_epidemic_period$prevalence)[1]<-"Sample size"
+
+kable(peak_epidemic_period$prevalence,caption = "RMSE of true to fitted values for prevalence during the peak epidemic period 1990:2000",booktabs=T,format = "latex",align = "C") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1,border_right = T)
+
+@
+
+<<rmse_peak_inc, echo = FALSE, fig.lp='tab:' >>=
+peak_epidemic_period$incidence<-peak_epidemic_period$incidence[,c(5,1,2,3,4)]
+
+names(peak_epidemic_period$incidence)[1] <- "Sample size"
+
+kable(peak_epidemic_period$incidence,caption = "RMSE of true to fitted values of incidence during the peak epidemic period of 1990:2000",booktabs=T,format = "latex",align = "c") %>% kable_styling(latex_options=c("hover","striped","hold_position")) %>% column_spec(1,border_right = T)
+@
+
+<<rmse_peak_kappa, echo=FALSE,fig.lp='tab:' >>=
+
+peak_epidemic_period$kappa<-peak_epidemic_period$kappa[,c(5,1,2,3,4)]
+
+names(peak_epidemic_period$kappa)[1] <- "Sample size"
+
+kable(peak_epidemic_period$kappa, caption = "RMSE of true to fitted values of kappa during the peak epidemic period of 1990:2000",booktabs=T,align = "c",format = "latex")  %>% kable_styling(latex_options=c("hover","striped","hold_position")) %>% column_spec(1,border_right = T)
+
+
+
+@
+
+From these we can see that there is a clear trend of increasing fit to the true epidemic with increasing sample size, this is present as well within both spline's estimation of kappa, where before for the whole time period of the epidemic we saw no clear relationship between sample size and RMSE. For all parameters across all sample sizes during this period the second order penalized RW produces the closest fit to the true epidemic's values. There is a clear difference between the RMSE values produced at sample size 5,000 for the kappa and prevalence values of the second order penalized RW, and the other techniques' RMSE values. This perhaps indicates that for a growing epidemic, a second order penalized RW is the best fitting method. 
+
+\subsubsection{Credibility interval analyses}
+
+To test how robust the 95\% credible intervals produced from our model fitting are, we detected how often the true epidemic parameter values fell within the 95\% credible interval of our model fits, across 100 different sample set iterations. These are depicted in tables (\ref{tab:prev_95_vals} : \ref{tab:kapp_95_vals}). 
+\par
+<<prev_95_vals, echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/credible_interval_analyses/overall_analysis")
+
+overall_95_stats$prev$sample_size<-c(100,500,1000,5000)
+overall_95_stats$prev<-overall_95_stats$prev[,c(5,1,2,3,4)]
+names(overall_95_stats$prev)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(overall_95_stats$prev,caption = "Percentage of time the true prevalence values fall within the 95 percent credible interval",booktabs=T,align="c",format = "latex") %>% kable_styling(latex_options=c("hover","striped","hold_position")) %>% column_spec(1,border_right = T)
+
+@
+
+
+<<inc_95_vals, echo = FALSE, fig.lp='tab:'>>=
+overall_95_stats$inc$sample_size<-c(100,500,1000,5000)
+overall_95_stats$inc<-overall_95_stats$inc[,c(5,1,2,3,4)]
+names(overall_95_stats$inc)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(overall_95_stats$inc,caption = "Percentage of time the true epidemic incidence values fall within the 95 percent credible interval",booktabs=T,align = "c",format = "latex") %>% kable_styling(latex_options=c("hover","striped","hold_position")) %>% column_spec(1,border_right = T)
+
+@
+
+<<kapp_95_vals, echo=FALSE,fig.lp='tab:'>>=
+overall_95_stats$kappa$sample_size<-c(100,500,1000,5000)
+overall_95_stats$kappa<-overall_95_stats$kappa[,c(5,1,2,3,4)]
+names(overall_95_stats$kappa)<-c("Sample size","Spline first order", "Spline second order","RW first order","RW second order")
+
+kable(overall_95_stats$kappa,caption = "Percentage of time the true epidemic Kappa values fall within the 95 percent credible interval",booktabs=T,align = "c",format = "latex") %>% kable_styling(latex_options=c("hover","striped","hold_position")) %>% column_spec(1,border_right = T)
+
+
+@
+
+These are interesting results, seemingly depicting that RW methods of fitting are more reliable in estimating the true epidemic values. With the second order peanlized RW, all the produced credible intervals contain the true value at least 96\% of the time, while first order penalized RWs perform best for including the true values of incidence and the kappa parameter. The Splines perform adequately at the lowest sample size of 100, but as the sample size increases, and subsequently their produced credible intervals contract, they end up holding the true value within their bounds far less frequently than they should. This is most pronounced when estimating the Kappa parameter, with the frequency at which the true kappa value lies within the credible bounds of the first order penalized Spline when the population sample size is 5,000 being only 48.6\%, almost half the frequency it should be. 
+\par
+These results, at least for this epidemic, suggest that the RW methods for modelling the kappa parameter are far more reliable in assesing the true epidemic parameters than the Spline methods. 
+
+\subsubsection{Overfitting and bias}
+To try and understand how systematically biased data may affect each model's ability to infer the true epidemic, we came up with a simple test statistic to determine if fitted prevalence estimates were overfitting to the sampled prevalence points each year: 
+$$ \frac{RMSE_{fitted-true}}{RMSE_{fitted-sample}} $$
+
+When the fitted prevalence more closely matches the true epidemic prevalence, this statistic tends to 0, while when the fitted prevalence matches the sampled prevalence more closely than the true prevalence this will tend to positive \infty.
+\par
+The results of our analysis of the potential overfitting of the model are seen in table (\ref{tab:overfit}). These are somewhat in line with our expectations, as we see that generally the RW models, which estimate more parameters when recreating the curve of the kappa parameter, are tending to overfit more to the prevalence data than the spline models. These RW values are higher, indicating they match closer to the sampled values than the spline models do. However these are in many cases only small differences and the second order penalized RW at sample size 5,000 actually fits closer to the true prevalence than the three other modelling techniques do. 
+\par
+Given these results, with a biased dataset, splines may be able to better predict the true epidemic values, although further work testing with biased datasets will be need to test this theory more rigorously 
+
+<<overfit,echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/overfit_analyses/overfit_list")
+
+overfit_tests$ratio$sample_size<-c(100,500,1000,5000)
+overfit_tests$ratio<-overfit_tests$ratio[,c(5,1,2,3,4)]
+names(overfit_tests$ratio)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(overfit_tests$ratio,caption="Analysis of overfitting to prevalence sampled data",booktabs=T,format = "latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1,border_right = T)
+
+@
+
+\section{Conclusions and further work}
+From our results for this epidemic we can conclude that for modelling the Kappa parameter through the course of the epidemic, using a Gaussian RW is more likely to recreate the true epidemic parameters of prevalence, incidence and the kappa parameter. For predicting the future course of an epidemic a first order penalized RW produces the closest fit to this form of epidemic's trajectory. While when recapturing the peak of this epidemic, a second order penalized RW matches closest to the true values. The 95\% credible intervals produced by the RW modelling are also much more relaible than the intervals produced via modelling with a Spline. 
+\par
+Our work tentatively suggests though that RW may overfit to the data compared to spline methods, further testing of this for a range of epidemic trajectories and data types is needed for a better understanding of this relationship. Indeed further work is needed within this framework to understand the effects of: 
+\begin{itemize}
+\item Modelling the incidence/Force of infection rather than the transmission parameter kappa.
+\item Different epidemeic trajectories on the accuracy of the different modelling techniques.
+\item Different data structures, fewer sampling, biased sampling and different data types on the fits produced.
+\item More flexible spline modelling.
+\item The effect of ART and improved diagnosis on epidemic trajecotry and estimation.
+\end{itemize}
+Completing this will allows us to provide robust feedback to the modelling community, informing them of the best methods to be used in each of the possible scenarios. 
+
+\end{doublespacing}
 \end{document}

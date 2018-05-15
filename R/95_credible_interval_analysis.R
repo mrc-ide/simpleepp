@@ -173,3 +173,7 @@ rw_secondo_95_kappa<-c(RW_95_second_order_100_kappa$overall,RW_95_second_order_5
 overall_stats_kappa<-cbind.data.frame(splino_firsto_95_kappa,splino_secondo_95_kappa,rw_firsto_95_kappa,rw_secondo_95_kappa)
 
 overall_stats_kappa
+
+
+overall_95_stats<-list(prev=overall_stats,inc=overall_stats_inc,kappa=overall_stats_kappa)
+save(overall_95_stats,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/credible_interval_analyses/overall_analysis")
