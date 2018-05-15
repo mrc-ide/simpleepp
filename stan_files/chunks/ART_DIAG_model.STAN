@@ -7,6 +7,11 @@ matrix simpleepp_art_diag(vector kappa, real iota, vector alpha, real mu, vector
   matrix[rows(mu_i), rows(kappa)+1] I;                                                      // dt is our time step, start is 1970, diag start will be 1981, art_start 1996
   matrix[rows(mu_i), rows(kappa)+1] D;                                                      // diag will be our diagnosis rates CD4, and art_prog progression through ART CD4 
   matrix[rows(mu_i), rows(kappa)+1] A;
+  vector[rows(kappa)+1] ART_first;
+  vector[rows(kappa)+1] Diag_first;
+  matrix[rows(kappa)+1, 2] first_mat;
+  matrix[rows(kappa)+1, 2] second_mat;
+  matrix[rows(kappa)+1, 4] return_mat;
   vector[rows(kappa)+1] rho;
   vector[rows(kappa)+1] lambda;
   int DS;
@@ -96,8 +101,14 @@ matrix simpleepp_art_diag(vector kappa, real iota, vector alpha, real mu, vector
     rho[t+1] = 1.0 - S[t+1] / (S[t+1] + sum(I[ ,t+1]) + sum(A[ ,t+1]) + sum(D[,t+1]));
   }
   
+  ART_first = to_vector(A[1,]);
+  Diag_first = to_vector(D[1,]);
+  first_mat = append_col(ART_first,Diag_first);
+  second_mat = append_col(lambda,rho);
+  return_mat = append_col(first_mat,second_mat);
   
   return(append_col(append_row(kappa[1], kappa),
-		    append_col(lambda, rho)));
+		    append_col(first_mat,second_mat)));
 }
 }
+

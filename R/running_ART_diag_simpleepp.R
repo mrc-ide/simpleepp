@@ -32,23 +32,24 @@ mu_d <- c(0.003,0.008,0.035,0.27)                                      ## Mortal
 
 mu_a <- c(0.002, 0.006, 0.006, 0.03)                                   ## Mortality by stage, on ART
 
-omega <- 0.7                                                           ## Reduction in trnasmissability on art
+omega <- 0.9                                                           ## Reduction in trnasmissability on art
 
-theta <- 0.2                                                          ## Reduction when know diagnosed
+theta <- 0.5                                                          ## Reduction when know diagnosed
 
 dt <- 0.1
 
 start<- 1970
 
-diag_start<- 1981
+diag_start<- 1990
 
-art_start<-2019
+art_start<-1996
 
-diag<-c(0.3,0.4,0.7,0.85)                                             ## Proportion to be diagnosed at each infected cd4 stage
+diag<-c(0.9,0.9,0.9,0.9)                                             ## Proportion to be diagnosed at each infected cd4 stage
 
 art_prog<-c(1/10,1/10,1/10)
 
 test_run<-simpleepp_art_diag(kappa = kappa,iota = iota,alpha = alpha,mu = mu,sigma = sigma, mu_i = mu_i, mu_d = mu_d,mu_a = mu_a,
                              omega = omega,theta = theta,dt = dt,start = start,diag_start = diag_start,art_start = art_start,
                              diag = diag,art_prog = art_prog)
-plot(test_run[,2])
+plot(test_run[,5])
+test_run
