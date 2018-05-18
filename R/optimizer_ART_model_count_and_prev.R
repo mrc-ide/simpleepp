@@ -304,7 +304,7 @@ test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitt
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan", data = stan_data_discrete_prev_rw,
+#mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan", data = stan_data_discrete_prev_rw,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.8))
 
@@ -369,7 +369,7 @@ test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_ran
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
+#mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
                      data = stan_data_discrete_count_rw,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.8))
@@ -447,7 +447,7 @@ test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_pr
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
+#mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
                      data = stan_data_discrete_prev_spline,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
@@ -512,7 +512,7 @@ test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/art_diag_model_cou
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
+#mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
                      data = stan_data_discrete_count_spline,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))

@@ -1,15 +1,39 @@
-###################################################################################################################################
-## Testing out how the new art diseased model work ################################################################################
-###################################################################################################################################
+##################################################################################################################################
+## ART functions on the cluster ##################################################################################################
+##################################################################################################################################
 
-require(ggplot2)
+setwd("Y:")
+options(didehpc.username = "jd2117",didehpc.home = "Y:/simpleepp",didehpc.cluster = "fi--didemrchnb")
+
+didehpc::didehpc_config(cores = 3,parallel = FALSE)
+?didehpc::didehpc_config
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
+## !!!!!!!!!!!!!!!!!!!!!!!! Remember to turn on pulse secure at this point !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
+didehpc::didehpc_config()
+
+context::context_log_start()
+
+root <- "contexts"
+
+ctx<- context::context_save(root,packages = c("rstan","ggplot2","splines"),
+                            sources = "simpleepp/R/ART_model_simple_functions_cluster.R")
+config <- didehpc::didehpc_config(cores = 3, parallel = FALSE)
+obj <- didehpc::queue_didehpc(ctx,config)
+
+
+###############################################################################################################################
+## NOw we've got the queue set up we need to generate the stan_data for using in the cluster runs #############################
+###############################################################################################################################
 require(rstan)
+require(ggplot2)
 require(reshape2)
-require(splines)
+require(ggpubr)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write=T)
 
-expose_stan_functions("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk.stan")
+expose_stan_functions("simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
 
 rlogistic <- function(t, p) {
   p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
@@ -23,7 +47,7 @@ kappa<- exp(rlogistic(step_vector,kappa_params))                       ## This i
 iota_val<-0.0001                                                       ## This is our initial proportion infected
 
 mu <- 1/35                                                             ## Population level death rate
-            
+
 sigma<- c(1/3.16,1/2.13,1/3.2)                                         ## Progression along Cd4 stages among untreated
 
 mu_i <- c(0.003, 0.008, 0.035, 0.27)                                   ## Mortality by stage, no ART
@@ -156,7 +180,7 @@ sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,
 
 
 sample_df_prev<-sample_function(sample_range,sample_years,sample_n,
-                                       simulated_df = sim_data_art,prevalence_column_id = 7)
+                                simulated_df = sim_data_art,prevalence_column_id = 7)
 
 
 plot_sample<-function(sample_df,simulated_df){
@@ -169,7 +193,7 @@ plot_sample<-function(sample_df,simulated_df){
 plot_sample(simulated_df = sim_data_art,sample_df = sample_df_prev)
 
 diagnosed_cd4_sample<-function(year_range_to_sample_from,integer_number_of_years_we_sampled_from,simulated_data,
-                              col_id_time_and_inc){
+                               col_id_time_and_inc){
   data_output<-NULL
   
   for(i in year_range_to_sample_from[1]:year_range_to_sample_from[integer_number_of_years_we_sampled_from]){
@@ -247,70 +271,16 @@ stan_data_discrete_prev_rw<-list(
   
 )
 
-params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
-
-prev_optim<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
-prev_optim_results<-optimizing(prev_optim,stan_data_discrete_prev_rw,as_vector=F)
-
-## Lets plot the optim results
-
-optim_plotter<-function(simulated_df,optimed_df){
- data_from_optim<-data.frame(optimed_df$par$fitted_output)
- data_from_optim$time<-seq(1970,2020,0.1)
- names(data_from_optim)[1:7]<-c("kappa","art","diag","N","ART_inc", "incidence","prevalence")
- 
- prev_plot<-ggplot(data = simulated_df)+geom_line(aes(x=time,y=prevalence),colour="red",size=1)+
-   geom_line(data = data_from_optim, aes(x=time,y=prevalence),colour="midnightblue",size=1)+
-   labs(x="time",y="prevalence as fraction",title="Prevalence prediction from optimizer in STAN, Red is TRUE data")
- inc_plot<-ggplot(data = simulated_df)+geom_line(aes(x=time,y=incidence),colour="red",size=1)+
-   geom_line(data = data_from_optim,aes(x=time,y=incidence),colour="midnightblue",size=1)+
-   labs(x="time",y="incidence",title="Incidence prediction from optimizer in Stan Red is TRUE data")
- kappa_plot<-ggplot(data = simulated_df)+geom_line(aes(x=time,y=kappa),colour="red",size=1)+
-   geom_line(data = data_from_optim,aes(x=time,y=kappa),colour="midnightblue",size=1)+
-   labs(x="time",y="kappa",title="Kappa prediction from optimizer in Stan Red is TRUE data")
- ART_inc_plot<-ggplot(data = simulated_df)+geom_line(aes(x=time,y=ART_inc),colour="red",size=1)+
-   geom_line(data = data_from_optim,aes(x=time,y=ART_inc),colour="midnightblue",size=1)+
-   labs(x="time",y="incidence of ART uptake in cd4>500",title="ART incidence with CD4 > 500, RED is true Data")
- 
- prev_rmse<- sqrt(mean((simulated_df$prevalence - data_from_optim$prevalence)^2))
- inc_rmse<- sqrt(mean((simulated_df$incidence - data_from_optim$incidence)^2))
- kappa_rmse<- sqrt(mean((simulated_df$kappa - data_from_optim$kappa)^2))
- art_inc_rmse<- sqrt(mean((simulated_df$ART_inc - data_from_optim$ART_inc)^2))
- 
- rmse_df<-cbind.data.frame(prev_rmse,inc_rmse,kappa_rmse,art_inc_rmse)
- 
- return(list(prev_plot=prev_plot,inc_plot=inc_plot,kappa_plot=kappa_plot,art_plot=ART_inc_plot, rmse_df=rmse_df))
- 
-}
-
-optim_results<-optim_plotter(sim_data_art,prev_optim_results)
-optim_results$prev_plot
-optim_results$inc_plot
-optim_results$kappa_plot
-optim_results$art_plot
-optim_results$rmse_df
-require(ggpubr)
-
-total_plots_prev<-ggarrange(optim_results$prev_plot,
-                            optim_results$inc_plot,
-                            optim_results$kappa_plot,
-                            optim_results$art_plot,
-                            ncol = 2, nrow = 2)
+RW_ART_prev<-obj$enqueue(prev_data_fitting_RW(simulated_data = sim_data_art,
+                                                            stan_data = stan_data_discrete_prev_rw))
+RW_ART_prev$status()
+id_rw_art_prev<-RW_ART_prev$id
+save(id_rw_art_prev,file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_ART_PREVALENCE_FITTING")
 
 
-test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan",
-                     data = stan_data_discrete_prev_rw,
-                     pars = params_monitor_hiv,
-                     chains = 1, iter = 10)  
-
-
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan", data = stan_data_discrete_prev_rw,
-                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                     control = list(adapt_delta = 0.8))
-
-###############################################################################################################################
-## This is our poisson sampling ###############################################################################################
-###############################################################################################################################
+##############################################################################################################################
+## Now lets run our RW poissson fit ##########################################################################################
+##############################################################################################################################
 
 penalty_order<-1
 xout<-seq(1970.1,2020,0.1)
@@ -345,39 +315,16 @@ stan_data_discrete_count_rw<-list(
   
 )
 
-params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
+RW_ART_count<-obj$enqueue(count_data_fitting_RW(sim_data_art,stan_data_discrete_count_rw))
+RW_ART_count$status()
+id_rw_art_count<-RW_ART_count$id
+save(id_rw_art_prev,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_ART_COUNT_FITTING")
 
-stan_mod_count<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan")
-optim_poiss<-optimizing(stan_mod_count,stan_data_discrete_count_rw,as_vector=F)
-optim_results_poisson<-optim_plotter(sim_data_art,optim_poiss)
+##############################################################################################################################
+## NOw for the splines #######################################################################################################
+##############################################################################################################################
 
-optim_results_poisson$prev_plot
-optim_results_poisson$inc_plot
-optim_results_poisson$kappa_plot
-optim_results_poisson$art_plot
-optim_results_poisson$rmse_df
-require(ggpubr)
-total_plots<-ggarrange(optim_results_poisson$prev_plot,
-                       optim_results_poisson$inc_plot,
-                       optim_results_poisson$kappa_plot,
-                       optim_results_poisson$art_plot,
-                       ncol = 2, nrow = 2)
-
-test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
-                     data = stan_data_discrete_count_rw,
-                     pars = params_monitor_hiv,
-                     chains = 1, iter = 10)  
-
-
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
-                     data = stan_data_discrete_count_rw,
-                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                     control = list(adapt_delta = 0.8))
-
-
-###############################################################################################################################
-## Now we'll fit it with a spline model of kappa first with prevalence  #######################################################
-###############################################################################################################################
 xout<-seq(1970,2020,0.1)
 splines_creator<-function(knot_number,penalty_order){
   
@@ -424,38 +371,15 @@ stan_data_discrete_prev_spline<-list(
   onem = obem
   
 )
-params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-stan_mod_spline_prev_fit<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan")
-optim_fit_spline_mod_prev<-optimizing(stan_mod_spline_prev_fit,stan_data_discrete_prev_spline,as_vector=F)
-optim_results_spline_prev<-optim_plotter(sim_data_art,optim_fit_spline_mod_prev)
-
-optim_results_spline_prev$prev_plot
-optim_results_spline_prev$inc_plot
-optim_results_spline_prev$kappa_plot
-optim_results_spline_prev$art_plot
-
-total_spline_prev<-ggarrange(optim_results_spline_prev$prev_plot,
-                             optim_results_spline_prev$inc_plot,
-                             optim_results_spline_prev$kappa_plot,
-                             optim_results_spline_prev$art_plot,
-                             ncol = 2, nrow = 2)
-
-test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
-                     data = stan_data_discrete_prev_spline,
-                     pars = params_monitor_hiv,
-                     chains = 1, iter = 10)  
+spline_art_prev<-obj$enqueue(prev_data_fitting_spline(sim_data_art,stan_data_discrete_prev_spline))
+spline_art_prev$status()
+spline_art_prev_id<-spline_art_prev$id
+save(spline_art_prev_id,file =
+       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/SPLINE_PREV_FIT_ART")
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
-                     data = stan_data_discrete_prev_spline,
-                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                     control = list(adapt_delta = 0.85))
-
-
-###############################################################################################################################
-## Now we will fit with the count data ########################################################################################
-###############################################################################################################################
+### NOw for the count data spline
 
 
 rows_to_evaluate<-seq((art_start-start)*10+1,(year_seq[length(year_seq)]-start+1)*10)
@@ -490,133 +414,8 @@ stan_data_discrete_count_spline<-list(
   
 )
 
-optim_count_spline<-stan_model("hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan")
-optim_fit_spline_count<-optimizing(optim_count_spline,stan_data_discrete_count_spline,as_vector=F)
-optim_spline_results_count<-optim_plotter(sim_data_art,optim_fit_spline_count)
-
-optim_spline_results_count$prev_plot
-optim_spline_results_count$inc_plot
-optim_spline_results_count$kappa_plot
-optim_spline_results_count$art_plot 
-
-spline_count_total_plots<-ggarrange(optim_spline_results_count$prev_plot,
-                           optim_spline_results_count$inc_plot,
-                           optim_spline_results_count$kappa_plot,
-                           optim_spline_results_count$art_plot,
-                           ncol = 2,nrow = 2)
-
-
-test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan",
-                     data = stan_data_discrete_count_spline,
-                     pars = params_monitor_hiv,
-                     chains = 1, iter = 10)  
-
-
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
-                     data = stan_data_discrete_count_spline,
-                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                     control = list(adapt_delta = 0.85))
-
-
-plot_stan_model_fit<-function(model_output,sim_sample,sim_output,plot_name,xout){
-  
-  posts_hiv <- rstan::extract(model_output)
-  
-  
-  iota_dist<-posts_hiv$iota
-  params<-median(posts_hiv$iota)
-  params_low<-quantile(posts_hiv$iota,c(0.025))
-  params_high<-quantile(posts_hiv$iota,c(0.975))
-  
-  params_df<-rbind.data.frame(params_low,params,params_high)
-  names(params_df)<-c("iota")
-  
-  sigma_pen_dist<-posts_hiv$sigma_pen
-  sigma_values<-median(posts_hiv$sigma_pen)
-  sigma_low<-quantile(posts_hiv$sigma_pen,c(0.025))
-  sigma_high<-quantile(posts_hiv$sigma_pen,probs=c(0.975))
-  sigma_df<-rbind.data.frame(sigma_low,sigma_values,sigma_high)
-  names(sigma_df)<-c("sigma_pen")
-  
-  
-  
-  # These should match well. 
-  
-  #################
-  # Plot model fit:
-  
-  # Proportion infected from the synthetic data:
-  
-  #sample_prop = sample_y / sample_n
-  
-  # Model predictions across the sampling time period.
-  # These were generated with the "fake" data and time series.
-  #mod_median = apply(posts_hiv$fake_I[,,2], 2, median)
-  #mod_low = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.025))
-  #mod_high = apply(posts_hiv$fake_I[,,2], 2, quantile, probs=c(0.975))
-  mod_time = xout
-  
-  prev_median<-(apply(posts_hiv$fitted_output[,,7],2,median))*100
-  prev_low<-(apply(posts_hiv$fitted_output[,,7],2,quantile,probs=c(0.025)))*100
-  prev_high<-(apply(posts_hiv$fitted_output[,,7],2,quantile,probs=c(0.975)))*100
-  
-  
-  incidence_median<-apply(posts_hiv$fitted_output[,,6],2,median)
-  incidence_low<-apply(posts_hiv$fitted_output[,,6],2,quantile,probs=c(0.025))
-  incidence_high<-apply(posts_hiv$fitted_output[,,6],2,quantile,probs=c(0.975))
-  
-  r_median<-apply(posts_hiv$fitted_output[,,1],2,median)
-  r_low<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.025))
-  r_high<-apply(posts_hiv$fitted_output[,,1],2,quantile,probs=c(0.975))
-  
-  # Combine into two data frames for plotting
-  #df_sample = data.frame(sample_prop, sample_time)
-  df_fit_prevalence = data.frame(prev_median, prev_low, prev_high, xout )
-  names(df_fit_prevalence)<-c("median","low","high","time")
-  df_fit_prevalence$credible_skew<-(df_fit_prevalence$high - df_fit_prevalence$median) - (df_fit_prevalence$median - df_fit_prevalence$low)
-  
-  df_fit_incidence<-data.frame(incidence_low,incidence_median,incidence_high,xout)
-  names(df_fit_incidence)<-c("low","median","high","time")
-  
-  r_fit<-data.frame(r_low,r_median,r_high,xout)
-  names(r_fit)<-c("low","median","high","time")
-  # Plot the synthetic data with the model predictions
-  # Median and 95% Credible Interval
-  
-  
-  plotter<-ggplot(sim_sample) +
-    geom_point(aes(x=sample_time_hiv, y=sample_prev_hiv_percentage),col="red", shape = 19, size = 1.5) +
-    geom_line(data = df_fit_prevalence, aes(x=time,y=median),colour="midnightblue",size=1)+
-    geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),
-                colour="midnightblue",alpha=0.2,fill="midnightblue")+
-    geom_line(data = sim_output,aes(x=time,y=prev_percent),colour="yellow",size=1)+
-    coord_cartesian(xlim=c(1965,2025))+labs(x="Time",y="Prevalence (%)", title=plot_name)
-  
-  incidence_plot<-ggplot(data=df_fit_incidence)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-    geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",alpha=0.2,colour="midnightblue")+
-    geom_line(data = sim_output,aes(x=time,y=lambda),colour="yellow",size=1)+
-    labs(x="time",y="incidence",title="incidence_plot")
-  
-  r_plot<-ggplot(data = r_fit)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
-    geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
-    geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
-  labs(x="Time",y="r value through time",title="R logistic through time")
-  return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
-              r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
-              iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist))
-  
-  
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
+spline_art_count<-obj$enqueue(count_data_fitting_spline(sim_data_art,stan_data_discrete_count_spline))
+spline_art_count$status()
+spline_count_id<-spline_art_count$id
+save(spline_count_id, file = 
+       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/SPLINE_COUNT_FIT_ART")
