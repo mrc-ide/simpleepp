@@ -32,7 +32,7 @@ mu_d <- c(0.003,0.008,0.035,0.27)                                      ## Mortal
 
 mu_a <- c(0.002, 0.006, 0.006, 0.03)                                   ## Mortality by stage, on ART
 
-omega <- 0.1                                                          ## Reduction in transmissability on art
+omega <- 0.8                                                          ## Reduction in transmissability on art
 
 theta <- 0.2                                                           ## Reduction when know diagnosed
 
@@ -40,9 +40,9 @@ dt <- 0.1
 
 start<- 1970
 
-diag_start<- 1975
+diag_start<- 1982
 
-art_start<-1976
+art_start<-1996
 
 sigmoid_curve_function<-function(x,lp){                               ## This is our function to produce the change in 
   (1 / (1 + exp(-lp[1]*x))) * lp[2]                                   ## diag rates and art uptake rates through time 
@@ -219,7 +219,7 @@ spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is
 penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=penalty_order)        ## This matrix creates the differences between your kappa values 
 rows_to_evaluate<-0:45*10+1
 
-stan_data_discrete<-list(
+stan_data_discrete_prev_rw<-list(
   n_obs = sample_years,
   y = as.array(sample_df_prev$sample_y_hiv_prev),
   n_sample = sample_n,
@@ -250,7 +250,7 @@ stan_data_discrete<-list(
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
 prev_optim<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
-prev_optim_results<-optimizing(prev_optim,stan_data_discrete,as_vector=F)
+prev_optim_results<-optimizing(prev_optim,stan_data_discrete_prev_rw,as_vector=F)
 
 ## Lets plot the optim results
 
@@ -299,12 +299,12 @@ total_plots_prev<-ggarrange(optim_results$prev_plot,
 
 
 test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan",
-                     data = stan_data_discrete,
+                     data = stan_data_discrete_prev_rw,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan", data = stan_data_discrete,
+mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan", data = stan_data_discrete_prev_rw,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.8))
 
@@ -319,9 +319,9 @@ penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=penalty_order)        ## Th
 rows_to_evaluate<-seq((art_start-start)*10+1,(year_seq[length(year_seq)]-start+1)*10)
 sneaky_rows_evaluate<-sneaky_sample
 
-stan_data_discrete<-list(
+stan_data_discrete_count_rw<-list(
   n_obs = number_year_obs,
-  y = as.array(sneaky_poiss),
+  y = as.array(poisson_sampled_data$sample_data$sampled),
   time_steps_euler = length(xout)+1,
   penalty_order = penalty_order,
   time_steps_year = 51,
@@ -331,7 +331,7 @@ stan_data_discrete<-list(
   sigma = sigma,
   mu_i = mu_i,
   dt_2 = 0.1,
-  rows_to_interpret = as.array(sneaky_rows_evaluate),
+  rows_to_interpret = as.array(rows_to_evaluate),
   alpha = alpha,
   mu_d = mu_d,
   mu_a = mu_a,
@@ -349,7 +349,7 @@ stan_data_discrete<-list(
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
 stan_mod_count<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan")
-optim_poiss<-optimizing(stan_mod_count,stan_data_discrete,as_vector=F)
+optim_poiss<-optimizing(stan_mod_count,stan_data_discrete_count_rw,as_vector=F)
 optim_results_poisson<-optim_plotter(sim_data_art,optim_poiss)
 
 optim_results_poisson$prev_plot
@@ -365,13 +365,13 @@ total_plots<-ggarrange(optim_results_poisson$prev_plot,
                        ncol = 2, nrow = 2)
 
 test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
-                     data = stan_data_discrete,
+                     data = stan_data_discrete_count_rw,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
 
 mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan",
-                     data = stan_data_discrete,
+                     data = stan_data_discrete_count_rw,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.8))
 
@@ -397,7 +397,7 @@ penalty_order= 2
 splines_matrices<-splines_creator(knot_number,penalty_order)
 rows_to_evaluate<-0:45*10+1
 
-stan_data_discrete<-list(
+stan_data_discrete_prev_spline<-list(
   n_obs = sample_years,
   y = as.array(sample_df_prev$sample_y_hiv_prev),
   n_sample = sample_n,
@@ -428,7 +428,7 @@ stan_data_discrete<-list(
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
 stan_mod_spline_prev_fit<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan")
-optim_fit_spline_mod_prev<-optimizing(stan_mod_spline_prev_fit,stan_data_discrete,as_vector=F)
+optim_fit_spline_mod_prev<-optimizing(stan_mod_spline_prev_fit,stan_data_discrete_prev_spline,as_vector=F)
 optim_results_spline_prev<-optim_plotter(sim_data_art,optim_fit_spline_mod_prev)
 
 optim_results_spline_prev$prev_plot
@@ -436,22 +436,30 @@ optim_results_spline_prev$inc_plot
 optim_results_spline_prev$kappa_plot
 optim_results_spline_prev$art_plot
 
+total_spline_prev<-ggarrange(optim_results_spline_prev$prev_plot,
+                             optim_results_spline_prev$inc_plot,
+                             optim_results_spline_prev$kappa_plot,
+                             optim_results_spline_prev$art_plot,
+                             ncol = 2, nrow = 2)
 
 test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
-                     data = stan_data_discrete,
+                     data = stan_data_discrete_prev_spline,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
 
 mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
-                     data = stan_data_discrete,
+                     data = stan_data_discrete_prev_spline,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
 
 
-stan_data_discrete<-list(
-  n_obs = length(sneaky_sample),
-  y = as.array(sneaky_sample),
+rows_to_evaluate<-seq((art_start-start)*10+1,(year_seq[length(year_seq)]-start+1)*10)
+
+
+stan_data_discrete_count_spline<-list(
+  n_obs = nrow(poisson_sampled_data$sample_data),
+  y = as.array(poisson_sampled_data$sample_data$sampled),
   n_sample = sample_n,
   knot_number = knot_number,
   time_steps_euler = length(xout),
@@ -463,7 +471,7 @@ stan_data_discrete<-list(
   sigma = sigma,
   mu_i = mu_i,
   dt_2 = 0.1,
-  rows_to_interpret = as.array(sneaky_rows_evaluate),
+  rows_to_interpret = as.array(rows_to_evaluate),
   alpha = alpha,
   mu_d = mu_d,
   mu_a = mu_a,
@@ -479,13 +487,31 @@ stan_data_discrete<-list(
 )
 
 optim_count_spline<-stan_model("hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan")
-optim_fit_spline_count<-optimizing(optim_count_spline,stan_data_discrete,as_vector=F)
+optim_fit_spline_count<-optimizing(optim_count_spline,stan_data_discrete_count_spline,as_vector=F)
 optim_spline_results_count<-optim_plotter(sim_data_art,optim_fit_spline_count)
 
 optim_spline_results_count$prev_plot
 optim_spline_results_count$inc_plot
 optim_spline_results_count$kappa_plot
 optim_spline_results_count$art_plot 
+
+spline_count_total_plots<-ggarrange(optim_spline_results_count$prev_plot,
+                           optim_spline_results_count$inc_plot,
+                           optim_spline_results_count$kappa_plot,
+                           optim_spline_results_count$art_plot,
+                           ncol = 2,nrow = 2)
+
+
+test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan",
+                     data = stan_data_discrete_count_spline,
+                     pars = params_monitor_hiv,
+                     chains = 1, iter = 10)  
+
+
+mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan",
+                     data = stan_data_discrete_count_spline,
+                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
+                     control = list(adapt_delta = 0.85))
 
 
 plot_stan_model_fit<-function(model_output,sim_sample,sim_output,plot_name,xout){

@@ -124,7 +124,7 @@ data {
  vector[3] sigma;                                                       // This is our vector of transition rates
  vector[4] mu_i;                                                        // This is our vector of death rates
  real dt_2;                                                             // this is our second time step for generating the output from the fitted beta parameters
- int rows_to_interpret[n_obs];                                          // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
+ int rows_to_interpret[n_obs * 10];                                          // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
  matrix[time_steps_euler , rows(mu_i)] alpha;                           // This is our matrix of ART uptake rates from the diagnosed class
  vector[4] mu_d;                                                        // This is our vecotr of death rates among diagnosed individuals
  vector[4] mu_a;                                                        // This is our vector of death rates among the ART class
@@ -154,14 +154,14 @@ parameters{
 
  
 transformed parameters{
- //vector[n_obs] tot_year_vals;
+ vector[n_obs] tot_year_vals;
  matrix[size(rows_to_interpret), 7] y_hat;                                         
  
  y_hat = simpleepp_art_diag( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem)[rows_to_interpret, ];
  
- //for(i in 1:n_obs){
- //tot_year_vals[i] = sum(y_hat[(i *10) - 9 : (i * 10)]);
-  //}
+ for(i in 1:n_obs){
+ tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10) - 8, 5];
+ }
 }
 
  
@@ -172,7 +172,7 @@ model {
  target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
  
   for( i in 1:n_obs){
-  y[i] ~ poisson(y_hat[i, 5]);                                           // This fits it to the binomially sampled data 
+  y[i] ~ poisson(tot_year_vals[i]);                                           // This fits it to the binomially sampled data 
   }
 
 } 
