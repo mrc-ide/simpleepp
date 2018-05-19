@@ -16,7 +16,7 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data){
                                 
     posts_hiv <- rstan::extract(model_output)
                               
-                                
+       xout<- seq(1970,2020,0.1)                         
       iota_dist<-posts_hiv$iota
                               
       params<-median(posts_hiv$iota)
