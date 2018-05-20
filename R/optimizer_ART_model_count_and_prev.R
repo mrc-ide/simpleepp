@@ -40,9 +40,9 @@ dt <- 0.1
 
 start<- 1970
 
-diag_start<- 1982
+diag_start<- 1971
 
-art_start<-1996
+art_start<-1972
 
 sigmoid_curve_function<-function(x,lp){                               ## This is our function to produce the change in 
   (1 / (1 + exp(-lp[1]*x))) * lp[2]                                   ## diag rates and art uptake rates through time 
@@ -249,7 +249,7 @@ stan_data_discrete_prev_rw<-list(
 
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-prev_optim<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
+prev_optim<-stan_model("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
 prev_optim_results<-optimizing(prev_optim,stan_data_discrete_prev_rw,as_vector=F)
 
 ## Lets plot the optim results
@@ -347,7 +347,7 @@ stan_data_discrete_count_rw<-list(
 
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-stan_mod_count<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan")
+stan_mod_count<-stan_model("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/ART_DIAG_model_random_walk_ART_count_fit.stan")
 optim_poiss<-optimizing(stan_mod_count,stan_data_discrete_count_rw,as_vector=F)
 optim_results_poisson<-optim_plotter(sim_data_art,optim_poiss)
 
@@ -426,7 +426,7 @@ stan_data_discrete_prev_spline<-list(
 )
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-stan_mod_spline_prev_fit<-stan_model("hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan")
+stan_mod_spline_prev_fit<-stan_model("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/ART_diag_spline_prev_fitting.stan")
 optim_fit_spline_mod_prev<-optimizing(stan_mod_spline_prev_fit,stan_data_discrete_prev_spline,as_vector=F)
 optim_results_spline_prev<-optim_plotter(sim_data_art,optim_fit_spline_mod_prev)
 
@@ -490,7 +490,7 @@ stan_data_discrete_count_spline<-list(
   
 )
 
-optim_count_spline<-stan_model("hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan")
+optim_count_spline<-stan_model("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/art_diag_model_count_fit_spline.stan")
 optim_fit_spline_count<-optimizing(optim_count_spline,stan_data_discrete_count_spline,as_vector=F)
 optim_spline_results_count<-optim_plotter(sim_data_art,optim_fit_spline_count)
 
