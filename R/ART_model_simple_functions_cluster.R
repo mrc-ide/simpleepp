@@ -12,7 +12,7 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
   
- plot_stan_model_fit<-function(model_output,simulated_dataset){#,sim_sample,sim_output,plot_name,xout){
+ plot_stan_model_fit<-function(model_output,simulated_dataset){
                                 
     posts_hiv <- rstan::extract(model_output)
                               
@@ -85,14 +85,18 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
                               plot_inc=inc_plot,plot_kappa=kappa_plot))
     }
                               
-  list_of_results<-plot_stan_model_fit(mod_hiv_prev)
+  list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
   return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
  
  
 }
 
-prev_data_fitting_spline<-function(simulated_data,stan_data,params_used_for_sim){
+#################################################################################################################################
+## NOW FOR THE PREVALENCE SPLINE MODEL *&*^%^(*&^%$£"£$%^&*((*&^%$£$%^&*(((((((((((((((((((((((((()))))))))))))))))))))))))))))##
+#################################################################################################################################
+
+prev_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_sim){
   rstan::rstan_options(auto_write = TRUE)                               ## Need these options like this for parrallel going
   options(mc.cores = parallel::detectCores())
   
@@ -106,7 +110,7 @@ prev_data_fitting_spline<-function(simulated_data,stan_data,params_used_for_sim)
                               control = list(adapt_delta = 0.85))
 
                               
-  plot_stan_model_fit<-function(model_output){#,sim_sample,sim_output,plot_name,xout){
+  plot_stan_model_fit<-function(model_output,simulated_dataset){#,sim_sample,sim_output,plot_name,xout){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -179,13 +183,17 @@ prev_data_fitting_spline<-function(simulated_data,stan_data,params_used_for_sim)
     
   }
   
-  list_of_results<-plot_stan_model_fit(mod_hiv_prev)
+  list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
   
   return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
 }
 
-prev_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
+#################################################################################################################################
+## NOW FOR THE RW MODEL STARTINF WITH THE PREVALENCE FITTING FUNCTION ###########################################################
+#################################################################################################################################
+
+prev_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
   rstan::rstan_options(auto_write = TRUE)                               ## Need these options like this for parrallel going
   options(mc.cores = parallel::detectCores())
   
@@ -199,7 +207,7 @@ prev_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
                               control = list(adapt_delta = 0.85))
                               
                               
-  plot_stan_model_fit<-function(model_output){#,sim_sample,sim_output,plot_name,xout){
+  plot_stan_model_fit<-function(model_output,simulated_dataset){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -273,12 +281,17 @@ prev_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
     
   }
   
-  list_of_results<-plot_stan_model_fit(mod_hiv_prev)
+  list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
   return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
 }
-                              
-count_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
+
+################################################################################################################################
+## NOW FINALLY FOR THE COUNT FITTING FUNCTION FOR THE DATA #####################################################################
+##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&##
+
+
+count_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
   rstan::rstan_options(auto_write = TRUE)                               ## Need these options like this for parrallel going
   options(mc.cores = parallel::detectCores())
   
@@ -293,7 +306,7 @@ count_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
                               control = list(adapt_delta = 0.85))
                               
                               
-  plot_stan_model_fit<-function(model_output){#,sim_sample,sim_output,plot_name,xout){
+  plot_stan_model_fit<-function(model_output,simulated_dataset){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -366,7 +379,7 @@ count_data_fitting_RW<-function(simulated_data,stan_data,,params_used_for_sim){
                 plot_inc=inc_plot,plot_kappa=kappa_plot))
   }
   
-  list_of_results<-plot_stan_model_fit(mod_hiv_prev)
+  list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
   return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
 }

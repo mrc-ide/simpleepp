@@ -119,7 +119,7 @@ plot(plotted_sim$whole)
 
 sample_range<-1970:2015
 sample_years<-46
-sample_n<-1000
+sample_n<-500
 
 
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
@@ -152,7 +152,7 @@ sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,
 
 
 sample_df_1000_second<-sample_function(sample_range,sample_years,sample_n,
-                                       simulated_df = sim_model_output$sim_df,prevalence_column_id = 3)
+                                       simulated_df = sim_model_foi$sim_df,prevalence_column_id = 3)
 
 
 
@@ -164,7 +164,7 @@ plot_sample<-function(sample_df,simulated_df){
   return(plot(a))
 }
 
-plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_1000_second)
+plot_sample(simulated_df = sim_model_foi$sim_df,sample_df = sample_df_1000_second)
 
 
 ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
@@ -173,25 +173,36 @@ ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_perc
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
 ###################################################################################################################################
 
-splines_creator<-function(knot_number,penalty_order){
+splines_creator<-function(knot_number,penalty_order,type,step_vector){
   
-  nk <- knot_number # number of knots
-  dk <- diff(range(xout))/(nk-3)
-  knots <- xstart + -3:nk*dk
-  spline_matrix<- splineDesign(knots, step_vector, ord=4)
-  penalty_matrix <- diff(diag(nk), diff=penalty_order)
+  if(type == "spline"){
+    mat_ord<-4
+    nk <- knot_number # number of knots
+    dk <- diff(range(xout))/(nk-3)
+    knots <- xstart + -3:nk*dk
+    spline_matrix<- splineDesign(knots, step_vector, ord=mat_ord)
+    penalty_matrix <- diff(diag(nk), diff=penalty_order)
+  }  else{
+    mat_ord<-2
+    spline_matrix<-splineDesign(1969:2021,step_vector,ord = mat_ord)
+    penalty_matrix <- diff(diag(ncol(spline_matrix)), diff=penalty_order)
+    
+  }
+  
+  
   
   return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
   
 }
 
 knot_number= 7
-penalty_order= 2
+penalty_order= 1
+typo<-"spline"
 
-splines_matrices<-splines_creator(knot_number,penalty_order)
-beta_vals<-first_order_spline_n_100$beta_vals[2,1:7]
-beta_vals<-as.numeric(beta_vals)
-beta_vals[7]<-beta_vals[6]
+splines_matrices<-splines_creator(knot_number,penalty_order,type = typo,step_vector = seq(1970.1,2020,0.1))
+#beta_vals<-first_order_spline_n_100$beta_vals[2,1:7]
+#beta_vals<-as.numeric(beta_vals)
+#beta_vals[7]<-beta_vals[6]
 #spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
 #penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
 rows_to_evaluate<-0:45*10+1
