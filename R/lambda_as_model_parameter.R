@@ -173,7 +173,7 @@ ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_perc
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
 ###################################################################################################################################
 
-splines_creator<-function(knot_number,penalty_order,type,step_vector){
+splines_creator_rw_o_splino<-function(knot_number,penalty_order,type,step_vector){
   
   if(type == "spline"){
     mat_ord<-4
@@ -195,16 +195,11 @@ splines_creator<-function(knot_number,penalty_order,type,step_vector){
   
 }
 
-knot_number= 7
-penalty_order= 1
+knot_number= 14
+penalty_order= 2
 typo<-"spline"
 
-splines_matrices<-splines_creator(knot_number,penalty_order,type = typo,step_vector = seq(1970.1,2020,0.1))
-#beta_vals<-first_order_spline_n_100$beta_vals[2,1:7]
-#beta_vals<-as.numeric(beta_vals)
-#beta_vals[7]<-beta_vals[6]
-#spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
-#penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
+splines_matrices<-splines_creator_rw_o_splino(knot_number,penalty_order,type = typo,step_vector = seq(1970.1,2020,0.1))
 rows_to_evaluate<-0:45*10+1
 
 
@@ -286,7 +281,7 @@ plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output)
   beta_low<-apply(posts_hiv$beta,2,quantile,probs=c(0.025))
   beta_high<-apply(posts_hiv$beta,2,quantile,probs=c(0.975))
   beta_df<-rbind.data.frame(beta_low,beta_median,beta_high)
-  names(beta_df)<-c("1","2","3","4","5","6","7")
+  names(beta_df)<-c("1","2","3","4")
   
   
   
@@ -353,3 +348,29 @@ stan_output_second_order_n_1000$prevalence_plot
 stan_output_second_order_n_1000$incidence_plot
 stan_output_second_order_n_1000$r_plot
 
+spline_first_order_plots<-list(stan_output_second_order_n_1000$prevalence_plot,
+                               stan_output_second_order_n_1000$incidence_plot,
+                               stan_output_second_order_n_1000$r_plot)
+spline_second_order_plots<-list(stan_output_second_order_n_1000$prevalence_plot,
+                                stan_output_second_order_n_1000$incidence_plot,
+                                stan_output_second_order_n_1000$r_plot)
+rw_first_order_plots<-list(stan_output_second_order_n_1000$prevalence_plot,
+                           stan_output_second_order_n_1000$incidence_plot,
+                           stan_output_second_order_n_1000$r_plot)
+rw_second_order_plots<-list(stan_output_second_order_n_1000$prevalence_plot,
+                            stan_output_second_order_n_1000$incidence_plot,
+                            stan_output_second_order_n_1000$r_plot)
+
+spline_first_order_plots[[1]]$labels$title<-"Spline first order n = 500"
+spline_second_order_plots[[1]]$labels$title<-"Spline second order n = 500"
+rw_first_order_plots[[1]]$labels$title<-" RW first order n = 500"
+rw_second_order_plots[[1]]$labels$title<-"RW second order n = 500"
+
+require(ggpubr)
+
+prev<-ggarrange(spline_first_order_plots[[1]],spline_second_order_plots[[1]],
+                rw_first_order_plots[[1]],rw_second_order_plots[[1]],ncol = 2,nrow = 2)
+inc<-ggarrange(spline_first_order_plots[[2]],spline_second_order_plots[[2]],
+               rw_first_order_plots[[2]],rw_second_order_plots[[2]],ncol = 2,nrow = 2)
+kappa<-ggarrange(spline_first_order_plots[[3]],spline_second_order_plots[[3]],
+                 rw_first_order_plots[[3]],rw_second_order_plots[[3]],ncol = 2,nrow = 2)

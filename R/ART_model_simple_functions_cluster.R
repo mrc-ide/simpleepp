@@ -12,7 +12,7 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
   
- plot_stan_model_fit<-function(model_output,simulated_dataset){
+ plot_stan_model_fit<-function(model_output,sim_data){
                                 
     posts_hiv <- rstan::extract(model_output)
                               
@@ -63,18 +63,18 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
                                 # Plot the synthetic data with the model predictions
                               
         # Median and 95% Credible Interval
-    prev_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
+    prev_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
       geom_line(data = df_fit_prevalence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="prevalence %",title="fitted and true prevalence, fitting to count data of ART numbers")  
                               
-    inc_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
+    inc_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
       geom_line(data = df_fit_incidence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_incidence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="incidence",title="fitted and true incidence, fitting to count data of ART numbers")  
     
     
-    kappa_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
+    kappa_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
       geom_line(data = r_fit,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = r_fit,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="Kappa",title="fitted and true kappa, fitting to count data of ART numbers")  
@@ -110,7 +110,7 @@ prev_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_s
                               control = list(adapt_delta = 0.85))
 
                               
-  plot_stan_model_fit<-function(model_output,simulated_dataset){#,sim_sample,sim_output,plot_name,xout){
+  plot_stan_model_fit<-function(model_output,sim_data){#,sim_sample,sim_output,plot_name,xout){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -160,18 +160,18 @@ prev_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_s
     names(r_fit)<-c("low","median","high","time")
     # Plot the synthetic data with the model predictions
     # Median and 95% Credible Interval
-    prev_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
+    prev_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
       geom_line(data = df_fit_prevalence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="prevalence %",title="fitted and true prevalence, fitting to count data of ART numbers")  
     
-    inc_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
+    inc_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
       geom_line(data = df_fit_incidence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_incidence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="incidence",title="fitted and true incidence, fitting to count data of ART numbers")  
     
     
-    kappa_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
+    kappa_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
       geom_line(data = r_fit,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = r_fit,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="Kappa",title="fitted and true kappa, fitting to count data of ART numbers")  
@@ -207,7 +207,7 @@ prev_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
                               control = list(adapt_delta = 0.85))
                               
                               
-  plot_stan_model_fit<-function(model_output,simulated_dataset){
+  plot_stan_model_fit<-function(model_output,sim_data){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -258,18 +258,18 @@ prev_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
     # Plot the synthetic data with the model predictions
     # Median and 95% Credible Interval
     
-    prev_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
+    prev_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
       geom_line(data = df_fit_prevalence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="prevalence %",title="fitted and true prevalence, fitting to count data of ART numbers")  
     
-    inc_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
+    inc_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
       geom_line(data = df_fit_incidence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_incidence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="incidence",title="fitted and true incidence, fitting to count data of ART numbers")  
     
     
-    kappa_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
+    kappa_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
       geom_line(data = r_fit,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = r_fit,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="Kappa",title="fitted and true kappa, fitting to count data of ART numbers")  
@@ -306,7 +306,7 @@ count_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim)
                               control = list(adapt_delta = 0.85))
                               
                               
-  plot_stan_model_fit<-function(model_output,simulated_dataset){
+  plot_stan_model_fit<-function(model_output,sim_data){
     
     posts_hiv <- rstan::extract(model_output)
     
@@ -357,18 +357,18 @@ count_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim)
     # Plot the synthetic data with the model predictions
     # Median and 95% Credible Interval
     
-    prev_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
+    prev_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=prev_percent),colour="red",size=1.05)+
       geom_line(data = df_fit_prevalence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_prevalence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="prevalence %",title="fitted and true prevalence, fitting to count data of ART numbers")  
     
-    inc_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
+    inc_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=incidence),colour="red",size=1.05)+
       geom_line(data = df_fit_incidence,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = df_fit_incidence,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="incidence",title="fitted and true incidence, fitting to count data of ART numbers")  
     
     
-    kappa_plot<-ggplot(data=simulated_dataset)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
+    kappa_plot<-ggplot(data=sim_data)+geom_line(aes(x=time,y=kappa),colour="red",size=1.05)+
       geom_line(data = r_fit,aes(x=time,y=median),colour="midnightblue",size=1.02)+
       geom_ribbon(data = r_fit,aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.2)+
       labs(x="time",y="Kappa",title="fitted and true kappa, fitting to count data of ART numbers")  

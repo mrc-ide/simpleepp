@@ -1,6 +1,7 @@
-#######################################################################################################################################
-## Implemenitng a spline model of the transmission paramter R #########################################################################
-#######################################################################################################################################
+#################################################################################################################################
+## Playing around with some functions for double peaks in the transmission parameter ############################################
+#################################################################################################################################
+
 require(splines)
 require(rstan)
 require(ggplot2)
@@ -30,19 +31,26 @@ run_simulated_model<-function(params,times){
   step_vector <- seq(xstart+dt, by=dt, length.out=nsteps)  # steps
   xout <- c(xstart, step_vector)    
   
-  
-  
-  rlogistic <- function(t, p) {
-    p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4]))) 
-  }
-  
-  bell_curve_func<-function(a,b,c,x){
-    f_t<-a*exp(-((x-b)^2)/(2*c^2))
+  splines_double_peak<-function(knot_number,step_vector,beta){
+    
+    mat_ord<-4
+    nk <- knot_number # number of knots
+    dk <- diff(range(xout))/(nk-3)
+    knots <- xstart + -3:nk*dk
+    spline_matrix<- splineDesign(knots, step_vector, ord=mat_ord)
+    
+    curve<- spline_matrix %*% beta
+    plot_curve<-plot(curve)
+    
+    
+    return(list(spline_matrix=spline_matrix,curve=curve,plot=plot_curve))
     
   }
   
-  kappa_params<-c(log(params$kappa[1]),log(params$kappa[2]),params$kappa[3],params$kappa[4])
-  kappa<-exp(rlogistic(step_vector,kappa_params))
+  
+ 
+  run_through<-splines_double_peak(params$knot_number,step_vector,params$beta)
+  kappa<-run_through$curve
   
   #kappa<-bell_curve_func(0.5,0.2,0.2,seq(0,0.998,0.002))
   
@@ -60,9 +68,9 @@ run_simulated_model<-function(params,times){
 mu <- 1/35                               # Non HIV mortality / exit from population
 sigma <- 1/c(3.16, 2.13, 3.20)           # Progression from stages of infection
 mu_i <- c(0.003, 0.008, 0.035, 0.27)     # Mortality by stage, no ART
-kappa<-c(0.5,0.1,0.3,1995)
 iota<-0.0001
-
+knot_number<-7
+beta<-c(0.70,0.7,0.6,0.3,0.45,0.45,0.45)
 
 dt <- 0.1                                     # time step
 nsteps <- as.integer(50/dt)                   # number of steps
@@ -72,7 +80,7 @@ xout <- c(xstart, step_vector)                #the vector of steps in total
 
 
 
-params_sim<-list(mu=mu,sigma=sigma,mu_i=mu_i,kappa=kappa,iota=iota)
+params_sim<-list(mu=mu,sigma=sigma,mu_i=mu_i,knot_number=knot_number,iota=iota,beta=beta)
 times_sim<-list(dt=dt,years=50,start=xstart)
 
 sim_model_output_changed_to_bell_curve<-run_simulated_model(params_sim,times_sim)
@@ -101,16 +109,13 @@ sim_plot<-function(sim_df){
 
 plotted_sim<-sim_plot(sim_model_output_changed_to_bell_curve$sim_df)
 plot(plotted_sim$whole)
-
-###################################################################################################################################
-## Now we have simulated through our model we can extract some samples form it ####################################################
-###################################################################################################################################
+plotted_sim$incidence
 
 sample_range<-1970:2015
 sample_years<-46
 sample_n<-1000
-  
-  
+
+
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
   sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
   sample_n <- people_t0_sample # number of host individuals sampled per day
@@ -141,7 +146,8 @@ sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,
 
 
 sample_df_1000_second<-sample_function(sample_range,sample_years,sample_n,
-                               simulated_df = sim_model_output$sim_df,prevalence_column_id = 3)
+                                       simulated_df = sim_model_output_changed_to_bell_curve$sim_df,
+                                       prevalence_column_id = 3)
 
 
 
@@ -153,7 +159,8 @@ plot_sample<-function(sample_df,simulated_df){
   return(plot(a))
 }
 
-plot_sample(simulated_df = sim_model_output$sim_df,sample_df = sample_df_1000_second)
+plot_sample(simulated_df = sim_model_output_changed_to_bell_curve$sim_df,
+            sample_df = sample_df_1000_second)
 
 
 ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_percentage))+geom_point(colour="red",size=1.5)
@@ -163,26 +170,21 @@ ggplot(data = sample_df_1000_second,aes(x=sample_time_hiv,y=sample_prev_hiv_perc
 ###################################################################################################################################
 
 splines_creator<-function(knot_number,penalty_order){
-
-nk <- knot_number # number of knots
-dk <- diff(range(xout))/(nk-3)
-knots <- xstart + -3:nk*dk
-spline_matrix<- splineDesign(knots, step_vector, ord=4)
-penalty_matrix <- diff(diag(nk), diff=penalty_order)
-
-return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
-
+  
+  nk <- knot_number # number of knots
+  dk <- diff(range(xout))/(nk-3)
+  knots <- xstart + -3:nk*dk
+  spline_matrix<- splineDesign(knots, step_vector, ord=4)
+  penalty_matrix <- diff(diag(nk), diff=penalty_order)
+  
+  return(list(spline_matrix=spline_matrix,penalty_matrix=penalty_matrix))
+  
 }
 
 knot_number= 7
 penalty_order= 2
 
 splines_matrices<-splines_creator(knot_number,penalty_order)
-beta_vals<-first_order_spline_n_100$beta_vals[2,1:7]
-beta_vals<-as.numeric(beta_vals)
-beta_vals[7]<-beta_vals[6]
-#spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
-#penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
 rows_to_evaluate<-0:45*10+1
 
 
@@ -207,19 +209,16 @@ stan_data_discrete<-list(
 
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-test_stan_hiv<- stan("stan_files/chunks/cd4_spline_model.stan",
+test_stan_hiv<- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan",
                      data = stan_data_discrete,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
-                     
+mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan",
+                     data = stan_data_discrete,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
-
-
-
 
 plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output){
   
@@ -311,7 +310,7 @@ plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output)
   r_plot<-ggplot(data = r_fit)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
     geom_ribbon(aes(x=time,ymin=low,ymax=high),fill="midnightblue",colour="midnightblue",alpha=0.2)+
     geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
-    labs(x="Time",y="r value through time",title="R logistic through time")
+  labs(x="Time",y="r value through time",title="R logistic through time")
   
   return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
               r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
@@ -324,78 +323,8 @@ xout<-seq(1970,2020,0.1)
 
 
 stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev,
-                                                   sim_sample = sample_df_1000_second,plot_name = "Spline Second order, n = 1000",xout = xout,
-                                                   sim_output = sim_model_output$sim_df)
-
-
-#######################################################################################################################################
-## Now we'll start plotting the output from these stan runs ###########################################################################
-#######################################################################################################################################
-plot(stan_output_first_order_n_1000$prevalence_plot)
-plot(stan_output_first_order_n_500$prevalence_plot)
-plot(stan_output_first_order_n_100$prevalence_plot)
-
-plot(stan_output_second_order_n_100$prevalence_plot)
-plot(stan_output_second_order_n_500$prevalence_plot)
-plot(stan_output_second_order_n_1000$prevalence_plot)
-
-Im_a_treeplay_plot_second_order_spline<-ggarrange(stan_output_second_order_n_100$prevalence_plot,
-                                                  stan_output_second_order_n_500$prevalence_plot,
-                                                  stan_output_second_order_n_1000$prevalence_plot,ncol = 3)
-
-Im_a_triple_plot<-ggarrange(stan_output_first_order_n_100$prevalence_plot,stan_output_first_order_n_500$prevalence_plot,
-                            stan_output_first_order_n_1000$prevalence_plot,ncol = 3)
-
-plot(Im_a_triple_plot)
-
-plot(Im_a_treeplay_plot_second_order_spline)
-
-
-sextuple_prev<-ggarrange(stan_output_first_order_n_100$prevalence_plot,stan_output_first_order_n_500$prevalence_plot,
-                         stan_output_first_order_n_1000$prevalence_plot,stan_output_second_order_n_100$prevalence_plot,
-                         stan_output_second_order_n_500$prevalence_plot,stan_output_second_order_n_1000$prevalence_plot,
-                         ncol = 3,nrow = 2)
-
-
-plot(sextuple_prev)
-
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-
-
-
-treeplay_r<-ggarrange(stan_output_first_order_n_100$r_plot,stan_output_first_order_n_500$r_plot,
-                      stan_output_first_order_n_1000$r_plot,ncol = 3)
-plot(treeplay_r)
-
-
-plot(stan_output_first_order_n_100$r_plot)
-
-save(stan_output_second_order_n_1000,file = "../stan_objects_from_simpleepp_R/n_1000_7_knot_second_order_spline")
-
-
-
-
-
-plot(stan_output_first_order$r_plot)
-plot(stan_output_first_order$incidence_plot)
-plot(stan_output_second_order$incidence_plot)
-
-arranged_first_and_second_order<-ggarrange(stan_output_first_order$prevalence_plot,stan_output_second_order$prevalence_plot,
-                                           stan_output_first_order$incidence_plot,stan_output_second_order$incidence_plot,
-                                           stan_output_first_order$r_plot,stan_output_second_order$r_plot
-                                           ,ncol = 2,nrow = 3)
-plot(arranged_first_and_second_order)
-
-prevalence_first_and_second<-ggarrange(stan_output_first_order$prevalence_plot,stan_output_second_order$prevalence_plot,
-                                       ncol = 2)
-plot(prevalence_first_and_second)
-
-incidence_first_and_second_order<-ggarrange(stan_output_first_order$incidence_plot,stan_output_second_order$incidence_plot,
-                                            ncol=2)
-plot(incidence_first_and_second_order)
-
-r_transmission_first_and_second<-ggarrange(stan_output_first_order$r_plot,stan_output_second_order$r_plot,
-                                           ncol=2)
-plot(r_transmission_first_and_second)
+                                                     sim_sample = sample_df_1000_second,plot_name = "Spline Second order, n = 1000",xout = xout,
+                                                     sim_output = sim_model_output_changed_to_bell_curve$sim_df)
+stan_output_second_order_n_1000$prevalence_plot
+stan_output_second_order_n_1000$incidence_plot
+stan_output_second_order_n_1000$r_plot
