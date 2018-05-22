@@ -1,5 +1,5 @@
 functions{
-matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector sigma,     // so kappa is our transmission parameter, iota our starting prop infected,
+matrix simpleepp_art_diag_constant_N(vector kappa, real iota, matrix alpha, real mu, vector sigma,     // so kappa is our transmission parameter, iota our starting prop infected,
 		 vector mu_i, vector mu_d, vector mu_a, real omega, real theta, real dt, int start, // alpha our progression from diagnosed to ART, mu our pop death rate, 
 		 int diag_start, int art_start, matrix diag, vector art_prog, real onem){           // sigma is our progression through cd4 classes, mu_i death from untreated HIV,
                                                                                             // mu_d is death from diagnosed hiv, mu_a death from art hiv, 
@@ -60,6 +60,8 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
     It = sum(I[,t]);
 	Dt = sum(D[,t]);
     At = sum(A[,t]);
+	deaths = mu * (S[t] + It + At + Dt) + sum(mu_i .* I[,t]) + sum(mu_d .* D[, t]) + sum(mu_a .* A[, t]);
+    
 
     artcov = At / (It + At + Dt);
 	diagnosed = Dt / (It + At + Dt);
@@ -68,7 +70,7 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
 	
 	// Now we are modelling the change in the different compartments 
 	
-	S[t+1] = S[t] + dt*( onem * S[t] -lambda[t+1] * S[t] - mu * S[t]);
+	S[t+1] = S[t] + dt*( -lambda[t+1] * S[t] - mu * S[t] + deaths);
 
     I[1, t+1] = I[1, t] + dt*(lambda[t+1] * S[t] - (mu + mu_i[1] + sigma[1] + diag[t, 1]) * I[1, t]);
     for(m in 2:(DS-1))
@@ -114,6 +116,7 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
 data {
  
  int<lower = 1> n_obs;                                                  // The number of time points we observe
+ int<lower = 1> n_sample;                                               // This is our sample size.
  int<lower = 0> y[n_obs];                                               // This is the number of poeple infected from our random draw 
  int time_steps_euler;                                                  // This is our number of points over which to evaulate the function 
  int penalty_order;                                                     // This is our first or second order penalty 
@@ -124,7 +127,7 @@ data {
  vector[3] sigma;                                                       // This is our vector of transition rates
  vector[4] mu_i;                                                        // This is our vector of death rates
  real dt_2;                                                             // this is our second time step for generating the output from the fitted beta parameters
- int rows_to_interpret[n_obs * 10];                                          // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
+ int rows_to_interpret[n_obs];                                          // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
  matrix[time_steps_euler , rows(mu_i)] alpha;                           // This is our matrix of ART uptake rates from the diagnosed class
  vector[4] mu_d;                                                        // This is our vecotr of death rates among diagnosed individuals
  vector[4] mu_a;                                                        // This is our vector of death rates among the ART class
@@ -157,11 +160,8 @@ transformed parameters{
  vector[n_obs] tot_year_vals;
  matrix[size(rows_to_interpret), 7] y_hat;                                         
  
- y_hat = simpleepp_art_diag( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem)[rows_to_interpret, ];
+ y_hat = simpleepp_art_diag_constant_N( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem)[rows_to_interpret, ];
  
- for(i in 1:n_obs){
- tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10) - 8, 5];
- }
 }
 
  
@@ -169,12 +169,11 @@ model {
    
  iota ~ normal(0, 0.5);                                                  // This models our initial population size 
  
- target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
  
-  for( i in 1:n_obs){
-  y[i] ~ poisson(tot_year_vals[i]);                                           // This fits it to the binomially sampled data 
-  }
-
+ target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
+  
+ y ~ binomial(n_sample,y_hat[, 7]);
+ 
 } 
 
 generated quantities{
@@ -182,7 +181,7 @@ generated quantities{
 matrix[time_steps_euler, 7] fitted_output;                               // This models the data after our fitting procedure
 
 
-fitted_output = simpleepp_art_diag( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem);   
+fitted_output = simpleepp_art_diag_constant_N( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem);   
 } 
 
 

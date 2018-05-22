@@ -1,6 +1,6 @@
-##################################################################################################################################
-## ART functions on the cluster ##################################################################################################
-##################################################################################################################################
+###############################################################################################################################
+## Constant N on the cluster ##################################################################################################
+###############################################################################################################################
 
 setwd("X:")
 options(didehpc.username = "jd2117",didehpc.home = "X:/simpleepp",didehpc.cluster = "fi--didemrchnb")
@@ -18,14 +18,16 @@ context::context_log_start()
 root <- "contexts"
 
 ctx<- context::context_save(root,packages = c("rstan","ggplot2","splines"),
-                            sources = "simpleepp/R/ART_model_simple_functions_cluster.R")
+                            sources = "simpleepp/R/constant_N_cluster_functions.R")
 config <- didehpc::didehpc_config(cores = 3, parallel = FALSE)
 obj <- didehpc::queue_didehpc(ctx,config)
 
+##################################################################################################################################
+## COnstant pop size model with ART ##############################################################################################
+###################################################################################################################################
+obj$task_status()
+obj$task_times()
 
-###############################################################################################################################
-## NOw we've got the queue set up we need to generate the stan_data for using in the cluster runs #############################
-###############################################################################################################################
 require(rstan)
 require(ggplot2)
 require(reshape2)
@@ -33,92 +35,92 @@ require(ggpubr)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write=T)
 
-expose_stan_functions("simpleepp/stan_files/chunks/ART_diag_prev_fitting.stan")
+expose_stan_functions("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/ART_mod_RW_constant_N.stan")
 
 sim_art_epidemic<-function(kappa_params,params){
-
+  
   rlogistic <- function(t, p) {
-   p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
-   }
-
-step_vector<-seq(1970.1,by = 0.1,length.out = 500)
-kappa_params<-c(log(kappa_params$peak),log(kappa_params$low),kappa_params$grad,kappa_params$decline)
-
-kappa<- exp(rlogistic(step_vector,kappa_params))                       ## This is our transmission parameter for the output
-
-iota_val<-params$iota                                                       ## This is our initial proportion infected
-
-mu <- params$mu                                                             ## Population level death rate
-
-sigma<- params$sigma                                         ## Progression along Cd4 stages among untreated
-
-mu_i <- params$mu_i                                   ## Mortality by stage, no ART
-
-mu_d <- params$mu_d                                      ## Mortality be stage on diagnosed
-
-mu_a <- params$mu_a                                   ## Mortality by stage, on ART
-
-omega <- params$omega                                                          ## Reduction in transmissability on art
-
-theta <- params$theta                                                           ## Reduction when know diagnosed
-
-dt <- params$dt
-
-start<- params$start
-
-diag_start<- params$diag_start
-
-art_start<-params$art_start
-
-sigmoid_curve_function<-function(x,lp){                               ## This is our function to produce the change in 
-  (1 / (1 + exp(-lp[1]*x))) * lp[2]                                   ## diag rates and art uptake rates through time 
-}
-
-zero_time_art<-rep(0,((art_start-start)*10))                          ## How long initially art is not available       
-
-zero_time_diag<-rep(0,((diag_start-start)*10))                        ## How long initially diagnoses not available
-
-art_length<-length(kappa)+1 - length(zero_time_art)                   ## how long art is available for 
-
-diag_time<-length(kappa)+1 - length(zero_time_diag)                   ## how long diag is available for
-
-elll<-c(0.05,0.7)                                                     ## first number represents the curve on the uptake,
-ellm<-c(0.05,0.7)                                                     ## second number represents the peak fraction on ART per time step
-elln<-c(0.05,0.8)
-ello<-c(0.1,0.9)
-
-art_col_1<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),l = elll)) ## These are our columns for the Alpha matirx
-art_col_2<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),ellm))     ## 1 is cd4>500, 4 is cd4<200
-art_col_3<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),elln))
-art_col_4<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),ello))
-
-diag_params<-c(0.1,0.9)
-diag_params_aids<-c(0.5,0.9)
-
-diag_col_1<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))
-diag_col_2<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))   ## Proportion to be diagnosed at each infected cd4 stage
-diag_col_3<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))
-diag_col_4<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params_aids))
-
-alpha<-cbind(art_col_1,art_col_2,art_col_3,art_col_4)
-diag<-cbind(diag_col_1,diag_col_2,diag_col_3,diag_col_4)
-
-art_prog<-params$art_prog
-
-obem<-params$obem
-
-test_run<-simpleepp_art_diag(kappa = kappa,iota = iota,alpha = alpha,mu = mu,sigma = sigma, mu_i = mu_i, mu_d = mu_d,mu_a = mu_a,
-                             omega = omega,theta = theta,dt = dt,start = start,diag_start = diag_start,art_start = art_start,
-                             diag = diag,art_prog = art_prog,onem = obem)
-sim_data_art_early_72_ART<-data.frame(test_run)
-sim_data_art_early_72_ART$time<-seq(start,by = dt,length.out = nrow(alpha))
-names(sim_data_art_early_72_ART)[1:7]<-c("kappa","art","diag","N","ART_inc", "incidence","prevalence")
-sim_data_art_early_72_ART$prev_percent<-sim_data_art_early_72_ART$prevalence * 100
-
-params$kappa<-kappa_params
-
-return(list(df=sim_data_art_early_72_ART,params_used=params,alpha_out=alpha,diag_out=diag))
-
+    p[1] - (p[1] - p[2]) / (1 + exp(-p[3] * (t - p[4])))
+  }
+  
+  step_vector<-seq(1970.1,by = 0.1,length.out = 500)
+  kappa_params<-c(log(kappa_params$peak),log(kappa_params$low),kappa_params$grad,kappa_params$decline)
+  
+  kappa<- exp(rlogistic(step_vector,kappa_params))                       ## This is our transmission parameter for the output
+  
+  iota_val<-params$iota                                                       ## This is our initial proportion infected
+  
+  mu <- params$mu                                                             ## Population level death rate
+  
+  sigma<- params$sigma                                         ## Progression along Cd4 stages among untreated
+  
+  mu_i <- params$mu_i                                   ## Mortality by stage, no ART
+  
+  mu_d <- params$mu_d                                      ## Mortality be stage on diagnosed
+  
+  mu_a <- params$mu_a                                   ## Mortality by stage, on ART
+  
+  omega <- params$omega                                                          ## Reduction in transmissability on art
+  
+  theta <- params$theta                                                           ## Reduction when know diagnosed
+  
+  dt <- params$dt
+  
+  start<- params$start
+  
+  diag_start<- params$diag_start
+  
+  art_start<-params$art_start
+  
+  sigmoid_curve_function<-function(x,lp){                               ## This is our function to produce the change in 
+    (1 / (1 + exp(-lp[1]*x))) * lp[2]                                   ## diag rates and art uptake rates through time 
+  }
+  
+  zero_time_art<-rep(0,((art_start-start)*10))                          ## How long initially art is not available       
+  
+  zero_time_diag<-rep(0,((diag_start-start)*10))                        ## How long initially diagnoses not available
+  
+  art_length<-length(kappa)+1 - length(zero_time_art)                   ## how long art is available for 
+  
+  diag_time<-length(kappa)+1 - length(zero_time_diag)                   ## how long diag is available for
+  
+  elll<-c(0.05,0.7)                                                     ## first number represents the curve on the uptake,
+  ellm<-c(0.05,0.7)                                                     ## second number represents the peak fraction on ART per time step
+  elln<-c(0.05,0.8)
+  ello<-c(0.1,0.9)
+  
+  art_col_1<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),l = elll)) ## These are our columns for the Alpha matirx
+  art_col_2<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),ellm))     ## 1 is cd4>500, 4 is cd4<200
+  art_col_3<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),elln))
+  art_col_4<-c(zero_time_art, sigmoid_curve_function(seq(1,art_length),ello))
+  
+  diag_params<-c(0.1,0.9)
+  diag_params_aids<-c(0.5,0.9)
+  
+  diag_col_1<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))
+  diag_col_2<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))   ## Proportion to be diagnosed at each infected cd4 stage
+  diag_col_3<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params))
+  diag_col_4<-c(zero_time_diag, sigmoid_curve_function(seq(1,diag_time),diag_params_aids))
+  
+  alpha<-cbind(art_col_1,art_col_2,art_col_3,art_col_4)
+  diag<-cbind(diag_col_1,diag_col_2,diag_col_3,diag_col_4)
+  
+  art_prog<-params$art_prog
+  
+  obem<-params$obem
+  
+  test_run<-simpleepp_art_diag_constant_N(kappa = kappa,iota = iota,alpha = alpha,mu = mu,sigma = sigma, mu_i = mu_i, mu_d = mu_d,mu_a = mu_a,
+                                          omega = omega,theta = theta,dt = dt,start = start,diag_start = diag_start,art_start = art_start,
+                                          diag = diag,art_prog = art_prog,onem = obem)
+  sim_data_art_early_72_ART<-data.frame(test_run)
+  sim_data_art_early_72_ART$time<-seq(start,by = dt,length.out = nrow(alpha))
+  names(sim_data_art_early_72_ART)[1:7]<-c("kappa","art","diag","N","ART_inc", "incidence","prevalence")
+  sim_data_art_early_72_ART$prev_percent<-sim_data_art_early_72_ART$prevalence * 100
+  
+  params$kappa<-kappa_params
+  
+  return(list(df=sim_data_art_early_72_ART,params_used=params,alpha_out=alpha,diag_out=diag))
+  
 }
 
 kappa_params<-list(peak=0.5,low=0.1,grad=0.3,decline=1995)
@@ -174,13 +176,12 @@ plot(plotted_sim$incidence)
 plot(plotted_sim$prevalence)
 
 ###############################################################################################################################
-## Now we will perform our sampling from the population #######################################################################
+## Lets do some sampling !""!"!"!"!""!"!"?!>"?!>"@!":!?"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ###############################################################################################################################
-
 
 sample_range<-1970:2015
 sample_years<-46
-sample_n<-10000
+sample_n<-1000
 
 
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
@@ -260,13 +261,12 @@ year_seq<- art_start:2015
 number_year_obs<-length(year_seq)
 col_ids<-list(time=8,inc=5)
 
-poisson_sampled_data<-diagnosed_cd4_sample(year_seq,number_year_obs,simulated_data = art_epidemic$df,
+poisson_sampled_data<-diagnosed_cd4_sample(year_seq,number_year_obs,
+                                           simulated_data = art_epidemic$df,
                                            col_id_time_and_inc = col_ids)
 
 poisson_sampled_data$sample_plot
 
-sneaky_sample<-(art_start-start):(2015-start)*10+1
-sneaky_poiss<-rpois(length(sneaky_sample),art_epidemic$df[sneaky_sample,5])
 
 ###################################################################################################################################
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
@@ -304,22 +304,20 @@ stan_data_discrete_prev_rw<-list(
   onem = obem
   
 )
-
 true_df<-art_epidemic$df
 true_params<-art_epidemic$params_used
 
-RW_art_prev_72_ART<-obj$enqueue(prev_data_fitting_RW(simulated_data = true_df,
-                                                            stan_data = stan_data_discrete_prev_rw,
+RW_constant_n_prev_72_art<-obj$enqueue(prev_data_fitting_RW(simulated_data = true_df,
+                                                     stan_data = stan_data_discrete_prev_rw,
                                                      params_used_for_sim = true_params))
-RW_art_prev_72_ART$status()
-id_rw_art_72_prev<-RW_art_prev_72_ART$id
-save(id_rw_art_72_prev,
+RW_constant_n_prev_72_art$status()
+id_rw_constant_n_art_72_count<-RW_constant_n_prev_72_art$id
+save(id_rw_constant_n_art_72_count,
      file = 
-       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/RW_ART_72_prev_fitting_17_12_21_MAY")
-
+       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_fitting_constant_N_16_46_May_22")
 
 ##############################################################################################################################
-## Now lets run our RW poissson fit ##########################################################################################
+## NOw we will run the count fitting data on the cluster for the RW ##########################################################
 ##############################################################################################################################
 
 penalty_order<-1
@@ -355,26 +353,18 @@ stan_data_discrete_count_rw<-list(
   
 )
 
-RW_ART_count_72_art<-obj$enqueue(count_data_fitting_RW(true_df,
+RW_constant_n_COUNT_72_art<-obj$enqueue(count_data_fitting_RW(true_df,
                                                        stan_data_discrete_count_rw,
                                                        true_params))
-RW_ART_count_72_art$status()
-id_rw_art_72_count<-RW_ART_count_72_art$id
-save(id_rw_art_72_count,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/RW_count_ART_72_17_13_MAY_21")
+RW_constant_n_COUNT_72_art$status()
+id_rw_art_72_constantN_count<-RW_constant_n_COUNT_72_art$id
+save(id_rw_art_72_constantN_count,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_fitting_constant_N_16_47_May_22")
+
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_ART_COUNT_FITTING")
 
-RW_art_count_check<-obj$task_get(id_rw_art_count)
-a<-obj$task_times()
-a$task_id[69]
-RW_art_count_check<-obj$task_get(a$task_id[69])
-RW_count_results<-RW_art_count_check$result()
-plot(RW_count_results$df_output$median)
-plot(RW_count_results$incidence_df$median)
-plot(RW_count_results$r_fit_df$median)
-
 ##############################################################################################################################
-## NOw for the splines #######################################################################################################
+## Running the Splines on the cluster now ####################################################################################
 ##############################################################################################################################
 
 xout<-seq(1970,2020,0.1)
@@ -423,13 +413,13 @@ stan_data_discrete_prev_spline<-list(
   onem = obem
   
 )
-
-spline_art_72_prev<-obj$enqueue(prev_data_fitting_spline(true_df,stan_data_discrete_prev_spline,
+spline_art_constant_N_72_PREV<-obj$enqueue(prev_data_fitting_spline(true_df,stan_data_discrete_prev_spline,
                                                          true_params))
-spline_art_72_prev$status()
-spline_art_prev_id_72<-spline_art_72_prev$id
+spline_art_constant_N_72_PREV$status()
+spline_art_prev_id_72<-spline_art_constant_N_72_PREV$id
 save(spline_art_prev_id_72,file =
-       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/spline_art_72_prev_17_17_MAY_21")
+       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_96_16_47_May_22")
+
 
 
 ### NOw for the count data spline
@@ -470,116 +460,28 @@ stan_data_discrete_count_spline<-list(
 true_df<-art_epidemic$df
 true_params<-art_epidemic$params_used
 
-spline_art_count_72<-obj$enqueue(count_data_fitting_spline(simulated_dataset = true_df,
+spline_count_constant_N_72<-obj$enqueue(count_data_fitting_spline(simulated_dataset = true_df,
                                                            stan_data = stan_data_discrete_count_spline,
                                                            params_used_for_sim = true_params))
-spline_art_count_72$status()
-spline_art_72_count_ID_sep_objs<-spline_art_count_72$id
-save(spline_art_72_count_ID_sep_objs, file = 
-       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/spline_art_COUNT_72_17_18_MAY_21")
-
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/SPLINE_COUNT_FIT_ART")
-
-count_spline_check<-obj$task_get(spline_count_id)
-count_spline_check$result()
-
-###############################################################################################################################
-## Loading up the results for each of the runs, first the normal 1996, 1982 art ad diag class #################################
-###############################################################################################################################
-
-a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_count_ART_96_17_08_MAY_21")
-b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_ART_96_prev_fitting_17_07_21_MAY")
-c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/spline_art_COUNT_96_17_10_MAY_21")
-d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/spline_art_96_prev_17_09_MAY_21")
-a
-b
-c
-d
-
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_count_ART_96_17_08_MAY_21")
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/RW_ART_96_prev_fitting_17_07_21_MAY")
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/spline_art_COUNT_96_17_10_MAY_21")
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/spline_art_96_prev_17_09_MAY_21")
-
-RW_ART_COUNT_96_ART<-obj$task_get(id_rw_art_96_count)
-RW_ART_PREV_96_ART<-obj$task_get(id_rw_art_96_prev)
-SPLINE_ART_COUNT_96_ART<-obj$task_get(spline_art_96_count_ID_sep_objs)
-SPLINE_ART_PREV_96_ART<-obj$task_get(spline_art_prev_id_96)
-
-RW_ART_COUNT_96_ART$result()
-RW_ART_PREV_96_ART$result()
-SPLINE_ART_COUNT_96_ART$result()
-
-
-rw_art_96_count_results<-RW_ART_COUNT_96_ART$result()
-rw_art_96_prev_results<-RW_ART_PREV_96_ART$result()
-spline_96_count_results<-SPLINE_ART_COUNT_96_ART$result()
-spline_96_prev_results<-SPLINE_ART_PREV_96_ART$result()
-
-########
-# NOw for the earlier ART results
-########
-
-a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/RW_count_ART_72_17_13_MAY_21")
-b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/RW_ART_72_prev_fitting_17_12_21_MAY")
-c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/spline_art_COUNT_72_17_18_MAY_21")
-d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/cluster_run_ids/early_72_ART_ids/spline_art_72_prev_17_17_MAY_21")
-
-RW_ART_COUNT_72_ART<-obj$task_get(id_rw_art_72_count)
-RW_ART_PREV_72_ART<-obj$task_get(id_rw_art_72_prev)
-SPLINE_ART_COUNT_72_ART<-obj$task_get(spline_art_72_count_ID_sep_objs)
-SPLINE_ART_PREV_72_ART<-obj$task_get(spline_art_prev_id_72)
-
-rw_art_72_count_results<-RW_ART_COUNT_72_ART$result()
-rw_art_72_prev_results<-RW_ART_PREV_72_ART$result()
-spline_72_count_results<-SPLINE_ART_COUNT_72_ART$result()
-spline_72_prev_results<-SPLINE_ART_PREV_72_ART$result()
-spline_72_prev_results$fitting_results$plot_kappa
-
-
-RW_ART_count_96_art$status()
-RW_art_prev_96_ART$status()
-
-spline_72_count_results<-spline_art_count_72_sep_objs$result()
-
-spline_72_count_results$fitting_results$iota_value
-
-a<-spline_72_count_results$fitting_results$plot_inc + coord_cartesian(ylim = c(0,0.025))
-
-spline_art_count_72_sep_objs$status()
+spline_count_constant_N_72$status()
+spline_art_constant_n_72_id<-spline_count_constant_N_72$id
+save(spline_art_constant_n_72_id, file = 
+       "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_16_48_May_22")
 
 ##############################################################################################################################
-## Making some plots to send to JEFF #########################################################################################
+## Loading up the results ####################################################################################################
 ##############################################################################################################################
 
-require(ggpubr)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_fitting_constant_N_16_46_May_22")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_fitting_constant_N_16_47_May_22")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_96_16_47_May_22")
+load"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_16_48_May_22")
 
-rw_96_count_plots<-ggarrange(rw_art_96_count_results$fitting_results$plot_prev,
-                             rw_art_96_count_results$fitting_results$plot_inc,
-                             rw_art_96_count_results$fitting_results$plot_kappa)
-rw_96_count_plots
-
-spline_96_count_plots<-ggarrange(spline_96_count_results$fitting_results$plot_prev,
-                                 spline_96_count_results$fitting_results$plot_inc,
-                                 spline_96_count_results$fitting_results$plot_kappa)
-spline_96_count_plots
-
-rw_72_count_plots<-ggarrange(rw_art_72_count_results$fitting_results$plot_prev,
-                             rw_art_72_count_results$fitting_results$plot_inc,
-                             rw_art_72_count_results$fitting_results$plot_kappa)
-
-rw_art_72_prev_results$fitting_results$plot_prev$labels$title<-"Fitted and true Prevalence, fitting to prevalence data"
-rw_art_72_count_results$fitting_results$plot_inc$labels$title<-"Fitted and true incidence, fitting to prevalence data"
-rw_art_72_count_results$fitting_results$plot_kappa$labels$title<-"Fitted and true kappa, fitting to prevalence data"
+id_rw_constant_n_art_72_prev<- id_rw_constant_n_art_72_count
+rw_72_constant_n_prev<-obj$task_get(id_rw_cons)
+id_rw_art_72_constantN_count
+spline_art_prev_id_72
+spline_art_constant_n_72_id
 
 
-rw_72_prev_plots<-ggarrange(rw_art_72_prev_results$fitting_results$plot_prev,
-                            rw_art_72_count_results$fitting_results$plot_inc,
-                            rw_art_72_count_results$fitting_results$plot_kappa)
-rw_72_prev_plots
-
-spline_72_count_plots<-ggarrange(spline_72_count_results$fitting_results$plot_prev,
-                                 spline_72_count_results$fitting_results$plot_inc,
-                                 spline_72_count_results$fitting_results$plot_kappa)
-spline_72_count_plots
 

@@ -28,8 +28,8 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
   delay_to_ART_start = (art_start - start) * 10;
 
   // initial values
-  S[1] = (1 - iota);
-  I[1, 1] = iota;
+  S[1] = 1000000 * (1 - iota);
+  I[1, 1] = 1000000 * iota;
   for(m in 2:DS)
     I[m, 1] = 0;
   for(i in 1:delay_to_diag_start){
@@ -64,11 +64,12 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
     artcov = At / (It + At + Dt);
 	diagnosed = Dt / (It + At + Dt);
     lambda[t+1] = kappa[t] * rho[t] * (1 - omega * artcov) * (1 - theta * diagnosed);
+    deaths = mu * (S[t] + It + At + Dt) + sum(mu_i .* I[,t]) + sum(mu_d .* D[, t]) + sum(mu_a .* A[, t]);
     
 	
 	// Now we are modelling the change in the different compartments 
 	
-	S[t+1] = S[t] + dt*( onem * S[t] -lambda[t+1] * S[t] - mu * S[t]);
+	S[t+1] = S[t] + dt*( onem * S[t] -lambda[t+1] * S[t] - mu * S[t] + deaths);
 
     I[1, t+1] = I[1, t] + dt*(lambda[t+1] * S[t] - (mu + mu_i[1] + sigma[1] + diag[t, 1]) * I[1, t]);
     for(m in 2:(DS-1))
@@ -114,17 +115,18 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
 data {
  
  int<lower = 1> n_obs;                                                  // The number of time points we observe
- int<lower = 0> y[n_obs];                                               // This is the number of poeple infected from our random draw 
+ int<lower = 0> y[n_obs];                                               // This is the number of poeple infected from our random draw
  int time_steps_euler;                                                  // This is our number of points over which to evaulate the function 
  int penalty_order;                                                     // This is our first or second order penalty 
+ int knot_number;                                                       // This is the number of knots in our spline
  int time_steps_year;                                                   // This is our number of years we evaluate  
- matrix[time_steps_euler - 1 , time_steps_year  ] X_design;             // This is our spline design matirx that we are modelling kappa with. 
- matrix[time_steps_year - penalty_order , time_steps_year ] D_penalty;  // This is our penalty matrix, can be first or second order depending on the R code 
+ matrix[time_steps_euler - 1 , knot_number  ] X_design;                 // This is our spline design matirx that we are modelling kappa with. 
+ matrix[knot_number - penalty_order , knot_number ] D_penalty;          // This is our penalty matrix, can be first or second order depending on the R code 
  real mu;                                                               // This is our population level death rate
  vector[3] sigma;                                                       // This is our vector of transition rates
  vector[4] mu_i;                                                        // This is our vector of death rates
  real dt_2;                                                             // this is our second time step for generating the output from the fitted beta parameters
- int rows_to_interpret[n_obs * 10];                                          // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
+ int rows_to_interpret[n_obs*10];                                       // This is a vector of the rows to use for the prevalence stats in y_hat. Corresponds to whole years
  matrix[time_steps_euler , rows(mu_i)] alpha;                           // This is our matrix of ART uptake rates from the diagnosed class
  vector[4] mu_d;                                                        // This is our vecotr of death rates among diagnosed individuals
  vector[4] mu_a;                                                        // This is our vector of death rates among the ART class
@@ -145,7 +147,7 @@ parameters{
  
  real<lower = 0, upper=1> iota;                                         // The proportion of the population initially infected 
  
- vector<lower = 0, upper = 1>[cols(X_design)] beta;                     // This is the knot point values
+ vector<lower = 0, upper = 1>[knot_number] beta;                        // This is the knot point values
  
  real<lower = 0, upper = 1> sigma_pen;                                  // This is the penalty to apply to the spline to make it smooth
  
@@ -162,17 +164,21 @@ transformed parameters{
  for(i in 1:n_obs){
  tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10) - 8, 5];
  }
-}
+ 
+ 
+ }
 
  
 model {
-   
+ 
+ 
+ 
  iota ~ normal(0, 0.5);                                                  // This models our initial population size 
  
  target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
  
   for( i in 1:n_obs){
-  y[i] ~ poisson(tot_year_vals[i]);                                           // This fits it to the binomially sampled data 
+  y[i] ~ poisson(y_hat[i, 5]);                                           // This fits it to the poisson sampled data 
   }
 
 } 
