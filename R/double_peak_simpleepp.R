@@ -109,6 +109,7 @@ sim_plot<-function(sim_df){
 
 plotted_sim<-sim_plot(sim_model_output_changed_to_bell_curve$sim_df)
 plot(plotted_sim$whole)
+
 plotted_sim$incidence
 
 sample_range<-1970:2015

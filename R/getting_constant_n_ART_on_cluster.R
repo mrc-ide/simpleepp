@@ -472,13 +472,85 @@ save(spline_art_constant_n_72_id, file =
 ## Loading up the results ####################################################################################################
 ##############################################################################################################################
 
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_fitting_constant_N_16_46_May_22")
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_fitting_constant_N_16_47_May_22")
-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_96_16_47_May_22")
-load"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_16_48_May_22")
+a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_fitting_constant_N_16_46_May_22")
+b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_fitting_constant_N_16_47_May_22")
+c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_96_16_47_May_22")
+d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_16_48_May_22")
 
-id_rw_constant_n_art_72_prev<- id_rw_constant_n_art_72_count
-rw_72_constant_n_prev<-obj$task_get(id_rw_cons)
+
+
+
+id_rw_constant_n_art_72_prev<-id_rw_constant_n_art_72_count
+rw_72_constant_n_prev<-obj$task_get(id_rw_constant_n_art_72_prev)
+rw_72_constant_n_count<-obj$task_get(id_rw_art_72_constantN_count)
+spline_72_constant_n_prev<-obj$task_get(spline_art_prev_id_72)
+spline_72_constant_n_count<-obj$task_get(spline_art_constant_n_72_id)
+
+a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_COUNT_fitting_constant_N_16_34_May_22")
+b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_prev_fitting_constant_N_16_24_May_22")
+c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_COUNT_constant_n_art_96_16_42_May_22")
+d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_prev_constant_n_art_96_16_39_May_22")
+
+id_rw_constant_n_art_96_prev<-id_rw_constant_n_art_96_count
+
+rw_96_constant_n_prev<-obj$task_get(id_rw_constant_n_art_96_prev)
+rw_96_constant_n_count<-obj$task_get(id_rw_art_96_constantN_count)
+spline_96_art_constant_prev<-obj$task_get(spline_art_prev_id_96)
+spline_96_art_constant_count<-obj$task_get(spline_art_constant_n_96_id)
+
+rw_96_constant_n_count_res<-rw_96_constant_n_count$result()
+rw_96_constan_n_prev_res<-rw_96_constant_n_prev$result()
+spline_96_art_constant_count_res<-spline_96_art_constant_count$result()
+spline_96_art_constant_prev_res<-spline_96_art_constant_prev$result()
+
+rw_72_constant_n_count_res<-rw_72_constant_n_count$result()
+rw_72_constant_n_prev_res<-rw_72_constant_n_prev$result()
+spline_72_constant_n_prev_res<-spline_72_constant_n_prev$result()
+spline_72_constant_n_count_res<- spline_72_constant_n_count$result()
+
+rw_prev_96_triple<-ggarrange(rw_96_constan_n_prev_res$fitting_results$plot_prev,
+                             rw_96_constan_n_prev_res$fitting_results$plot_inc,
+                             rw_96_constan_n_prev_res$fitting_results$plot_kappa)
+rw_count_96_triple<-ggarrange(rw_96_constant_n_count_res$fitting_results$plot_prev,
+                              rw_96_constant_n_count_res$fitting_results$plot_inc,
+                              rw_96_constant_n_count_res$fitting_results$plot_kappa)
+
+spline_prev_96_triple<-ggarrange(spline_96_art_constant_prev_res$fitting_result$plot_prev,
+                                 spline_96_art_constant_prev_res$fitting_result$plot_inc,
+                                 spline_96_art_constant_prev_res$fitting_result$plot_kappa)
+
+spline_count_96_triple<-ggarrange(spline_96_art_constant_count_res$fitting_results$plot_prev,
+                                  spline_96_art_constant_count_res$fitting_results$plot_inc,
+                                  spline_96_art_constant_count_res$fitting_results$plot_kappa)
+
+
+##
+
+rw_prev_72_triple<-ggarrange(rw_72_constant_n_prev_res$fitting_results$plot_prev,
+                             rw_72_constant_n_prev_res$fitting_results$plot_inc,
+                             rw_72_constant_n_prev_res$fitting_results$plot_kappa)
+
+rw_count_72_triple<-ggarrange(rw_72_constant_n_count_res$fitting_results$plot_prev,
+                              rw_72_constant_n_count_res$fitting_results$plot_inc,
+                              rw_72_constant_n_count_res$fitting_results$plot_kappa)
+
+spline_prev_72_triple<-ggarrange(spline_72_constant_n_prev_res$fitting_results$plot_prev,
+                                 spline_72_constant_n_prev_res$fitting_results$plot_inc,
+                                 spline_72_constant_n_prev_res$fitting_results$plot_kappa)
+
+spline_count_72_triple<-ggarrange(spline_72_constant_n_count_res$fitting_results$plot_prev,
+                                  spline_72_constant_n_count_res$fitting_results$plot_inc,
+                                  spline_72_constant_n_count_res$fitting_results$plot_kappa)
+
+
+rw_prev_72_triple
+rw_count_72_triple
+spline_prev_72_triple
+spline_count_72_triple
+
+rw_prev_96_triple
+rw_count_96_triple
+
 id_rw_art_72_constantN_count
 spline_art_prev_id_72
 spline_art_constant_n_72_id

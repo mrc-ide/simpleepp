@@ -1,5 +1,5 @@
 functions{
-matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector sigma,     // so kappa is our transmission parameter, iota our starting prop infected,
+matrix simpleepp_art_prev_and_count(vector kappa, real iota, matrix alpha, real mu, vector sigma,     // so kappa is our transmission parameter, iota our starting prop infected,
 		 vector mu_i, vector mu_d, vector mu_a, real omega, real theta, real dt, int start, // alpha our progression from diagnosed to ART, mu our pop death rate, 
 		 int diag_start, int art_start, matrix diag, vector art_prog, real onem){           // sigma is our progression through cd4 classes, mu_i death from untreated HIV,
                                                                                             // mu_d is death from diagnosed hiv, mu_a death from art hiv, 
@@ -116,6 +116,9 @@ data {
  
  int<lower = 1> n_obs;                                                  // The number of time points we observe
  int<lower = 0> y[n_obs];                                               // This is the number of poeple infected from our random draw
+ int<lower = 1> n_obs_prev;
+ int<lower = 0> y_prev[n_obs_prev];
+ int<lower = 0> n_sample;
  int time_steps_euler;                                                  // This is our number of points over which to evaulate the function 
  int penalty_order;                                                     // This is our first or second order penalty 
  int knot_number;                                                       // This is the number of knots in our spline
@@ -138,6 +141,7 @@ data {
  matrix[time_steps_euler, rows(mu_i)] diag;								// Our matrix of rates moving from infected to diagnosed
  vector[3] art_prog;                                                    // Progression through the CD$ stages when on ART
  real onem;                                                             // Birth rate into susceptible population.
+ int prev_rows[n_obs_prev];
   }
   
  
@@ -156,20 +160,28 @@ parameters{
 
  
 transformed parameters{
- vector[n_obs] tot_year_vals;
- matrix[size(rows_to_interpret), 7] y_hat;                                         
+ matrix[time_steps_euler, 7] y_hat;                                         
  
- y_hat = simpleepp_art_diag( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem)[rows_to_interpret, ];
+ y_hat = simpleepp_art_prev_and_count( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem);
  
- for(i in 1:n_obs){
- tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10), 5];
- }
  
  
  }
 
  
 model {
+ 
+ matrix[size(rows_to_interpret), 7] count_data_set;
+ vector[n_obs] tot_year_vals;
+ matrix[size(prev_rows), 7] prev_data;
+ 
+ count_data_set = y_hat[rows_to_interpret, ];
+ prev_data = y_hat[prev_rows, ];
+ 
+ 
+ for(i in 1:n_obs){
+ tot_year_vals[i] = count_data_set[(i*10) - 9, 5] + count_data_set[(i*10) - 8, 5] + count_data_set[(i*10) - 7, 5] + count_data_set[(i*10) - 6, 5] + count_data_set[(i*10) - 5, 5] + count_data_set[(i*10) - 4, 5] + count_data_set[(i*10) - 3, 5] + count_data_set[(i*10) - 2, 5] + count_data_set[(i*10) - 1, 5] + count_data_set[(i*10), 5];
+ }
  
  
  
@@ -178,9 +190,11 @@ model {
  target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
  
   for( i in 1:n_obs){
-  y[i] ~ poisson(tot_year_vals[i]);                                           // This fits it to the poisson sampled data 
+  y[i] ~ poisson(tot_year_vals);                                           // This fits it to the poisson sampled data 
   }
 
+  y_prev ~ binomial(n_sample, prev_data[ ,7]);
+  
 } 
 
 generated quantities{
@@ -188,7 +202,7 @@ generated quantities{
 matrix[time_steps_euler, 7] fitted_output;                               // This models the data after our fitting procedure
 
 
-fitted_output = simpleepp_art_diag( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem);   
+fitted_output = simpleepp_art_prev_and_count( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem);   
 } 
 
 

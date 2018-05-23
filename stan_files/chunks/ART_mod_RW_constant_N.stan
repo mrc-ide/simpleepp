@@ -162,7 +162,7 @@ transformed parameters{
  y_hat = simpleepp_art_diag_constant_N( X_design * beta , iota, alpha, mu, sigma, mu_i, mu_d, mu_a, omega, theta, dt_2, start, diag_start, art_start, diag, art_prog, onem)[rows_to_interpret, ];
  
  for(i in 1:n_obs){
- tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10) - 8, 5];
+ tot_year_vals[i] = y_hat[(i*10) - 9, 5] + y_hat[(i*10) - 8, 5] + y_hat[(i*10) - 7, 5] + y_hat[(i*10) - 6, 5] + y_hat[(i*10) - 5, 5] + y_hat[(i*10) - 4, 5] + y_hat[(i*10) - 3, 5] + y_hat[(i*10) - 2, 5] + y_hat[(i*10) - 1, 5] + y_hat[(i*10) , 5];
  }
 }
 

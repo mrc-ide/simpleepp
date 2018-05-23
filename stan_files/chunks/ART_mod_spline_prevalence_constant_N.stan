@@ -69,7 +69,7 @@ matrix simpleepp_art_diag(vector kappa, real iota, matrix alpha, real mu, vector
 	
 	// Now we are modelling the change in the different compartments 
 	
-	S[t+1] = S[t] + dt*( onem * S[t] -lambda[t+1] * S[t] - mu * S[t] + deaths);
+	S[t+1] = S[t] + dt*(-lambda[t+1] * S[t] - mu * S[t] + deaths);
 
     I[1, t+1] = I[1, t] + dt*(lambda[t+1] * S[t] - (mu + mu_i[1] + sigma[1] + diag[t, 1]) * I[1, t]);
     for(m in 2:(DS-1))
