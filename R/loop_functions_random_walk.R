@@ -339,7 +339,7 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
   
   stan_output_random_walk_second_n_100<-plot_stan_model_fit(model_output = mod_hiv_prev,sim_sample = sample_df_100_random_second,
                                                             plot_name = "Random walk second order, n = 100",xout = xout,
-                                                            sim_output = simulated_true_df$sim_df)
+                                                            sim_output = simulated_true_df)
   
   prev_df<-stan_output_random_walk_second_n_100$df_output
   prev_df$iteration<-rep(i,nrow(prev_df))

@@ -12,6 +12,21 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
   
+  #############################################################################################################################
+  ## SO that has produced our model fit, we will now collect some summary statistics from the HMC fitting process #############
+  #############################################################################################################################
+  
+  test_summary_fitted<-rstan::summary(mod_hiv_prev,pars=c("fitted_output"))$summary
+  test_summary_beta<-rstan::summary(mod_hiv_prev,pars=c("beta"))$summary
+  
+  test_summary_fitted<-data.frame(test_summary_fitted)
+  test_summary_beta<-data.frame(test_summary_beta)
+  
+  r_hat_fitted_summary<-base::summary(test_summary_fitted$Rhat)
+  r_hat_beta_summary<-base::summary(test_summary_beta$Rhat)
+  
+  ### Now we will plot our fits against the sample data 
+  
   plot_stan_model_fit<-function(model_output,sim_data){
     
     posts_hiv <- rstan::extract(model_output)
@@ -87,7 +102,9 @@ count_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_
   
   list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
-  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
+  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim,
+              rstan_summary_fitted=test_summary_fitted,rstan_summary_beta=test_summary_beta,
+              rhat_fitted=r_hat_fitted_summary,rhat_beta=r_hat_beta_summary))
   
   
 }
@@ -108,6 +125,15 @@ prev_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_s
   mod_hiv_prev <- rstan::stan("simpleepp/stan_files/chunks/ART_mod_spline_prevalence_constant_N.stan", data = stan_data_discrete,
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
+  
+  test_summary_fitted<-rstan::summary(mod_hiv_prev,pars=c("fitted_output"))$summary
+  test_summary_beta<-rstan::summary(mod_hiv_prev,pars=c("beta"))$summary
+  
+  test_summary_fitted<-data.frame(test_summary_fitted)
+  test_summary_beta<-data.frame(test_summary_beta)
+  
+  r_hat_fitted_summary<-base::summary(test_summary_fitted$Rhat)
+  r_hat_beta_summary<-base::summary(test_summary_beta$Rhat)
   
   
   plot_stan_model_fit<-function(model_output,sim_data){#,sim_sample,sim_output,plot_name,xout){
@@ -186,7 +212,9 @@ prev_data_fitting_spline<-function(simulated_dataset,stan_data,params_used_for_s
   list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
   
-  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
+  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim,
+              rstan_summary_fitted=test_summary_fitted,rstan_summary_beta=test_summary_beta,
+              rhat_fitted=r_hat_fitted_summary,rhat_beta=r_hat_beta_summary))
 }
 
 #################################################################################################################################
@@ -205,6 +233,15 @@ prev_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
   mod_hiv_prev <- rstan::stan("simpleepp/stan_files/chunks/ART_mod_RW_Prevalence_constant_N.stan", data = stan_data_discrete,
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
+  
+  test_summary_fitted<-rstan::summary(mod_hiv_prev,pars=c("fitted_output"))$summary
+  test_summary_beta<-rstan::summary(mod_hiv_prev,pars=c("beta"))$summary
+  
+  test_summary_fitted<-data.frame(test_summary_fitted)
+  test_summary_beta<-data.frame(test_summary_beta)
+  
+  r_hat_fitted_summary<-base::summary(test_summary_fitted$Rhat)
+  r_hat_beta_summary<-base::summary(test_summary_beta$Rhat)
   
   
   plot_stan_model_fit<-function(model_output,sim_data){
@@ -283,7 +320,9 @@ prev_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim){
   
   list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
-  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
+  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim,
+              rstan_summary_fitted=test_summary_fitted,rstan_summary_beta=test_summary_beta,
+              rhat_fitted=r_hat_fitted_summary,rhat_beta=r_hat_beta_summary))
 }
 
 ################################################################################################################################
@@ -305,6 +344,15 @@ count_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim)
                               pars = params_monitor_stan,chains = 3,warmup = 500,iter = 1500,
                               control = list(adapt_delta = 0.85))
   
+  test_summary_fitted<-rstan::summary(mod_hiv_prev,pars=c("fitted_output"))$summary
+  test_summary_beta<-rstan::summary(mod_hiv_prev,pars=c("beta"))$summary
+  
+  test_summary_fitted<-data.frame(test_summary_fitted)
+  test_summary_beta<-data.frame(test_summary_beta)
+  
+  r_hat_fitted_summary<-base::summary(test_summary_fitted$Rhat)
+  r_hat_beta_summary<-base::summary(test_summary_beta$Rhat)
+  
   
   plot_stan_model_fit<-function(model_output,sim_data){
     
@@ -381,5 +429,7 @@ count_data_fitting_RW<-function(simulated_dataset,stan_data,params_used_for_sim)
   
   list_of_results<-plot_stan_model_fit(mod_hiv_prev,simulated_dataset)
   
-  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim))
+  return(list(fitting_results=list_of_results,simulated_data = simulated_dataset,sim_params=params_used_for_sim,
+              rstan_summary_fitted=test_summary_fitted,rstan_summary_beta=test_summary_beta,
+              rhat_fitted=r_hat_fitted_summary,rhat_beta=r_hat_beta_summary))
 }

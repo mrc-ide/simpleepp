@@ -329,3 +329,179 @@ stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev
 stan_output_second_order_n_1000$prevalence_plot
 stan_output_second_order_n_1000$incidence_plot
 stan_output_second_order_n_1000$r_plot
+
+#############################################################################################################################
+## Now lets fit it with a RW funciton #######################################################################################
+#############################################################################################################################
+
+xout<-seq(1970,2020,0.1)
+spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
+penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
+rows_to_evaluate<-0:45*10+1
+
+
+
+stan_data_discrete<-list(
+  n_obs = sample_years,
+  n_sample = sample_n,
+  y = as.array(sample_df_1000_second$sample_y_hiv_prev),
+  time_steps_euler = 501,
+  penalty_order = 2,
+  estimate_period = 5,
+  time_steps_year = 51,
+  X_design = spline_matrix,
+  D_penalty = penalty_matrix,
+  mu = mu,
+  sigma = sigma,
+  mu_i = mu_i,
+  dt = 1,
+  dt_2 = 0.1,
+  rows_to_interpret = as.array(rows_to_evaluate)
+)
+
+params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
+
+test_stan_hiv<- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_matrix_random_walk.stan",
+                     data = stan_data_discrete,
+                     pars = params_monitor_hiv,
+                     chains = 1, iter = 10)  
+
+
+mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_matrix_random_walk.stan",
+                     data = stan_data_discrete,
+                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
+                     control = list(adapt_delta = 0.85))
+
+xout<-seq(1970,2020.1,0.1)
+
+
+stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev,
+                                                     sim_sample = sample_df_1000_second,
+                                                     plot_name = "Spline Second order, n = 1000",xout = xout,
+                                                     sim_output = sim_model_output_changed_to_bell_curve$sim_df)
+stan_output_second_order_n_1000$prevalence_plot
+stan_output_second_order_n_1000$incidence_plot
+stan_output_second_order_n_1000$r_plot
+
+#############################################################################################################################
+## Now we need to create 100 datasets for the four different sample sizes in our analysis, 100, 500, 1000 and 5,000 #########
+#############################################################################################################################
+
+sample_range<-1970:2015
+## Need to change this to length of time_points_to_sample if sporadic
+sample_n<-5000
+
+exponential_decay_function<-function(N0,t,lambda){
+  
+  nt<-N0*exp(-t*lambda)
+  
+  return(nt)
+}
+
+decay<- 0  #exponential_decay_function(N0 = 90,t=(seq(0,50,0.1)),lambda = 0.05) # Must be put to equal 0 for no underreporting
+
+penalty_order<-1
+
+time_points_to_sample<- 0 #seq(1970,2015,3)                                   ## Must also be equal to 0 for complete reporting 
+
+rows_to_evaluate<- 0:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
+
+sample_years<-length(rows_to_evaluate)
+
+sample_df_tot<-NULL
+
+total_timo<-NULL
+
+iterations<-100
+
+for(i in 1:iterations){
+  
+  timo<-Sys.time()
+  
+  sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id,decay=0,time_points_to_sample=0){
+    sample_years_hiv <- number_of_years_to_sample # number of days sampled throughout the epidemic
+    sample_n <- people_t0_sample # number of host individuals sampled per day
+    
+    # Choose which days the samples were taken. 
+    # Ideally this would be daily, but we all know that is difficult.
+    
+    sample_time_hiv<-time_points_to_sample
+    
+    if(time_points_to_sample[1] == 0){
+      sample_time_hiv = sort(sample(year_range, sample_years_hiv, replace=F))
+    }
+    # Extract the "true" fraction of the population that is infected on each of the sampled days:
+    sample_propinf_hiv = simulated_df[simulated_df$time %in% sample_time_hiv, prevalence_column_id]
+    
+    ## this just samples our prevalence, to get a probability that the sample we take is HIV infected then we need to divide
+    ## by 100
+    
+    #sample_propinf_hiv<-sample_propinf_hiv/100
+    
+    # Generate binomially distributed data.
+    # So, on each day we sample a given number of people (sample_n), and measure how many are infected.
+    # We expect binomially distributed error in this estimate, hence the random number generation.
+    sample_y_hiv_prev = rbinom(length(sample_time_hiv), sample_n, sample_propinf_hiv)
+    
+    if(decay[1] != 0){
+      proportion_reported= 1 - (decay/100)
+      times_to_sample<-(sample_time_hiv - 1970) * 10 + 1
+      proportion_reported = proportion_reported[times_to_sample]
+      
+      sample_y_hiv_prev = round(proportion_reported * sample_y_hiv_prev) 
+    }
+    
+    
+    
+    sample_prev_hiv_percentage<-(sample_y_hiv_prev/sample_n)*100
+    
+    ## lets have a ggplot of the y (infected) and out sample of Y over time 
+    sample_df_100<-data.frame(cbind(sample_time_hiv,sample_prev_hiv_percentage,sample_y_hiv_prev,sample_propinf_hiv))
+    return(sample_df_100)  
+  }
+  
+  
+  
+  sample_df_100_random_second<-sample_function(sample_range,sample_years,sample_n,
+                                               simulated_df = sim_model_output_changed_to_bell_curve$sim_df,
+                                               prevalence_column_id = 3,decay = decay,
+                                               time_points_to_sample = time_points_to_sample)
+  
+  sample_df_100_random_second$iteration<-rep(i,nrow(sample_df_100_random_second))
+  
+  sample_df_tot<-rbind.data.frame(sample_df_tot,sample_df_100_random_second)
+  
+  print(i/iterations * 100)
+  
+}
+
+plot(sample_df_tot[sample_df_tot$iteration==64,2])
+for(i in 1:100){
+      colour="midnightblue"
+  if( ((i+4)/5) == round((i+4)/5)){
+    colour="red"
+  }
+  if(((i+3)/5) == round((i+3)/5)){
+    colour="forestgreen"
+  }
+  if(((i+2)/5) == round((i+2)/5)){
+    colour="yellow"
+  }
+  if(((i+1)/5) == round((i+1)/5)){
+    colour="orange"
+  }
+
+  lines(sample_df_tot[sample_df_tot$iteration==i,2],col=colour)
+  Sys.sleep(0.5)
+  print(i)
+}
+
+
+
+sampled_n_5000_complete_data<-sample_df_tot
+
+save(sampled_n_5000_complete_data,file = "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/double_peak_run/sample_n_5000_data")  
+save(sim_model_output_changed_to_bell_curve,
+     file = "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/double_peak_run/true_epidemic_data_double_peak")
+plot(sim_model_output_changed_to_bell_curve$sim_df$kappa)
+
