@@ -472,10 +472,10 @@ save(spline_art_constant_n_count_72_id, file =
 ## Loading up the results ####################################################################################################
 ##############################################################################################################################
 
-a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_fitting_constant_N_16_14_May_23")
-b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_72_fitting_constant_N_16_48_May_23")
-c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_16_57_May_23")
-d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_72_16_50_May_23")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_COUNT_72_fitting_constant_N_11_56_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/RW_prev_72_fitting_constant_N_11_54_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_COUNT_constant_n_art_72_11_58_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/early_art_runs/spline_prev_constant_n_art_72_11_57_May_24")
 
 
 
@@ -484,12 +484,12 @@ id_rw_constant_n_art_72_prev<-id_rw_constant_n_art_72_count
 rw_72_constant_n_prev<-obj$task_get(id_rw_constant_n_art_72_prev)
 rw_72_constant_n_count<-obj$task_get(id_rw_art_72_constantN_count)
 spline_72_constant_n_prev<-obj$task_get(spline_art_prev_id_72)
-spline_72_constant_n_count<-obj$task_get(spline_art_constant_n_72_id)
+spline_72_constant_n_count<-obj$task_get(spline_art_constant_n_count_72_id)
 
-a<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_COUNT_96_fitting_constant_N_16_45_May_23")
-b<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_prev_96_fitting_constant_N_16_45_May_23")
-c<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_COUNT_constant_n_art_96_16_58_May_23")
-d<-load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_prev_constant_n_art_96_16_46_May_23")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_COUNT_96_fitting_constant_N_11_50_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/RW_prev_96_fitting_constant_N_11_43_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_COUNT_constant_n_art_96_11_53_May_24")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/art_simpleepp/constant_n_cluster_runs/spline_prev_constant_n_art_96_11_53_May_24")
 
 id_rw_constant_n_art_96_prev<-id_rw_constant_n_art_96_count
 
@@ -550,6 +550,8 @@ spline_count_72_triple
 
 rw_prev_96_triple
 rw_count_96_triple
+spline_count_96_triple
+spline_prev_96_triple
 
 id_rw_art_72_constantN_count
 spline_art_prev_id_72

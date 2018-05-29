@@ -13,7 +13,7 @@ find_rtools()
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-expose_stan_functions("stan_files/chunks/cd4_matrix_random_walk.stan")
+expose_stan_functions("stan_files/chunks/cd4_spline_model.stan")
 
 ########################################################################################################################################
 ## Run the simulated model to get the output ###########################################################################################
