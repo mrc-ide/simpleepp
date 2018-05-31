@@ -10,25 +10,25 @@ require(plyr)
 ## Now lets load up the datasets for measuring whether they fall in the 95% confidence interval ######################################
 ######################################################################################################################################
 
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_5000",verbose = T)
 
 ######################################################################################################################################
 ## Now we will write the function to test what percentage of time the true value lies within the lower and upper bounds ##############
@@ -66,25 +66,25 @@ credible_interval_test<-function(true_df_vector,fitted_df,time_points=seq(1970,2
 }
 
 
-spline_95_first_order_100<-credible_interval_test(sim_model_output$sim_df$prev_percent,first_order_spline_n_100$prev)
-spline_95_first_order_500<-credible_interval_test(sim_model_output$sim_df$prev_percent,first_order_spline_n_500$prev)
-spline_95_first_order_1000<-credible_interval_test(sim_model_output$sim_df$prev_percent,first_order_spline_n_1000$prev)
-spline_95_first_order_5000<-credible_interval_test(sim_model_output$sim_df$prev_percent,first_order_spline_n_5000$prev)
+spline_95_first_order_100<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_100_res$prev)
+spline_95_first_order_500<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_500_res$prev)
+spline_95_first_order_1000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_1000_res$prev)
+spline_95_first_order_5000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_5000_res$prev)
 
-spline_95_second_order_100<-credible_interval_test(sim_model_output$sim_df$prev_percent,second_order_spline_n_100$prev)
-spline_95_second_order_500<-credible_interval_test(sim_model_output$sim_df$prev_percent,second_order_spline_n_500$prev)
-spline_95_second_order_1000<-credible_interval_test(sim_model_output$sim_df$prev_percent,second_order_spline_n_1000$prev)
-spline_95_second_order_5000<-credible_interval_test(sim_model_output$sim_df$prev_percent,second_order_spline_n_5000$prev)
+spline_95_second_order_100<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_100_res$prev)
+spline_95_second_order_500<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_500_res$prev)
+spline_95_second_order_1000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_1000_res$prev)
+spline_95_second_order_5000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,spline_first_5000_res$prev)
 
-RW_95_first_order_100<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_first_order_n_100$prev)
-RW_95_first_order_500<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_first_order_n_500$prev)
-RW_95_first_order_1000<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_first_order_n_1000$prev)
-RW_95_first_order_5000<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_first_order_n_5000$prev)
+RW_95_first_order_100<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_first_100_res$prev)
+RW_95_first_order_500<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_first_500_res$prev)
+RW_95_first_order_1000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_first_1000_res$prev)
+RW_95_first_order_5000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_first_5000_res$prev)
 
-RW_95_second_order_100<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_second_order_n_100$prev)
-RW_95_second_order_500<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_second_order_n_500$prev)
-RW_95_second_order_1000<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_second_order_n_1000$prev)
-RW_95_second_order_5000<-credible_interval_test(sim_model_output$sim_df$prev_percent,RW_second_order_n_5000$prev)
+RW_95_second_order_100<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_sec_100_res$prev)
+RW_95_second_order_500<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_sec_500_res$prev)
+RW_95_second_order_1000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_sec_1000_res$prev)
+RW_95_second_order_5000<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$prev_percent,rw_sec_5000_res$prev)
 
 
 splino_firsto_95<-c(spline_95_first_order_100$overall,spline_95_first_order_500$overall,
@@ -102,25 +102,25 @@ overall_stats
 ## So that's our test of whether prevalence is within the 95% confidence intervals or not, now we will test incidence ###################
 #########################################################################################################################################
 
-spline_95_first_order_100_inc<-credible_interval_test(sim_model_output$sim_df$lambda,first_order_spline_n_100$incidence)
-spline_95_first_order_500_inc<-credible_interval_test(sim_model_output$sim_df$lambda,first_order_spline_n_500$incidence)
-spline_95_first_order_1000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,first_order_spline_n_1000$incidence)
-spline_95_first_order_5000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,first_order_spline_n_5000$incidence)
+spline_95_first_order_100_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_100_res$incidence)
+spline_95_first_order_500_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_500_res$incidence)
+spline_95_first_order_1000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_1000_res$incidence)
+spline_95_first_order_5000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_5000_res$incidence)
 
-spline_95_second_order_100_inc<-credible_interval_test(sim_model_output$sim_df$lambda,second_order_spline_n_100$incidence)
-spline_95_second_order_500_inc<-credible_interval_test(sim_model_output$sim_df$lambda,second_order_spline_n_500$incidence)
-spline_95_second_order_1000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,second_order_spline_n_1000$incidence)
-spline_95_second_order_5000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,second_order_spline_n_5000$incidence)
+spline_95_second_order_100_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_100_res$incidence)
+spline_95_second_order_500_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_500_res$incidence)
+spline_95_second_order_1000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_1000_res$incidence)
+spline_95_second_order_5000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,spline_first_5000_res$incidence)
 
-RW_95_first_order_100_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_first_order_n_100$incidence)
-RW_95_first_order_500_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_first_order_n_500$incidence)
-RW_95_first_order_1000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_first_order_n_1000$incidence)
-RW_95_first_order_5000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_first_order_n_5000$incidence)
+RW_95_first_order_100_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_first_100_res$incidence)
+RW_95_first_order_500_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_first_500_res$incidence)
+RW_95_first_order_1000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_first_1000_res$incidence)
+RW_95_first_order_5000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_first_5000_res$incidence)
 
-RW_95_second_order_100_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_second_order_n_100$incidence)
-RW_95_second_order_500_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_second_order_n_500$incidence)
-RW_95_second_order_1000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_second_order_n_1000$incidence)
-RW_95_second_order_5000_inc<-credible_interval_test(sim_model_output$sim_df$lambda,RW_second_order_n_5000$incidence)
+RW_95_second_order_100_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_sec_100_res$incidence)
+RW_95_second_order_500_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_sec_500_res$incidence)
+RW_95_second_order_1000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_sec_1000_res$incidence)
+RW_95_second_order_5000_inc<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$lambda,rw_sec_5000_res$incidence)
 
 
 splino_firsto_95_inc<-c(spline_95_first_order_100_inc$overall,spline_95_first_order_500_inc$overall,
@@ -140,25 +140,25 @@ overall_stats_inc
 ## Now we will test for the kappa term, how this is kept within the 95% confidence intervals #############################################
 ##########################################################################################################################################
 
-spline_95_first_order_100_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,first_order_spline_n_100$kappa)
-spline_95_first_order_500_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,first_order_spline_n_500$kappa)
-spline_95_first_order_1000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,first_order_spline_n_1000$kappa)
-spline_95_first_order_5000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,first_order_spline_n_5000$kappa)
+spline_95_first_order_100_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_100_res$kappa)
+spline_95_first_order_500_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_500_res$kappa)
+spline_95_first_order_1000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_1000_res$kappa)
+spline_95_first_order_5000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_5000_res$kappa)
 
-spline_95_second_order_100_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,second_order_spline_n_100$kappa)
-spline_95_second_order_500_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,second_order_spline_n_500$kappa)
-spline_95_second_order_1000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,second_order_spline_n_1000$kappa)
-spline_95_second_order_5000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,second_order_spline_n_5000$kappa)
+spline_95_second_order_100_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_100_res$kappa)
+spline_95_second_order_500_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_500_res$kappa)
+spline_95_second_order_1000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_1000_res$kappa)
+spline_95_second_order_5000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,spline_first_5000_res$kappa)
 
-RW_95_first_order_100_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_first_order_n_100$kappa)
-RW_95_first_order_500_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_first_order_n_500$kappa)
-RW_95_first_order_1000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_first_order_n_1000$kappa)
-RW_95_first_order_5000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_first_order_n_5000$kappa)
+RW_95_first_order_100_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_first_100_res$kappa)
+RW_95_first_order_500_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_first_500_res$kappa)
+RW_95_first_order_1000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_first_1000_res$kappa)
+RW_95_first_order_5000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_first_5000_res$kappa)
 
-RW_95_second_order_100_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_second_order_n_100$kappa)
-RW_95_second_order_500_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_second_order_n_500$kappa)
-RW_95_second_order_1000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_second_order_n_1000$kappa)
-RW_95_second_order_5000_kappa<-credible_interval_test(sim_model_output$sim_df$kappa,RW_second_order_n_5000$kappa)
+RW_95_second_order_100_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_sec_100_res$kappa)
+RW_95_second_order_500_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_sec_500_res$kappa)
+RW_95_second_order_1000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_sec_1000_res$kappa)
+RW_95_second_order_5000_kappa<-credible_interval_test(sim_model_output_changed_to_bell_curve$sim_df$kappa,rw_sec_5000_res$kappa)
 
 
 splino_firsto_95_kappa<-c(spline_95_first_order_100_kappa$overall,spline_95_first_order_500_kappa$overall,
@@ -176,4 +176,8 @@ overall_stats_kappa
 
 
 overall_95_stats<-list(prev=overall_stats,inc=overall_stats_inc,kappa=overall_stats_kappa)
-save(overall_95_stats,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/credible_interval_analyses/overall_analysis")
+save(overall_95_stats,file = "hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/95_percent_conf_analysis/overall_95")
+
+
+
+

@@ -10,6 +10,8 @@ require(ggpubr)
 ## Lets do some plotting of the mean results over the range of 100 different datasets #############################################
 ###################################################################################################################################
 
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/inital_simmed_data",verbose = T)
+
 mean_value_function<-function(iterations,nrow_per_iteration,data_frame){
   data_prev<-NULL
   iter_value<-iterations - 1
@@ -32,30 +34,54 @@ mean_value_function<-function(iterations,nrow_per_iteration,data_frame){
   
 }
 
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_5000",verbose = T)
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_5000",verbose = T)
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_5000",verbose = T)
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_5000",verbose = T)
+
+
+
+
+
 spline_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_100_res$prev)
 
-spline_first_n_100<-ggplot(data=spline_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_first_n_100<-ggplot(data=spline_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline First Order n = 100")
 
 spline_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_500_res$prev)
 
-spline_first_n_500<-ggplot(data=spline_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_first_n_500<-ggplot(data=spline_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline First Order n = 500")
 
 spline_firsty_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_1000_res$prev)
 
-spline_first_n_1000<-ggplot(data=spline_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_first_n_1000<-ggplot(data=spline_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline First Order n = 1000")
 
 spline_firsty_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_5000_res $prev)
 
-spline_first_n_5000<-ggplot(data=spline_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_first_n_5000<-ggplot(data=spline_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline First Order n = 5000")
@@ -69,28 +95,28 @@ plot(first_order_splines)
 
 spline_secondy_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_100_res$prev)
 
-spline_second_n_100<-ggplot(data=spline_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_second_n_100<-ggplot(data=spline_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline Second Order n = 100")
 
 spline_secondy_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_500_res$prev)
 
-spline_second_n_500<-ggplot(data=spline_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_second_n_500<-ggplot(data=spline_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline Second Order n = 500")
 
 spline_secondy_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_1000_res$prev)
 
-spline_second_n_1000<-ggplot(data=spline_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_second_n_1000<-ggplot(data=spline_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline Second Order n = 1000")
 
 spline_secondy_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_5000_res$prev)
 
-spline_second_n_5000<-ggplot(data=spline_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+spline_second_n_5000<-ggplot(data=spline_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline Second Order n = 5000")
@@ -105,28 +131,28 @@ plot(second_order_splines)
 
 RW_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = rw_first_100_res$prev)
 
-RW_first_n_100<-ggplot(data=RW_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_first_n_100<-ggplot(data=RW_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW First Order n = 100")
 
 RW_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_500_res$prev)
 
-RW_first_n_500<-ggplot(data=RW_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_first_n_500<-ggplot(data=RW_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW First Order n = 500")
 
 RW_firsty_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_1000_res$prev)
 
-RW_first_n_1000<-ggplot(data=RW_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_first_n_1000<-ggplot(data=RW_firsty_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW First Order n = 1000")
 
 RW_firsty_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_5000_res$prev)
 
-RW_first_n_5000<-ggplot(data=RW_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_first_n_5000<-ggplot(data=RW_firsty_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW First Order n = 5000")
@@ -139,28 +165,28 @@ plot(first_order_RW)
 ################################################################################################################################
 RW_secondy_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 502,data_frame = rw_sec_100_res$prev)
 
-RW_second_n_100<-ggplot(data=RW_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_second_n_100<-ggplot(data=RW_secondy_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW Second Order n = 100")
 
 RW_secondy_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_500_res$prev)
 
-RW_second_n_500<-ggplot(data=RW_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_second_n_500<-ggplot(data=RW_secondy_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW Second Order n = 500")
 
 RW_secondy_n_1000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_1000_res$prev)
 
-RW_second_n_1000<-ggplot(data=RW_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_second_n_1000<-ggplot(data=RW_secondy_n_1000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW Second Order n = 1000")
 
 RW_secondy_n_5000<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_5000_res$prev)
 
-RW_second_n_5000<-ggplot(data=RW_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
+RW_second_n_5000<-ggplot(data=RW_secondy_n_5000)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="RW Second Order n = 5000")
@@ -189,7 +215,7 @@ spline_first_n_100_inc<-ggplot(data=spline_firsty_n_100_inc)+geom_line(aes(x=tim
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
   labs(x="Time",y="Incidence",title="Spline First Order n = 100")+
-  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.5))
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 
 spline_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_500_res$incidence)
@@ -197,21 +223,24 @@ spline_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration
 spline_first_n_500_inc<-ggplot(data=spline_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Incidence",title="Spline First Order n = 500")
+  labs(x="Time",y="Incidence",title="Spline First Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 spline_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_1000_res$incidence)
 
 spline_first_n_1000_inc<-ggplot(data=spline_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Incidence",title="Spline First Order n = 1000")
+  labs(x="Time",y="Incidence",title="Spline First Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 spline_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_5000_res $incidence)
 
 spline_first_n_5000_inc<-ggplot(data=spline_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="Incidence",title="Spline First Order n = 5000")
+  labs(x="Time",y="Incidence",title="Spline First Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 first_order_splines_inc<-ggarrange(spline_first_n_100_inc,spline_first_n_500_inc,spline_first_n_1000_inc,spline_first_n_5000_inc,
                                    ncol = 2,nrow = 2)
@@ -226,28 +255,32 @@ spline_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteratio
 spline_second_n_100_inc<-ggplot(data=spline_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 100")
+  labs(x="Time",y="incidence",title="Spline Second Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 spline_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_500_res$incidence)
 
 spline_second_n_500_inc<-ggplot(data=spline_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 500")
+  labs(x="Time",y="incidence",title="Spline Second Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 spline_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_1000_res$incidence)
 
 spline_second_n_1000_inc<-ggplot(data=spline_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 1000")
+  labs(x="Time",y="incidence",title="Spline Second Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 spline_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_5000_res$incidence)
 
 spline_second_n_5000_inc<-ggplot(data=spline_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="Spline Second Order n = 5000")
+  labs(x="Time",y="incidence",title="Spline Second Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 second_order_splines_inc<-ggarrange(spline_second_n_100_inc,spline_second_n_500_inc,
                                     spline_second_n_1000_inc,spline_second_n_5000_inc,ncol = 2,nrow = 2)
@@ -263,7 +296,7 @@ RW_first_n_100_inc<-ggplot(data=RW_firsty_n_100_inc)+geom_line(aes(x=time,y=medi
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
   labs(x="Time",y="incidence",title="RW First Order n = 100")+
-  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.5))
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 
 RW_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_500_res$incidence)
@@ -271,21 +304,24 @@ RW_firsty_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 5
 RW_first_n_500_inc<-ggplot(data=RW_firsty_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 500")
+  labs(x="Time",y="incidence",title="RW First Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 RW_firsty_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_1000_res$incidence)
 
 RW_first_n_1000_inc<-ggplot(data=RW_firsty_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 1000")
+  labs(x="Time",y="incidence",title="RW First Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 RW_firsty_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_5000_res$incidence)
 
 RW_first_n_5000_inc<-ggplot(data=RW_firsty_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW First Order n = 5000")
+  labs(x="Time",y="incidence",title="RW First Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 first_order_RW_inc<-ggarrange(RW_first_n_100_inc,RW_first_n_500_inc,RW_first_n_1000_inc,RW_first_n_5000_inc,ncol = 2,nrow = 2)
 plot(first_order_RW_inc)
@@ -298,28 +334,32 @@ RW_secondy_n_100_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 
 RW_second_n_100_inc<-ggplot(data=RW_secondy_n_100_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 100")
+  labs(x="Time",y="incidence",title="RW Second Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 RW_secondy_n_500_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_500_res$incidence)
 
 RW_second_n_500_inc<-ggplot(data=RW_secondy_n_500_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 500")
+  labs(x="Time",y="incidence",title="RW Second Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 RW_secondy_n_1000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_1000_res$incidence)
 
 RW_second_n_1000_inc<-ggplot(data=RW_secondy_n_1000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 1000")
+  labs(x="Time",y="incidence",title="RW Second Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 RW_secondy_n_5000_inc<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_5000_res$incidence)
 
 RW_second_n_5000_inc<-ggplot(data=RW_secondy_n_5000_inc)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=lambda),colour="red")+
-  labs(x="Time",y="incidence",title="RW Second Order n = 5000")
+  labs(x="Time",y="incidence",title="RW Second Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0,0.7))
 
 second_order_RW_inc<-ggarrange(RW_second_n_100_inc,RW_second_n_500_inc,RW_second_n_1000_inc,RW_second_n_5000_inc,
                                ncol = 2,nrow = 2)
@@ -354,28 +394,32 @@ spline_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iterati
 spline_first_n_100_kappa<-ggplot(data=spline_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline First Order n = 100")
+  labs(x="Time",y="Kappa",title="Spline First Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_500_res$kappa)
 
 spline_first_n_500_kappa<-ggplot(data=spline_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline First Order n = 500")
+  labs(x="Time",y="Kappa",title="Spline First Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_1000_res$kappa)
 
 spline_first_n_1000_kappa<-ggplot(data=spline_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline First Order n = 1000")
+  labs(x="Time",y="Kappa",title="Spline First Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_first_5000_res $kappa)
 
 spline_first_n_5000_kappa<-ggplot(data=spline_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline First Order n = 5000")
+  labs(x="Time",y="Kappa",title="Spline First Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 first_order_splines_kappa<-ggarrange(spline_first_n_100_kappa,spline_first_n_500_kappa,spline_first_n_1000_kappa,spline_first_n_5000_kappa,
                                      ncol = 2,nrow = 2)
@@ -390,28 +434,32 @@ spline_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iterat
 spline_second_n_100_kappa<-ggplot(data=spline_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline Second Order n = 100")
+  labs(x="Time",y="Kappa",title="Spline Second Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_500_res$kappa)
 
 spline_second_n_500_kappa<-ggplot(data=spline_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline Second Order n = 500")
+  labs(x="Time",y="Kappa",title="Spline Second Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_1000_res$kappa)
 
 spline_second_n_1000_kappa<-ggplot(data=spline_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline Second Order n = 1000")
+  labs(x="Time",y="Kappa",title="Spline Second Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 spline_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_sec_5000_res$kappa)
 
 spline_second_n_5000_kappa<-ggplot(data=spline_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="Spline Second Order n = 5000")
+  labs(x="Time",y="Kappa",title="Spline Second Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 second_order_splines_kappa<-ggarrange(spline_second_n_100_kappa,spline_second_n_500_kappa,
                                       spline_second_n_1000_kappa,spline_second_n_5000_kappa,ncol = 2,nrow = 2)
@@ -426,28 +474,32 @@ RW_firsty_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration =
 RW_first_n_100_kappa<-ggplot(data=RW_firsty_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW First Order n = 100")
+  labs(x="Time",y="Kappa",title="RW First Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_firsty_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_500_res$kappa)
 
 RW_first_n_500_kappa<-ggplot(data=RW_firsty_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW First Order n = 500")
+  labs(x="Time",y="Kappa",title="RW First Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_firsty_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_1000_res$kappa)
 
 RW_first_n_1000_kappa<-ggplot(data=RW_firsty_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW First Order n = 1000")
+  labs(x="Time",y="Kappa",title="RW First Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_firsty_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_first_5000_res$kappa)
 
 RW_first_n_5000_kappa<-ggplot(data=RW_firsty_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW First Order n = 5000")
+  labs(x="Time",y="Kappa",title="RW First Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 first_order_RW_kappa<-ggarrange(RW_first_n_100_kappa,RW_first_n_500_kappa,RW_first_n_1000_kappa,RW_first_n_5000_kappa,ncol = 2,nrow = 2)
 plot(first_order_RW_kappa)
@@ -460,28 +512,32 @@ RW_secondy_n_100_kappa<-mean_value_function(iterations = 100,nrow_per_iteration 
 RW_second_n_100_kappa<-ggplot(data=RW_secondy_n_100_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW Second Order n = 100")
+  labs(x="Time",y="Kappa",title="RW Second Order n = 100")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_secondy_n_500_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_500_res$kappa)
 
 RW_second_n_500_kappa<-ggplot(data=RW_secondy_n_500_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW Second Order n = 500")
+  labs(x="Time",y="Kappa",title="RW Second Order n = 500")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_secondy_n_1000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_1000_res$kappa)
 
 RW_second_n_1000_kappa<-ggplot(data=RW_secondy_n_1000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW Second Order n = 1000")
+  labs(x="Time",y="Kappa",title="RW Second Order n = 1000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 RW_secondy_n_5000_kappa<-mean_value_function(iterations = 100,nrow_per_iteration = 502,rw_sec_5000_res$kappa)
 
 RW_second_n_5000_kappa<-ggplot(data=RW_secondy_n_5000_kappa)+geom_line(aes(x=time,y=median),colour="midnightblue",size=1)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_output_changed_to_bell_curve$sim_df,aes(x=time,y=kappa),colour="red")+
-  labs(x="Time",y="Kappa",title="RW Second Order n = 5000")
+  labs(x="Time",y="Kappa",title="RW Second Order n = 5000")+
+  coord_cartesian(xlim = c(1970,2020),ylim = c(0.3,1))
 
 second_order_RW_kappa<-ggarrange(RW_second_n_100_kappa,RW_second_n_500_kappa,RW_second_n_1000_kappa,RW_second_n_5000_kappa,
                                  ncol = 2,nrow = 2)
@@ -581,11 +637,11 @@ spline_first_order_analysis_n_100<-list(rmse_prev=RMSE_full_data_spline_first_or
                                   kappa_mean_plot=spline_first_n_100_kappa)
 
 RMSE_full_data_spline_first_order_n_500_prev<-root_mean_error_function(sim_model_output_changed_to_bell_curve$sim_df,
-                                                                       first_order_spline_n_500)
+                                                                       spline_first_500_res)
 RMSE_full_data_spline_first_order_n_500_inc<-root_mean_error_function(sim_model_output_changed_to_bell_curve$sim_df,metric = "incidence",
-                                                                      first_order_spline_n_500)
+                                                                      spline_first_500_res)
 RMSE_full_data_spline_first_order_n_500_kappa<-root_mean_error_function(sim_model_output_changed_to_bell_curve$sim_df,metric = "kappa",
-                                                                        first_order_spline_n_500)
+                                                                        spline_first_500_res)
 
 spline_first_order_analysis_n_500<-list(rmse_prev=RMSE_full_data_spline_first_order_n_500_prev,
                                         rmse_inc=RMSE_full_data_spline_first_order_n_500_inc,
@@ -730,9 +786,9 @@ RMSE_full_data_RW_first_order_n_1000_inc<-root_mean_error_function(sim_model_out
                                                                         fitted_data = rw_first_1000_res)
 RMSE_full_data_RW_first_order_n_1000_kappa<-root_mean_error_function(sim_model_output_changed_to_bell_curve$sim_df,metric = "kappa",
                                                                           fitted_data = rw_first_1000_res)
-RW_first_order_analysis_n_1000<-list(rmse_prev=RMSE_full_data_rw_first_1000_res_prev,
-                                          rmse_inc=RMSE_full_data_rw_first_1000_res_inc,
-                                          rmse_kappa=RMSE_full_data_rw_first_1000_res_kappa,
+RW_first_order_analysis_n_1000<-list(rmse_prev=RMSE_full_data_RW_first_order_n_1000_prev,
+                                          rmse_inc=RMSE_full_data_RW_first_order_n_1000_inc,
+                                          rmse_kappa=RMSE_full_data_RW_first_order_n_1000_kappa,
                                           prev_mean_plot=RW_first_n_1000,inc_mean_plot=RW_first_n_1000_inc,
                                           kappa_mean_plot=RW_first_n_1000_kappa)
 
@@ -743,9 +799,9 @@ RMSE_full_data_RW_first_order_n_5000_inc<-root_mean_error_function(sim_model_out
                                                                         fitted_data = rw_first_5000_res)
 RMSE_full_data_RW_first_order_n_5000_kappa<-root_mean_error_function(sim_model_output_changed_to_bell_curve$sim_df,metric = "kappa",
                                                                           fitted_data = rw_first_5000_res)
-RW_first_order_analysis_n_5000<-list(rmse_prev=RMSE_full_data_rw_first_5000_res_prev,
-                                          rmse_inc=RMSE_full_data_rw_first_5000_res_inc,
-                                          rmse_kappa=RMSE_full_data_rw_first_5000_res_kappa,
+RW_first_order_analysis_n_5000<-list(rmse_prev=RMSE_full_data_RW_first_order_n_5000_prev,
+                                          rmse_inc=RMSE_full_data_RW_first_order_n_5000_inc,
+                                          rmse_kappa=RMSE_full_data_RW_first_order_n_5000_kappa,
                                           prev_mean_plot=RW_first_n_5000,inc_mean_plot=RW_first_n_5000_inc,
                                           kappa_mean_plot=RW_first_n_5000_kappa)
 
@@ -929,11 +985,39 @@ kappa_mean_complete_df<-RMSE_dataset_extraction(metric = "kappa")
 
 complete_rmse_data<-list(prev=prev_mean_complete_df,inc=inc_mean_complete_df,kappa=kappa_mean_complete_df)
 
-save(complete_rmse_data,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/rmse_datasets/complete_dataset_rmse")
+save(complete_rmse_data,file = "hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/prev_inc_kappa_average_RMSE")
 
 overall_fitting_analysis$mean_rmse_tot
+complete_rmse_data$prev
+complete_rmse_data$inc
+complete_rmse_data$kappa
 
-
+cool_plot_function<-function(base_vector,simmed_df,simmed_vector_col_id,simmed_iteration){
+plot(base_vector)
+for(i in 1:100){
+  colour="yellow"
+  if( ((i+4)/5) == round((i+4)/5)){
+    colour="red"
+  }
+  if(((i+3)/5) == round((i+3)/5)){
+    colour="forestgreen"
+  }
+  if(((i+2)/5) == round((i+2)/5)){
+    colour="dodgerblue"
+  }
+  if(((i+1)/5) == round((i+1)/5)){
+    colour="orange"
+  }
+  
+  lines((simmed_df[simmed_iteration==i,simmed_vector_col_id] ),col=colour)
+  Sys.sleep(0.3)
+  print(i)
+}
+}
+cool_plot_function(sim_model_output_changed_to_bell_curve$sim_df$kappa,simmed_df = spline_first_100_res$kappa,
+                   simmed_vector_col_id = 2,simmed_iteration = spline_first_100_res$kappa$iteration)
+cool_plot_function(sim_model_output_changed_to_bell_curve$sim_df$lambda,simmed_df = rw_first_1000_res$incidence,
+                   simmed_vector_col_id = 2, simmed_iteration = rw_first_1000_res$incidence$iteration)
 
 ################################################################################################################################
 ## Now lets come up with a function that can do all the above rmse stuff, just for the prediction period #######################
@@ -1007,7 +1091,7 @@ prediction_period_rmse$prevalence
 prediction_period_rmse$incidence
 prediction_period_rmse$kappa
 
-save(prediction_period_rmse,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/rmse_datasets/2015_2020_period_rmse")
+save(prediction_period_rmse,file = "hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/prediction_period_rmse_dp")
 
 plot(overall_fitting_analysis$sp_first_100$inc_mean_plot)
 
@@ -1017,7 +1101,7 @@ peak_epidemic_period$prevalence
 peak_epidemic_period$incidence
 peak_epidemic_period$kappa
 
-save(peak_epidemic_period,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/rmse_datasets/1990_2000_peak_epidemic_period_rmse")
+save(peak_epidemic_period,file = "hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/peak_epidemic_rmse_dp")
 
 ###############################################################################################################################
 ## Now we will plot a graph of the mean error for each iteration for each of the 100 datasets #################################

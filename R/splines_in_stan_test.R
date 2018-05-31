@@ -5,6 +5,7 @@
 require(rstan)
 require(splines)
 require(ggplot2)
+require(reshape2)
 rstan_options(auto_write=T)
 options(mc.cores =  parallel::detectCores())
 
@@ -170,14 +171,14 @@ splines_creator<-function(knot_number,penalty_order){
   
 }
 
-knot_number= 7
-penalty_order= 2
+knot_number= 10
+penalty_order= 1
 
 splines_matrices<-splines_creator(knot_number,penalty_order)
 rows_to_evaluate<-0:45*10+1
 
 
-num_knots <- 7
+num_knots <- 8
 spline_degree <- 3
 num_basis <- num_knots + spline_degree - 1
 X <- seq(from=1970, to=2020, by=0.1)
@@ -188,6 +189,8 @@ a <- rnorm(num_basis, 0, 5)
 B_true <- t(bs(X, df=num_basis, degree=spline_degree, intercept = TRUE))
 Y_true <- as.vector(a0*X + a%*%B_true)
 Y <- Y_true + rnorm(length(X), 0, 0.2)
+#splines_matrices$penalty_matrix<-t(splines_matrices$penalty_matrix)
+
 
 stan_data_splines<-list(
   n_obs = sample_years,
@@ -195,7 +198,7 @@ stan_data_splines<-list(
   y = as.array(sample_df_1000_second$sample_y_hiv_prev),
   time_steps_euler = length(xout),
   penalty_order = penalty_order,
-  knot_number = knot_number,
+  knot_number = num_knots,
   estimate_years = 5,
   time_steps_year = 51,
   X_design = splines_matrices$spline_matrix,
@@ -214,19 +217,24 @@ stan_data_splines<-list(
 )
 
 spline_mod<-stan_model("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/splines_in_stan_simpleepp.stan")
-test<-sampling(spline_mod,stan_data_splines,iter=500)
+test<-sampling(spline_mod,stan_data_splines,iter = 500,chains = 3,control = list(adapt_delta=0.95))
 test_extract<-rstan::extract(test)
 test_extract$fitted_output
-prev_median<-(apply(test_extract$fitted_output[,,2],2,median))
-prev_low<-(apply(test_extract$fitted_output[,,2],2,quantile,probs=c(0.025)))
-prev_high<-(apply(test_extract$fitted_output[,,2],2,quantile,probs=c(0.975)))
+prev_median<-(apply(test_extract$fitted_output[,,1],2,median))
+prev_low<-(apply(test_extract$fitted_output[,,1],2,quantile,probs=c(0.025)))
+prev_high<-(apply(test_extract$fitted_output[,,1],2,quantile,probs=c(0.975)))
 spline_produced_estimate_df<-cbind.data.frame(prev_low,prev_median,prev_high)
 names(spline_produced_estimate_df)<-c("low","median","high")
+spline_produced_estimate_df$time<-seq(1970,2020.1,0.1)
+plot(sim_model_output$sim_df$kappa)
 
-ggplot(data = spline_produced_estimate_df)+geom_line(aes(x=seq(0,100,1),y=median),colour="dodgerblue",size=1.05)+
-  geom_ribbon(aes(x=seq(0,100,1),ymin=low,ymax=high),colour="dodgerblue",fill="dodgerblue",alpha=0.15,size=1.02)+
-  geom_line(aes(x=seq(0,100,1),y=Y_true),colour="firebrick1",size=1.05)+geom_point(aes(x=seq(0,100,1),y=Y),colour="gold",)
+lines(spline_produced_estimate_df$median)
+lines(spline_produced_estimate_df$low,col="red")
+lines(spline_produced_estimate_df$high,col="red")
 
+ggplot(data = spline_produced_estimate_df)+geom_line(aes(x=time,y=median),colour="dodgerblue",size=1.05)+
+  geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="dodgerblue",fill="dodgerblue",alpha=0.15,size=1.02)+
+  geom_line(data = sim_model_output$sim_df, aes(x=time,y=kappa),colour="firebrick1",size=1.05)
 
 knots
 spline_degree
@@ -235,6 +243,23 @@ num_data
 Y
 X
 
+expose_stan_functions("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/splines_in_stan_simpleepp.stan")
 
 
+xout<-seq(1970,2020,0.1)
+intro<-rep(knots[1],spline_degree)
+outro<-rep(knots[length(knots)],spline_degree)
+ext_knots<-c(intro,knots,outro)
 
+a_tot<-NULL
+
+for(i in 1:knot_number){
+
+  a<-build_b_spline(xout,ext_knots,i,(spline_degree+1))
+a_tot<-cbind(a_tot,a)
+  
+  }
+a_tot[501,10]=1
+dim(a_tot)
+matplot(a_tot,type = "l")
+matplot(spline_matrix,type = "l")

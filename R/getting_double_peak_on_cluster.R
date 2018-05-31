@@ -140,6 +140,9 @@ plot(plotted_sim$whole)
 
 plotted_sim$incidence
 
+save(sim_model_output_changed_to_bell_curve,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/inital_simmed_data")
+
 ##############################################################################################################################
 ## Now we will get this epidemic fitting on the cluster ######################################################################
 ##############################################################################################################################

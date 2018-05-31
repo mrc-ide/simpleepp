@@ -87,8 +87,8 @@ data {
  int penalty_order;                                                     // This is the degree of penalty we place on the 
  int knot_number;                                                       // Number of knots, our length of beta         
  int estimate_years;                                                    // This is the number of years we predict data for
- matrix[time_steps_euler - 1 , knot_number  ] X_design;                 // This is our spline design matirx that we are modelling kappa with. 
- matrix[knot_number - penalty_order , knot_number ] D_penalty;          // This is our penalty matrix, can be first or second order depending on the R code 
+ matrix[time_steps_euler - 1 , knot_number + 2 ] X_design;              // This is our spline design matirx that we are modelling kappa with. 
+ matrix[knot_number + 2 - penalty_order  , knot_number +2 ] D_penalty;                      // This is our penalty matrix, can be first or second order depending on the R code 
  real mu;                                                               // This is our population level death rate
  vector[3] sigma;                                                       // This is our vector of transition rates
  vector[4] mu_i;                                                        // This is our vector of death rates
@@ -102,40 +102,34 @@ data {
  
  transformed data {
   int num_basis = knot_number + spline_degree - 1;                        // total number of B-splines
-  matrix[num_basis, time_steps_euler] B;                                  // matrix of B-splines
+  matrix[time_steps_euler, num_basis] B;                                  // matrix of B-splines
   vector[spline_degree + knot_number] ext_knots_temp;
   vector[2*spline_degree + knot_number] ext_knots;                        // set of extended knots
   ext_knots_temp = append_row(rep_vector(knots[1], spline_degree), knots);
   ext_knots = append_row(ext_knots_temp, rep_vector(knots[knot_number], spline_degree));
   for (ind in 1:num_basis)
-    B[ind,:] = to_row_vector(build_b_spline(X, to_array_1d(ext_knots), ind, spline_degree + 1));
-  B[knot_number + spline_degree - 1, time_steps_euler] = 1;
+    B[:,ind] = (build_b_spline(X, to_array_1d(ext_knots), ind, spline_degree + 1));
+  B[time_steps_euler, knot_number + spline_degree - 1] = 1;
 }
  
 parameters{
  
  real<lower = 0, upper=1> iota;                                         // The proportion of the population initially infected 
- vector<lower = 0>[knot_number] beta;                                   // This is the knot point values
  real<lower = 0> sigma_pen;                                             // This is the penalty to apply to the spline to make it smooth
- row_vector[num_basis] a_raw;
-  real a0;                                                              // intercept
-  real<lower=0> sigma_spline;
-  real<lower=0> tau;
- 
+ vector[num_basis] beta;
+  
 }
 
  
 transformed parameters{
 
-  vector[rows(X_design)] kappa;
   matrix[size(rows_to_interpret), 3] y_hat;
-  row_vector[num_basis] a;                                             // spline coefficients
   vector[time_steps_euler] splino;
   
-  a = a_raw*tau;
-  splino = a0*to_vector(X) + to_vector(a*B);
 
-  kappa = X_design * beta;
+  splino = B * beta;
+  
+    
   y_hat = simpleepp_no_art( splino , iota, mu, sigma, mu_i, dt_2)[rows_to_interpret, ];
 
  
@@ -144,31 +138,25 @@ transformed parameters{
  
 model {
   
-   
-  a_raw ~ normal(0, 1);                                                  // Priors
-  a0 ~ normal(0, 1);
-  tau ~ normal(0, 1);
-  sigma_spline ~ normal(0, 1);
-
-  
+    
+  target += normal_lpdf( D_penalty * beta  | 0, sigma_pen);
  
- iota ~ normal(0, 0.5);                                                  // This models our initial population size 
+  iota ~ normal(0, 0.5);                                                    // This models our initial population size 
  
- target += normal_lpdf( D_penalty * to_vector(a)[2 : num_basis - 1] | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
 
-
-  y ~ binomial(n_sample, y_hat[ , 3]);                                   // This fits it to the binomially sampled data 
+  y ~ binomial(n_sample, y_hat[ , 3]);                                     // This fits it to the binomially sampled data 
 
 } 
 
 generated quantities{
 
-vector[rows(X_design)] kappa_fit;
-matrix[time_steps_euler , 3] fitted_output;
+matrix[time_steps_euler +1 , 3] fitted_output;
+vector[time_steps_euler] splino_fit;
 
+splino_fit = to_vector(B * beta);
+ 
 
-kappa_fit = X_design * beta;
-fitted_output = simpleepp_no_art(kappa_fit, iota, mu, sigma, mu_i, dt_2);       // This models the data after our fitting procedure
+fitted_output = simpleepp_no_art(splino_fit, iota, mu, sigma, mu_i, dt_2);       // This models the data after our fitting procedure
 
 } 
 
