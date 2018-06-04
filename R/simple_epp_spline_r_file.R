@@ -106,8 +106,8 @@ plot(plotted_sim$whole)
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-1970:2015
-sample_years<-46
+sample_range<-1982:2015
+sample_years<-34
 sample_n<-1000
   
   
@@ -183,7 +183,8 @@ beta_vals<-as.numeric(beta_vals)
 beta_vals[7]<-beta_vals[6]
 #spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
 #penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
-rows_to_evaluate<-0:45*10+1
+sample_start<-sample_range[1]-1970
+rows_to_evaluate<-sample_start:45*10+1
 
 
 stan_data_discrete<-list(
@@ -193,7 +194,7 @@ stan_data_discrete<-list(
   time_steps_euler = length(xout),
   penalty_order = penalty_order,
   knot_number = knot_number,
-  estimate_years = 5,
+  estimate_years = 5+sample_start,
   time_steps_year = 51,
   X_design = splines_matrices$spline_matrix,
   D_penalty = splines_matrices$penalty_matrix,
@@ -207,13 +208,13 @@ stan_data_discrete<-list(
 
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
 
-test_stan_hiv<- stan("stan_files/chunks/cd4_spline_model.stan",
+test_stan_hiv<- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan",
                      data = stan_data_discrete,
                      pars = params_monitor_hiv,
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
+mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
                      
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
@@ -331,9 +332,9 @@ stan_output_second_order_n_1000<-plot_stan_model_fit(model_output = mod_hiv_prev
 #######################################################################################################################################
 ## Now we'll start plotting the output from these stan runs ###########################################################################
 #######################################################################################################################################
-plot(stan_output_first_order_n_1000$prevalence_plot)
-plot(stan_output_first_order_n_500$prevalence_plot)
-plot(stan_output_first_order_n_100$prevalence_plot)
+plot(stan_output_second_order_n_1000$prevalence_plot)
+plot(stan_output_second_order_n_1000$incidence_plot)
+plot(stan_output_second_order_n_1000$r_plot)
 
 plot(stan_output_second_order_n_100$prevalence_plot)
 plot(stan_output_second_order_n_500$prevalence_plot)

@@ -13,7 +13,7 @@ find_rtools()
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-expose_stan_functions("stan_files/chunks/cd4_spline_model.stan")
+expose_stan_functions("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan")
 
 ########################################################################################################################################
 ## Run the simulated model to get the output ###########################################################################################
@@ -100,9 +100,9 @@ plot(plotted_sim$whole)
 ## Now lets form our loop to sample through and fit to stan data ######################################################################
 #######################################################################################################################################
 
-sample_range<-1970:2015
+sample_range<-1984:2015
 ## Need to change this to length of time_points_to_sample if sporadic
-sample_n<-100
+sample_n<-5000
 
 exponential_decay_function<-function(N0,t,lambda){
   
@@ -117,7 +117,9 @@ penalty_order<-1
 
 time_points_to_sample<- 0 #seq(1970,2015,3)                                   ## Must also be equal to 0 for complete reporting 
 
-rows_to_evaluate<- 0:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
+
+sample_start<-sample_range[1]-1970
+rows_to_evaluate<- sample_start:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
 
 sample_years<-length(rows_to_evaluate)
 
@@ -188,7 +190,30 @@ for(i in 1:iterations){
 }
 
 plot(sample_df_tot[sample_df_tot$iteration==19,2])
+plot(sample_df_tot[sample_df_tot$iteration==64,2])
+for(i in 1:100){
+  colour="midnightblue"
+  if( ((i+4)/5) == round((i+4)/5)){
+    colour="red"
+  }
+  if(((i+3)/5) == round((i+3)/5)){
+    colour="forestgreen"
+  }
+  if(((i+2)/5) == round((i+2)/5)){
+    colour="yellow"
+  }
+  if(((i+1)/5) == round((i+1)/5)){
+    colour="orange"
+  }
   
-sampled_n_100_complete_data<-sample_df_tot
+  lines(sample_df_tot[sample_df_tot$iteration==i,2],col=colour)
+  Sys.sleep(0.5)
+  print(i)
+}
 
-save(sampled_n_100_complete_data,file = "../simulated_data_sets/complete_data_simpleepp_no_art/n_100_complete_data_no_art")  
+  
+sampled_n_5000_84_data<-sample_df_tot
+
+save(sampled_n_5000_84_data,file = "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/data_from_1984_simpleepp/N_5000_samples")  
+save(sim_model_output,
+     file = "hiv_project/analysis_of_cluster_run_datasets/data_from_1984_simpleepp/true_epidemic")

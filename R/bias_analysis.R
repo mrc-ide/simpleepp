@@ -5,30 +5,27 @@
 require(ggplot2)
 require(reshape2)
 
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/first_order/cluster_RW_first_order_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/random_walk_loops/cluster_runs/second_order/rw_second_order_complete_data_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/first_order/first_order_complete_spline_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_5000",verbose = T)
 
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_100")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_500")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_1000")
-load("hiv_project/stan_objects_from_simpleepp_R/spline_runs/cluster_runs/second_order/spline_second_order_complete_n_5000")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_100",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_500",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_1000",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_5000",verbose = T)
 
-load("hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_100_complete_data_no_art")
-load("hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_500_complete_data_no_art")
-load("hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_1000_complete_data_no_art")
-load("hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_5000_complete_data_no_art")
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/inital_simmed_data")
 
 #################################################################################################################################
 ## Now we've loaded the data lets create our function to evaluate the mean absolute error at each point #########################
@@ -131,52 +128,52 @@ bias_function<-function(fitted_prev_df,sample_prev_df,true_df,time_to_evaluate=s
   
 }
 
-bias_spline_f_100 <- bias_function(first_order_spline_n_100$prev,sample_prev_df = sampled_n_100_complete_data,
-                                 true_df = sim_model_output$sim_df)
-bias_spline_f_500 <- bias_function(first_order_spline_n_500$prev,sample_prev_df = sampled_n_500_complete_data,
-                                 true_df = sim_model_output$sim_df)
-bias_spline_f_1k <- bias_function(first_order_spline_n_1000$prev,sample_prev_df = sampled_n_1000_complete_data,
-                                  true_df = sim_model_output$sim_df)
-bias_spline_f_5k <- bias_function(first_order_spline_n_5000$prev,sample_prev_df = sampled_n_5000_complete_data,
-                                  true_df = sim_model_output$sim_df)
+bias_spline_f_100 <- bias_function(spline_first_100_res$prev,sample_prev_df = sampled_n_100_complete_data,
+                                 true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_f_500 <- bias_function(spline_first_500_res$prev,sample_prev_df = sampled_n_500_complete_data,
+                                 true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_f_1k <- bias_function(spline_first_1000_res$prev,sample_prev_df = sampled_n_1000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_f_5k <- bias_function(spline_first_5000_res$prev,sample_prev_df = sampled_n_5000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
 
 ######################################################################################################################################
 ## So thats the first order spline tested, now we will test the second order splines #################################################
 ######################################################################################################################################
 
-bias_spline_s_100 <- bias_function(second_order_spline_n_100$prev,sample_prev_df = sampled_n_100_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_spline_s_500 <- bias_function(second_order_spline_n_500$prev,sample_prev_df = sampled_n_500_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_spline_s_1k <- bias_function(second_order_spline_n_1000$prev,sample_prev_df = sampled_n_1000_complete_data,
-                                  true_df = sim_model_output$sim_df)
-bias_spline_s_5k <- bias_function(second_order_spline_n_5000$prev,sample_prev_df = sampled_n_5000_complete_data,
-                                  true_df = sim_model_output$sim_df)
+bias_spline_s_100 <- bias_function(spline_sec_100_res$prev,sample_prev_df = sampled_n_100_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_s_500 <- bias_function(spline_sec_500_res$prev,sample_prev_df = sampled_n_500_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_s_1k <- bias_function(spline_sec_1000_res$prev,sample_prev_df = sampled_n_1000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_spline_s_5k <- bias_function(spline_sec_5000_res$prev,sample_prev_df = sampled_n_5000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
 
 ######################################################################################################################################
 ## So thats's splines done, now we can look at the two randomw walks #################################################################
 ######################################################################################################################################
-bias_rw_f_100 <- bias_function(RW_first_order_n_100$prev,sample_prev_df = sampled_n_100_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_rw_f_500 <- bias_function(RW_first_order_n_500$prev,sample_prev_df = sampled_n_500_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_rw_f_1k <- bias_function(RW_first_order_n_1000$prev,sample_prev_df = sampled_n_1000_complete_data,
-                                  true_df = sim_model_output$sim_df)
-bias_rw_f_5k <- bias_function(RW_first_order_n_5000$prev,sample_prev_df = sampled_n_5000_complete_data,
-                                  true_df = sim_model_output$sim_df)
+bias_rw_f_100 <- bias_function(rw_first_100_res$prev,sample_prev_df = sampled_n_100_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_f_500 <- bias_function(rw_first_500_res$prev,sample_prev_df = sampled_n_500_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_f_1k <- bias_function(rw_first_1000_res$prev,sample_prev_df = sampled_n_1000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_f_5k <- bias_function(rw_first_5000_res$prev,sample_prev_df = sampled_n_5000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
 
 ######################################################################################################################################
 ## So thats the first order rw tested, now we will test the second order rws #########################################################
 ######################################################################################################################################
 
-bias_rw_s_100 <- bias_function(RW_second_order_n_100$prev,sample_prev_df = sampled_n_100_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_rw_s_500 <- bias_function(RW_second_order_n_500$prev,sample_prev_df = sampled_n_500_complete_data,
-                                   true_df = sim_model_output$sim_df)
-bias_rw_s_1k <- bias_function(RW_second_order_n_1000$prev,sample_prev_df = sampled_n_1000_complete_data,
-                                  true_df = sim_model_output$sim_df)
-bias_rw_s_5k <- bias_function(RW_second_order_n_5000$prev,sample_prev_df = sampled_n_5000_complete_data,
-                                  true_df = sim_model_output$sim_df)
+bias_rw_s_100 <- bias_function(rw_sec_100_res$prev,sample_prev_df = sampled_n_100_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_s_500 <- bias_function(rw_sec_500_res$prev,sample_prev_df = sampled_n_500_complete_data,
+                                   true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_s_1k <- bias_function(rw_sec_1000_res$prev,sample_prev_df = sampled_n_1000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
+bias_rw_s_5k <- bias_function(rw_sec_5000_res$prev,sample_prev_df = sampled_n_5000_complete_data,
+                                  true_df = sim_model_output_changed_to_bell_curve$sim_df)
 
 ######################################################################################################################################
 ## Now we'll try implementing our measure of how overfit the fitted values are to the data sampled compared to the true values #######
@@ -221,38 +218,38 @@ overfit_function<-function(fit_df,sample_df,true_df){
   
 }
 
-overfit_spline_f_n_100<-overfit_function(first_order_spline_n_100$prev,true_df = sim_model_output$sim_df,
+overfit_spline_f_n_100<-overfit_function(spline_first_100_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                          sample_df = sampled_n_100_complete_data)
-overfit_spline_f_n_500<-overfit_function(first_order_spline_n_500$prev,true_df = sim_model_output$sim_df,
+overfit_spline_f_n_500<-overfit_function(spline_first_500_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                          sample_df = sampled_n_500_complete_data)
-overfit_spline_f_n_1K<-overfit_function(first_order_spline_n_1000$prev,true_df = sim_model_output$sim_df,
+overfit_spline_f_n_1K<-overfit_function(spline_first_1000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                         sample_df = sampled_n_1000_complete_data)
-overfit_spline_f_n_5K<-overfit_function(first_order_spline_n_5000$prev,true_df = sim_model_output$sim_df,
+overfit_spline_f_n_5K<-overfit_function(spline_first_5000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                         sample_df = sampled_n_5000_complete_data)
-overfit_rw_f_100<-overfit_function(RW_first_order_n_100$prev,true_df = sim_model_output$sim_df,
+overfit_rw_f_100<-overfit_function(rw_first_100_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                    sample_df = sampled_n_100_complete_data)
-overfit_rw_f_500<-overfit_function(RW_first_order_n_500$prev,true_df = sim_model_output$sim_df,
+overfit_rw_f_500<-overfit_function(rw_first_500_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                    sample_df = sampled_n_500_complete_data)
-overfit_rw_f_1k<-overfit_function(RW_first_order_n_1000$prev,true_df = sim_model_output$sim_df,
+overfit_rw_f_1k<-overfit_function(rw_first_1000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                   sample_df = sampled_n_1000_complete_data)
-overfit_rw_f_5k<-overfit_function(RW_first_order_n_5000$prev,true_df = sim_model_output$sim_df,
+overfit_rw_f_5k<-overfit_function(rw_first_5000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                   sample_df = sampled_n_5000_complete_data)
 
-overfit_spline_s_n_100<-overfit_function(second_order_spline_n_100$prev,true_df = sim_model_output$sim_df,
+overfit_spline_s_n_100<-overfit_function(spline_sec_100_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                          sample_df = sampled_n_100_complete_data)
-overfit_spline_s_n_500<-overfit_function(second_order_spline_n_500$prev,true_df = sim_model_output$sim_df,
+overfit_spline_s_n_500<-overfit_function(spline_sec_500_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                          sample_df = sampled_n_500_complete_data)
-overfit_spline_s_n_1K<-overfit_function(second_order_spline_n_1000$prev,true_df = sim_model_output$sim_df,
+overfit_spline_s_n_1K<-overfit_function(spline_sec_1000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                         sample_df = sampled_n_1000_complete_data)
-overfit_spline_s_n_5K<-overfit_function(second_order_spline_n_5000$prev,true_df = sim_model_output$sim_df,
+overfit_spline_s_n_5K<-overfit_function(spline_sec_5000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                         sample_df = sampled_n_5000_complete_data)
-overfit_rw_s_100<-overfit_function(RW_second_order_n_100$prev,true_df = sim_model_output$sim_df,
+overfit_rw_s_100<-overfit_function(rw_sec_100_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                    sample_df = sampled_n_100_complete_data)
-overfit_rw_s_500<-overfit_function(RW_second_order_n_500$prev,true_df = sim_model_output$sim_df,
+overfit_rw_s_500<-overfit_function(rw_sec_500_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                    sample_df = sampled_n_500_complete_data)
-overfit_rw_s_1k<-overfit_function(RW_second_order_n_1000$prev,true_df = sim_model_output$sim_df,
+overfit_rw_s_1k<-overfit_function(rw_sec_1000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                   sample_df = sampled_n_1000_complete_data)
-overfit_rw_s_5k<-overfit_function(RW_second_order_n_5000$prev,true_df = sim_model_output$sim_df,
+overfit_rw_s_5k<-overfit_function(rw_sec_5000_res$prev,true_df = sim_model_output_changed_to_bell_curve$sim_df,
                                   sample_df = sampled_n_5000_complete_data)
 
 spline_first_overfit<-c(overfit_spline_f_n_100$overfit,overfit_spline_f_n_500$overfit,
@@ -280,4 +277,4 @@ overall_ratio
 
 overfit_tests<-list(ratio=overall_ratio,initial_test_stat=overfit_satas)
 
-save(overfit_tests,file = "hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/overfit_analyses/overfit_list")
+save(overfit_tests,file = "hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/overfit_analysis/overall_overfit")

@@ -113,6 +113,9 @@ sim_plot<-function(sim_df){
 plotted_sim<-sim_plot(sim_model_foi$sim_df)
 plot(plotted_sim$whole)
 
+save(sim_model_foi,file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/true_epidemic")
+
+
 ###################################################################################################################################
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
@@ -570,7 +573,7 @@ for(i in 1:iterations){
   
 }
 
-#plot(sample_df_tot[sample_df_tot$iteration==19,2])
+plot(sample_df_tot[sample_df_tot$iteration==19,2])
 for(i in 1:100){
   colour="midnightblue"
   if( ((i+4)/5) == round((i+4)/5)){
