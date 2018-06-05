@@ -319,7 +319,77 @@ Finally in figure (\ref{fig:dp_kappa}) the average fitted results for kappa are 
 This serves to highlight how the different asssumptions of the modelling techniques affect predictions in the absence of data. Previously we had seen in a declining epidemic how second order penalized methods teneded to produce closer fits to the true epidemic than first order penalized methods. In this scenario the reverse is true, perhaps indicating how the choice of model is an arbitrary one, and any reliance on future predictions should be held in respect to the modelling technique choosen. 
 
 \subsubsection{RMSE to double peak epidemic}
+In table (\ref{tab:dp_prev_tot}) we see the mean RMSE of the produced fits for each sample size for each of the four different modelling techniques, compared to the true epidemic values of prevalence. We see in this case the first order modelling methods outperforming their respective second order counterparts. In contrast to previous results, splines are closer to the true epidemic's prevalence values than the RW methods are, with the 5,000 sample size of the first order splines giving the closest match of any of the techniques to the true epidemics values.
 
+<<dp_prev_tot,echo=FALSE,fig.lp='tab:dp_prev_tot'>>=
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/prev_inc_kappa_average_RMSE")
+complete_rmse_data$prev$sample_size<-c(100,500,1000,5000)
+complete_rmse_data$prev<-complete_rmse_data$prev[,c(5,1,2,3,4)]
+names(complete_rmse_data$prev)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(complete_rmse_data$prev,caption="Mean RMSE values over 100 different samples for prevalence for four different modelling techniques",booktabs=T,format = "latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1,border_right = T)
+@
+
+The incidence RMSE values for the whole course of the epidemic are displayed in table (\ref{tab:dp_inc_tot}). Once again we see that first order methods fit closer to the true values of incidence than their respective second order penalized methods. While, apart from at a sample size of 100, the spline fitting methods outperform the RW methods with the first order penalized spline at a sample size of 5,000 having the closest fit to the true epidemic's incidence values. The differences in these values are in many cases very small, with all values within a sample size in general on the same order of magnitude.  
+
+<<dp_inc_tot, echo=FALSE, fig.lp='tab:dp_inc_tot' >>=
+
+complete_rmse_data$inc$sample_size<-c(100,500,1000,5000)
+complete_rmse_data$inc<-complete_rmse_data$inc[,c(5,1,2,3,4)]
+names(complete_rmse_data$inc)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(complete_rmse_data$inc,caption = "Mean RMSE values over 100 different samples for incidence for four different modelling techniques", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+@
+
+
+Finally the Kappa RMSE values over the whole course of our double epidemic are displayed in table (\ref{tab:dp_kappa_tot}).The interpretation of these results is more nuanced than for the previous two parameters. In general the first order penalized spline performs the best for all sample sizes, except for the smallest of 100. In contrary to the prevalence and incidence from previously, the second order RW outperforms the first order penalized RW across all sample sizes. Given that the true kappa parameter was created using a seven knot spline function it is easy to explain why spline methods in this case fit well. However the previous epidemic's kappa parameter was generated using a simple logistic curve, a shape you would expect a seven knot spline to be able to replicate, yet in that case RW methods fit closer to the true epidemic than spline methods. Now we will move on to look in particular at the prediction period and peak epidemic period RMSE values for our different fitting methods.  
+
+<<dp_kappa_tot,echo=FALSE,fig.lp='tab:dp_kappa_tot'>>=
+
+complete_rmse_data$kappa$sample_s<-c(100,500,1000,5000)
+complete_rmse_data$kappa<-complete_rmse_data$kappa[,c(5,1,2,3,4)]
+names(complete_rmse_data$kappa)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(complete_rmse_data$kappa,caption = "Mean RMSE values over 100 different samples for Kappa for four different modelling techniques", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+
+@
+
+\subsubsection{RMSE during prediction period}
+In tables (\ref{tab:dp_pred_prev} : \ref{tab:dp_pred_kappa})
+
+<<dp_pred_prev,echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/prediction_period_rmse_dp")
+
+prediction_period_rmse$prevalence$sample_s<-c(100,500,1000,5000)
+prediction_period_rmse$prevalence<-prediction_period_rmse$prevalence[,c(5,1,2,3,4)]
+names(prediction_period_rmse$prevalence)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(prediction_period_rmse$prevalence,caption = "Mean RMSE values over 100 different samples for Prevalence for four different modelling techniques during the prediction period 2015-2020", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+
+
+@
+
+<<dp_pred_inc, echo=FALSE,fig.lp='tab:'>>=
+prediction_period_rmse$incidence$sample_s<-c(100,500,1000,5000)
+prediction_period_rmse$incidence<-prediction_period_rmse$incidence[,c(5,1,2,3,4)]
+names(prediction_period_rmse$incidence)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(prediction_period_rmse$incidence,caption = "Mean RMSE values over 100 different samples for Incidence for four different modelling techniques during the prediction period 2015-2020", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+
+@
+
+<<dp_pred_kappa,echo=FALSE,fig.lp='tab:'>>=
+prediction_period_rmse$kappa$sample_s<-c(100,500,1000,5000)
+prediction_period_rmse$kappa<-prediction_period_rmse$kappa[,c(5,1,2,3,4)]
+names(prediction_period_rmse$kappa)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(prediction_period_rmse$kappa,caption = "Mean RMSE values over 100 different samples for kappa for four different modelling techniques during the prediction period 2015-2020", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
 
 \section{Conclusions and further work}
 From our results for this epidemic we can conclude that for modelling the Kappa parameter through the course of the epidemic, using a Gaussian RW is more likely to recreate the true epidemic parameters of prevalence, incidence and the kappa parameter. For predicting the future course of an epidemic a first order penalized RW produces the closest fit to this form of epidemic's trajectory. While when recapturing the peak of this epidemic, a second order penalized RW matches closest to the true values. The 95\% credible intervals produced by the RW modelling are also much more relaible than the intervals produced via modelling with a Spline. 

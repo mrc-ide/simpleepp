@@ -58,14 +58,14 @@ load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_
 
 
 
-spline_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_f_100_foi_res()$prev)
+spline_firsty_n_100<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_f_100_foi_res$prev)
 
 spline_first_n_100<-ggplot(data=spline_firsty_n_100)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+
   geom_line(data=sim_model_foi$sim_df,aes(x=time,y=prev_percent),colour="red")+
   labs(x="Time",y="Prevalence",title="Spline First Order n = 100")
 
-spline_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_f_500_foi_res()$prev)
+spline_firsty_n_500<-mean_value_function(iterations = 100,nrow_per_iteration = 501,data_frame = spline_f_500_foi_res$prev)
 
 spline_first_n_500<-ggplot(data=spline_firsty_n_500)+geom_line(aes(x=time,y=median),colour="midnightblue",size=0.95)+
   geom_ribbon(aes(x=time,ymin=low,ymax=high),colour="midnightblue",fill="midnightblue",alpha=0.25)+

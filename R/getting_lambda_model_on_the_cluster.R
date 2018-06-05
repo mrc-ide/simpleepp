@@ -799,7 +799,7 @@ spline_first_100_foi$wait(10)
 spline_first_100_foi_ten_knot$status()
 spline_first_100_foi_ten_knot_id<-spline_first_100_foi_ten_knot$id
 save(spline_first_100_foi_ten_knot_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/10_knots/SPLINE_first_100_10_knots_14_16_JUNE_4")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_100_10_knots_14_16_JUNE_4")
 
 ##### 500 #####
 
@@ -996,6 +996,454 @@ save(spline_s_1k_foi_res_ten,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/10_knots/results/sp_sec_1000_foi_10_knots")
 save(spline_s_5k_foi_res_ten,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/10_knots/results/sp_sec_5000_foi_10_knots")
+
+#######################################################################################################################################
+## Now for the 11 knot splines ###############################~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~######################################
+##############################################################***********************************######################################
+
+knot_number<-11
+penalty_order<-1
+model_type<-"spline"
+sample_years<-46
+sample_n<-100
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_100_foi_11_knot<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_100_complete_data_foi_model,
+                                                                          iteration_number = 100,
+                                                                          data_about_sampling = data_about_sampling,
+                                                                          params = params_cluster), name = "SPLINE_first_100_foi_11_knot")
+spline_first_100_foi$wait(10)
+spline_first_100_foi_11_knot$status()
+spline_first_100_foi_11_knot_id<-spline_first_100_foi_11_knot$id
+save(spline_first_100_foi_11_knot_id,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_100_11_knots_13_54_JUNE_5")
+
+##### 500 #####
+
+sample_n<-500
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_500_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_500_complete_data_foi_model,
+                                                                     iteration_number = 100,
+                                                                     data_about_sampling = data_about_sampling,
+                                                                     params = params_cluster), name = "SPLINE_first_500_foi_11_knot")
+spline_first_100_foi$wait(10)
+spline_first_500_foi_11$status()
+spline_first_500_foi_id_11<-spline_first_500_foi_11$id
+save(spline_first_500_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_500_11_knots_13_55_JUNE_5")
+
+##### 1k #####
+
+sample_n<-1000
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_1000_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_1000_complete_data_foi_model,
+                                                                      iteration_number = 100,
+                                                                      data_about_sampling = data_about_sampling,
+                                                                      params = params_cluster), name = "SPLINE_first_1000_foi_11_knot")
+spline_first_100_foi$wait(10)
+spline_first_1000_foi_11$status()
+spline_first_1000_foi_id_11<-spline_first_1000_foi_11$id
+save(spline_first_1000_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_1000_11_knots_13_55_JUNE_5")
+
+##### 5k #####
+
+sample_n<-5000
+
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_5000_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_5000_complete_data_foi_model,
+                                                                      iteration_number = 100,
+                                                                      data_about_sampling = data_about_sampling,
+                                                                      params = params_cluster), name = "SPLINE_first_5000_foi_11_knot")
+spline_first_100_foi$wait(10)
+spline_first_5000_foi_11$status()
+spline_first_5000_foi_id_11<-spline_first_5000_foi_11$id
+save(spline_first_5000_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_5000_11_knots_13_56_JUNE_5")
+
+#######################################################################################################################
+## Now for the second order spline results ############################################################################
+#######################################################################################################################
+
+penalty_order<-2
+model_type<-"spline"
+sample_years<-46
+sample_n<-100
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_100_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_100_complete_data_foi_model,
+                                                                   iteration_number = 100,
+                                                                   data_about_sampling = data_about_sampling,
+                                                                   params = params_cluster), name = "SPLINE_sec_100_foi_11_knot")
+spline_sec_100_foi$wait(10)
+spline_sec_100_foi_11$status()
+spline_sec_100_foi_id_11<-spline_sec_100_foi_11$id
+save(spline_sec_100_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_100_11_knots_13_56_JUNE_5")
+
+##### 500 #####
+
+sample_n<-500
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_500_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_500_complete_data_foi_model,
+                                                                   iteration_number = 100,
+                                                                   data_about_sampling = data_about_sampling,
+                                                                   params = params_cluster), name = "SPLINE_sec_500_foi_11_knot")
+spline_sec_500_foi$wait(10)
+spline_sec_500_foi_11$status()
+spline_sec_500_foi_id_11<-spline_sec_500_foi_11$id
+save(spline_sec_500_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_500_11_knots_13_56_JUNE_5")
+
+##### 1000 #####
+
+sample_n<-1000
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_1000_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_1000_complete_data_foi_model,
+                                                                    iteration_number = 100,
+                                                                    data_about_sampling = data_about_sampling,
+                                                                    params = params_cluster), name = "SPLINE_sec_1000_foi_11_knot")
+spline_sec_1000_foi$wait(10)
+spline_sec_1000_foi_11$status()
+spline_sec_1000_foi_id_11<-spline_sec_1000_foi_11$id
+save(spline_sec_1000_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_1000_11_knots_13_57_JUNE_5")
+##### 5k #####
+
+sample_n<-5000
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_5000_foi_11<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_5000_complete_data_foi_model,
+                                                                    iteration_number = 100,
+                                                                    data_about_sampling = data_about_sampling,
+                                                                    params = params_cluster), name = "SPLINE_sec_5000_foi_11_knot")
+spline_sec_5000_foi$wait(12)
+spline_sec_5000_foi_11$status()
+spline_sec_5000_foi_id_11<-spline_sec_5000_foi_11$id
+save(spline_sec_5000_foi_id_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_5000_11_knots_13_57_JUNE_5")
+#########################################################################################################################################
+## Now to load up the results of the cluster runs 11 11 11 11 11 11  ####################################################################
+#########################################################################################################################################
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_100_11_knots_13_54_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_500_11_knots_13_55_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_1000_11_knots_13_55_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_first_5000_11_knots_13_56_JUNE_5",
+     verbose = T)
+
+spline_f_100_foi_11<-obj$task_get(spline_first_100_foi_11_knot_id)
+spline_f_500_foi_11<-obj$task_get(spline_first_500_foi_id_11)
+spline_f_1k_foi_11<-obj$task_get(spline_first_1000_foi_id_11)
+spline_f_5k_foi_11<-obj$task_get(spline_first_5000_foi_id_11)
+
+spline_f_100_foi_res_11<-spline_f_100_foi_11$result()
+spline_f_500_foi_res_11<-spline_f_500_foi_11$result()
+spline_f_1k_foi_res_11<-spline_f_1k_foi_11$result()
+spline_f_5k_foi_res_11<-spline_f_5k_foi_11$result()
+
+save(spline_f_100_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_100_1st_11_knots")
+save(spline_f_500_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_500_1st_11_knots")
+save(spline_f_1k_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_1000_1st_11_knots")
+save(spline_f_5k_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_5000_1st_11_knots")
+
+
+###### spline second order ######
+
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_100_11_knots_13_56_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_500_11_knots_13_56_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_1000_11_knots_13_57_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/SPLINE_sec_5000_11_knots_13_57_JUNE_5")
+
+spline_s_100_foi<-obj$task_get(spline_sec_100_foi_id_11)
+spline_s_500_foi<-obj$task_get(spline_sec_500_foi_id_11)
+spline_s_1k_foi<-obj$task_get(spline_sec_1000_foi_id_11)
+spline_s_5k_foi<-obj$task_get(spline_sec_5000_foi_id_11)
+
+spline_s_100_foi_res_11<-spline_s_100_foi$result()
+spline_s_500_foi_res_11<-spline_s_500_foi$result()
+spline_s_1k_foi_res_11<-spline_s_1k_foi$result()
+spline_s_5k_foi_res_11<-spline_s_5k_foi$result()
+
+save(spline_s_100_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_100_foi_11_knots")
+save(spline_s_500_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_500_foi_11_knots")
+save(spline_s_1k_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_1000_foi_11_knots")
+save(spline_s_5k_foi_res_11,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_5000_foi_11_knots")
+
+########################################################################################################################################
+##   12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12   ##
+## Now we will run through the 12 knots#########12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12 #
+##   12  12  12  12  12  12  12  12  12  12 12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12 #
+## 12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  12  #
+########################################################################################################################################
+knot_number<-12
+penalty_order<-1
+model_type<-"spline"
+sample_years<-46
+sample_n<-100
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_100_foi_12_knot<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_100_complete_data_foi_model,
+                                                                         iteration_number = 100,
+                                                                         data_about_sampling = data_about_sampling,
+                                                                         params = params_cluster), name = "SPLINE_first_100_foi_12_knot")
+spline_first_100_foi$wait(10)
+spline_first_100_foi_12_knot$status()
+spline_first_100_foi_12_knot_id<-spline_first_100_foi_12_knot$id
+save(spline_first_100_foi_12_knot_id,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_100_12_knots_14_06_JUNE_5")
+
+##### 500 #####
+
+sample_n<-500
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_500_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_500_complete_data_foi_model,
+                                                                    iteration_number = 100,
+                                                                    data_about_sampling = data_about_sampling,
+                                                                    params = params_cluster), name = "SPLINE_first_500_foi_12_knot")
+spline_first_100_foi$wait(10)
+spline_first_500_foi_12$status()
+spline_first_500_foi_id_12<-spline_first_500_foi_12$id
+save(spline_first_500_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_500_12_knots_14_07_JUNE_5")
+
+##### 1k #####
+
+sample_n<-1000
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_1000_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_1000_complete_data_foi_model,
+                                                                     iteration_number = 100,
+                                                                     data_about_sampling = data_about_sampling,
+                                                                     params = params_cluster), name = "SPLINE_first_1000_foi_12_knot")
+spline_first_100_foi$wait(10)
+spline_first_1000_foi_12$status()
+spline_first_1000_foi_id_12<-spline_first_1000_foi_12$id
+save(spline_first_1000_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_1000_12_knots_14_07_JUNE_5")
+
+##### 5k #####
+
+sample_n<-5000
+
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_first_5000_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_5000_complete_data_foi_model,
+                                                                     iteration_number = 100,
+                                                                     data_about_sampling = data_about_sampling,
+                                                                     params = params_cluster), name = "SPLINE_first_5000_foi_12_knot")
+spline_first_100_foi$wait(10)
+spline_first_5000_foi_12$status()
+spline_first_5000_foi_id_12<-spline_first_5000_foi_12$id
+save(spline_first_5000_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_5000_12_knots_14_08_JUNE_5")
+
+#######################################################################################################################
+## Now for the second order spline results ############################################################################
+#######################################################################################################################
+
+penalty_order<-2
+model_type<-"spline"
+sample_years<-46
+sample_n<-100
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_100_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_100_complete_data_foi_model,
+                                                                  iteration_number = 100,
+                                                                  data_about_sampling = data_about_sampling,
+                                                                  params = params_cluster), name = "SPLINE_sec_100_foi_12_knot")
+spline_sec_100_foi$wait(10)
+spline_sec_100_foi_12$status()
+spline_sec_100_foi_id_12<-spline_sec_100_foi_12$id
+save(spline_sec_100_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_100_12_knots_14_08_JUNE_5")
+
+##### 500 #####
+
+sample_n<-500
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_500_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_500_complete_data_foi_model,
+                                                                  iteration_number = 100,
+                                                                  data_about_sampling = data_about_sampling,
+                                                                  params = params_cluster), name = "SPLINE_sec_500_foi_12_knot")
+spline_sec_500_foi$wait(10)
+spline_sec_500_foi_12$status()
+spline_sec_500_foi_id_12<-spline_sec_500_foi_12$id
+save(spline_sec_500_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_500_12_knots_14_09_JUNE_5")
+
+##### 1000 #####
+
+sample_n<-1000
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_1000_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_1000_complete_data_foi_model,
+                                                                   iteration_number = 100,
+                                                                   data_about_sampling = data_about_sampling,
+                                                                   params = params_cluster), name = "SPLINE_sec_1000_foi_12_knot")
+spline_sec_1000_foi$wait(10)
+spline_sec_1000_foi_12$status()
+spline_sec_1000_foi_id_12<-spline_sec_1000_foi_12$id
+save(spline_sec_1000_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_1000_12_knots_14_09_JUNE_5")
+##### 5k #####
+
+sample_n<-5000
+
+params_cluster<-list(mu=mu,sigma=sigma,mu_i=mu_i,foi_flag=foi_flag)
+data_about_sampling<-list(knot_number=knot_number,penalty_order=penalty_order,
+                          model_type=model_type,sample_years=sample_years,
+                          sample_n=sample_n)
+
+spline_sec_5000_foi_12<-obj$enqueue(fitting_data_function_loop_foi(samples_data_frame = sampled_n_5000_complete_data_foi_model,
+                                                                   iteration_number = 100,
+                                                                   data_about_sampling = data_about_sampling,
+                                                                   params = params_cluster), name = "SPLINE_sec_5000_foi_12_knot")
+spline_sec_5000_foi$wait(12)
+spline_sec_5000_foi_12$status()
+spline_sec_5000_foi_id_12<-spline_sec_5000_foi_12$id
+save(spline_sec_5000_foi_id_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_5000_12_knots_14_09_JUNE_5")
+#########################################################################################################################################
+## Now to load up the results of the cluster runs 12 12 12 12 12 12  ####################################################################
+#########################################################################################################################################
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_100_12_knots_14_06_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_500_12_knots_14_07_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_1000_12_knots_14_07_JUNE_5",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_first_5000_12_knots_14_08_JUNE_5",
+     verbose = T)
+
+spline_f_100_foi_12<-obj$task_get(spline_first_100_foi_12_knot_id)
+spline_f_500_foi_12<-obj$task_get(spline_first_500_foi_id_12)
+spline_f_1k_foi_12<-obj$task_get(spline_first_1000_foi_id_12)
+spline_f_5k_foi_12<-obj$task_get(spline_first_5000_foi_id_12)
+
+spline_f_100_foi_res_12<-spline_f_100_foi_12$result()
+spline_f_500_foi_res_12<-spline_f_500_foi_12$result()
+spline_f_1k_foi_res_12<-spline_f_1k_foi_12$result()
+spline_f_5k_foi_res_12<-spline_f_5k_foi_12$result()
+
+save(spline_f_100_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_100_1st_12_knots")
+save(spline_f_500_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_500_1st_12_knots")
+save(spline_f_1k_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_1000_1st_12_knots")
+save(spline_f_5k_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_5000_1st_12_knots")
+
+
+###### spline second order ######
+
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_100_12_knots_14_08_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_500_12_knots_14_09_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_1000_12_knots_14_09_JUNE_5")
+load(verbose = T,
+     "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/SPLINE_sec_5000_12_knots_14_09_JUNE_5")
+
+spline_s_100_foi<-obj$task_get(spline_sec_100_foi_id_12)
+spline_s_500_foi<-obj$task_get(spline_sec_500_foi_id_12)
+spline_s_1k_foi<-obj$task_get(spline_sec_1000_foi_id_12)
+spline_s_5k_foi<-obj$task_get(spline_sec_5000_foi_id_12)
+
+spline_s_100_foi_res_12<-spline_s_100_foi$result()
+spline_s_500_foi_res_12<-spline_s_500_foi$result()
+spline_s_1k_foi_res_12<-spline_s_1k_foi$result()
+spline_s_5k_foi_res_12<-spline_s_5k_foi$result()
+
+save(spline_s_100_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_100_foi_12_knots")
+save(spline_s_500_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_500_foi_12_knots")
+save(spline_s_1k_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_1000_foi_12_knots")
+save(spline_s_5k_foi_res_12,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_5000_foi_12_knots")
+
+
+
+
 
 
 
