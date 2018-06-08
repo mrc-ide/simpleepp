@@ -357,7 +357,7 @@ kable(complete_rmse_data$kappa,caption = "Mean RMSE values over 100 different sa
 @
 
 \subsubsection{RMSE during prediction period}
-In tables (\ref{tab:dp_pred_prev} : \ref{tab:dp_pred_kappa})
+In tables (\ref{tab:dp_pred_prev} : \ref{tab:dp_pred_kappa}) we see the results for RMSE analysis over the 100 different samples we take from the true epidemic at four different sample sizes. These results clearly depict first order penalized methods outperforming second order penalized methods. At lower sample sizes the RW first order penalized method tends to fit closer to the true epidemic than the Spline methods, but with larger sample sizes this trend reverses, with first order splines at higher sample sizes producing the best fit to the true epidemics values. 
 
 <<dp_pred_prev,echo=FALSE,fig.lp='tab:'>>=
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/RMSE_analysis/prediction_period_rmse_dp")
@@ -389,6 +389,53 @@ names(prediction_period_rmse$kappa)<-c("Sample size","Spline first order","Splin
 
 kable(prediction_period_rmse$kappa,caption = "Mean RMSE values over 100 different samples for kappa for four different modelling techniques during the prediction period 2015-2020", booktabs = T, format = "latex", align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
 
+@
+
+
+\subsubsection{Credible interval analysis}
+To test how relaiable the produced 95\% credible intervals were we analysed how often the true epidemic values fell within these ranges for the four different modelling techniques we used. The results are depicted in tables (\ref{tab:dp_95_prev} : \ref{tab:dp_95_kappa})
+
+<<dp_95_prev, echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/95_percent_conf_analysis/overall_95")
+overall_95_stats$prev$samp<-c(100,500,1000,5000)
+overall_95_stats$prev<-overall_95_stats$prev[,c(5,1,2,3,4)]
+names(overall_95_stats$prev)<-c("Sample size","Spline first order","SPline second order","RW first order","RW second order")
+
+kable(overall_95_stats$prev,caption = "Percentage of time the true epidemic value of prevalence fell within the 95 percent credible interval produced by four different modelling techniques over four different sample sizes across 100 different samples",booktabs =T,
+      format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
+
+<<dp_95_inc,echo=FALSE,fig.lp='tab:'>>=
+overall_95_stats$inc$samp<-c(100,500,1000,5000)
+overall_95_stats$inc<-overall_95_stats$inc[,c(5,1,2,3,4)]
+names(overall_95_stats$inc)<-c("Sample size","Spline first order","SPline second order","RW first order","RW second order")
+
+kable(overall_95_stats$inc,caption = "Percentage of time the true epidemic value of incidence fell within the 95 percent credible interval produced by four different modelling techniques over four different sample sizes across 100 different samples",booktabs =T,
+      format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
+
+<<dp_95_kappa, echo=FALSE,fig.lp='tab:'>>=
+overall_95_stats$kappa$samp<-c(100,500,1000,5000)
+overall_95_stats$kappa<-overall_95_stats$kappa[,c(5,1,2,3,4)]
+names(overall_95_stats$kappa)<-c("Sample size","Spline first order","SPline second order","RW first order","RW second order")
+
+kable(overall_95_stats$kappa,caption = "Percentage of time the true epidemic value of Kappa fell within the 95 percent credible interval produced by four different modelling techniques over four different sample sizes across 100 different samples",booktabs =T,
+      format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
+
+
+\subsubsection{Overfit analysis}
+
+<<overfit_dp,echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/overfit_analysis/overall_overfit")
+overfit_tests$ratio$sampl<-c(100,500,1000,5000)
+overfit_tests$ratio<-overfit_tests$ratio[,c(5,1,2,3,4)]
+names(overfit_tests$ratio)<-c("Sample size","Spline first order","Spline second order","RW first order","RW second order")
+
+kable(overfit_tests$ratio,caption = "Ratio of RMSE to sample points against ratio to true epidemic for four different fitting methods",booktab =T, format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
 @
 
 \section{Conclusions and further work}

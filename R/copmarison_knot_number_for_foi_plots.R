@@ -81,6 +81,46 @@ load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/10_knots/results/sp_sec_5000_foi_10_knots",
      verbose = T)
 
+### 11 knotters
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_100_1st_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_500_1st_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_1000_1st_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/spline_5000_1st_11_knots",
+     verbose = T)
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_100_foi_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_500_foi_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_1000_foi_11_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/sp_sec_5000_foi_11_knots",
+     verbose = T)
+
+### 12 knotters
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_100_1st_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_500_1st_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_1000_1st_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/spline_5000_1st_12_knots",
+     verbose = T)
+
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_100_foi_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_500_foi_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_1000_foi_12_knots",
+     verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/sp_sec_5000_foi_12_knots",
+     verbose = T)
+
 #######################################################################################################################################
 ## Now lets write a function that outputs a graph comparing these different outcomes over differernt scales ###########################
 #######################################################################################################################################
@@ -122,8 +162,8 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
     
   }
   
-  plot_colours<-c("dodgerblue","red","blueviolet","forestgreen","yellow","midnightblue",
-                  "indianred4","springgreen2","chocolate4","azure2")
+  plot_colours<-c("dodgerblue","red","blueviolet","forestgreen","yellow",
+                  "indianred4","springgreen2","chocolate4","azure2","midnightblue")
   
   random_colour<-round(runif(1,min = 1,max = length(plot_colours)))
   
@@ -161,7 +201,7 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
 
   }else{
     total_plot<-ggplot(data = tot_df_values, aes(x=tot_df_values$time,y=tot_df_values$median,group=tot_df_values$knot))+
-      geom_line(aes(colour=tot_df_values$knot),size= 1)+labs(x="time",y=graph_titles[1],title=graph_titles[2])+
+      geom_line(aes(colour=tot_df_values$knot,size=tot_df_values$knot)) + labs(x="time",y=graph_titles[1],title=graph_titles[2])+
       scale_colour_manual("Knot Number",
                           values = c("true"="black",colour_values))+
       scale_size_manual("Knot Number",
@@ -182,28 +222,32 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
 #######################################################################################################################################
 
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 100")
-df_tot<-list(spline_f_100_foi_res$prev,spline_f_100_foi_res_8$prev,spline_f_100_foi_res_9$prev,spline_f_100_foi_res_ten$prev)
+df_tot<-list(spline_f_100_foi_res$prev,spline_f_100_foi_res_8$prev,spline_f_100_foi_res_9$prev,spline_f_100_foi_res_ten$prev,
+             spline_f_100_foi_res_11$prev,spline_f_100_foi_res_12$prev)
 
 n_100_knot_compo<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                               include_credible = T)
 
 ## 500
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 500")
-df_tot<-list(spline_f_500_foi_res$prev,spline_f_500_foi_res_8$prev,spline_f_500_foi_res_9$prev,spline_f_500_foi_res_ten$prev)
+df_tot<-list(spline_f_500_foi_res$prev,spline_f_500_foi_res_8$prev,spline_f_500_foi_res_9$prev,spline_f_500_foi_res_ten$prev,
+             spline_f_500_foi_res_11$prev,spline_f_500_foi_res_12$prev)
 
 n_500_knot_compo<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                              include_credible = T)
 
 ## 1000
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 1000")
-df_tot<-list(spline_f_1k_foi_res$prev,spline_f_1k_foi_res_8$prev,spline_f_1k_foi_res_9$prev,spline_f_1k_foi_res_ten$prev)
+df_tot<-list(spline_f_1k_foi_res$prev,spline_f_1k_foi_res_8$prev,spline_f_1k_foi_res_9$prev,spline_f_1k_foi_res_ten$prev,
+             spline_f_1k_foi_res_11$prev,spline_f_1k_foi_res_12$prev)
 
 n_1k_knot_compo<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                              include_credible = T)
 
 ## 5000
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 5000")
-df_tot<-list(spline_f_5k_foi_res$prev,spline_f_5k_foi_res_8$prev,spline_f_5k_foi_res_9$prev,spline_f_5k_foi_res_ten$prev)
+df_tot<-list(spline_f_5k_foi_res$prev,spline_f_5k_foi_res_8$prev,spline_f_5k_foi_res_9$prev,spline_f_5k_foi_res_ten$prev,
+             spline_f_5k_foi_res_11$prev,spline_f_5k_foi_res_12$prev)
 
 n_5k_knot_compo<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                             include_credible = T)
@@ -215,28 +259,32 @@ prev_compo_plots
 
 ##' 2nd order ####
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 100 2nd Order")
-df_tot<-list(spline_s_100_foi_res$prev,spline_s_100_foi_res_8$prev,spline_s_100_foi_res_9$prev,spline_s_100_foi_res_ten$prev)
+df_tot<-list(spline_s_100_foi_res$prev,spline_s_100_foi_res_8$prev,spline_s_100_foi_res_9$prev,spline_s_100_foi_res_ten$prev,
+             spline_s_100_foi_res_11$prev,spline_s_100_foi_res_12$prev)
 
 n_100_knot_compo_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                              include_credible = T)
 
 ## 500
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 500 2nd Order")
-df_tot<-list(spline_s_500_foi_res$prev,spline_s_500_foi_res_8$prev,spline_s_500_foi_res_9$prev,spline_s_500_foi_res_ten$prev)
+df_tot<-list(spline_s_500_foi_res$prev,spline_s_500_foi_res_8$prev,spline_s_500_foi_res_9$prev,spline_s_500_foi_res_ten$prev,
+             spline_s_500_foi_res_11$prev,spline_s_500_foi_res_12$prev)
 
 n_500_knot_compo_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                              include_credible = T)
 
 ## 1000
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 1000 2nd Order")
-df_tot<-list(spline_s_1k_foi_res$prev,spline_s_1k_foi_res_8$prev,spline_s_1k_foi_res_9$prev,spline_s_1k_foi_res_ten$prev)
+df_tot<-list(spline_s_1k_foi_res$prev,spline_s_1k_foi_res_8$prev,spline_s_1k_foi_res_9$prev,spline_s_1k_foi_res_ten$prev,
+             spline_s_1k_foi_res_11$prev,spline_s_1k_foi_res_12$prev)
 
 n_1k_knot_compo_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                             include_credible = T)
 
 ## 5000
 graph_title<-c("prev","Comparison of number of knots predicting prevalence n = 5000 2nd Order")
-df_tot<-list(spline_s_5k_foi_res$prev,spline_s_5k_foi_res_8$prev,spline_s_5k_foi_res_9$prev,spline_s_5k_foi_res_ten$prev)
+df_tot<-list(spline_s_5k_foi_res$prev,spline_s_5k_foi_res_8$prev,spline_s_5k_foi_res_9$prev,spline_s_5k_foi_res_ten$prev,
+             spline_s_5k_foi_res_11$prev,spline_s_5k_foi_res_12$prev)
 
 n_5k_knot_compo_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$prev_percent,
                                             include_credible = T)
@@ -256,28 +304,32 @@ prev_1_and_2_prev_compo<-ggarrange(n_100_knot_compo$compo_plot,n_100_knot_compo_
 ## INC now #############################################################################################################################
 ########################################################################################################################################
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 100")
-df_tot<-list(spline_f_100_foi_res$incidence,spline_f_100_foi_res_8$incidence,spline_f_100_foi_res_9$incidence,spline_f_100_foi_res_ten$incidence)
+df_tot<-list(spline_f_100_foi_res$incidence,spline_f_100_foi_res_8$incidence,spline_f_100_foi_res_9$incidence,
+             spline_f_100_foi_res_ten$incidence,spline_f_100_foi_res_11$incidence,spline_f_100_foi_res_12$incidence)
 
 n_100_knot_compo_inc<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                              include_credible = T)
 
 ## 500
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 500")
-df_tot<-list(spline_f_500_foi_res$incidence,spline_f_500_foi_res_8$incidence,spline_f_500_foi_res_9$incidence,spline_f_500_foi_res_ten$incidence)
+df_tot<-list(spline_f_500_foi_res$incidence,spline_f_500_foi_res_8$incidence,spline_f_500_foi_res_9$incidence,
+             spline_f_500_foi_res_ten$incidence,spline_f_500_foi_res_11$incidence,spline_f_500_foi_res_12$incidence)
 
 n_500_knot_compo_inc<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                              include_credible = T)
 
 ## 1000
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 1000")
-df_tot<-list(spline_f_1k_foi_res$incidence,spline_f_1k_foi_res_8$incidence,spline_f_1k_foi_res_9$incidence,spline_f_1k_foi_res_ten$incidence)
+df_tot<-list(spline_f_1k_foi_res$incidence,spline_f_1k_foi_res_8$incidence,spline_f_1k_foi_res_9$incidence,
+             spline_f_1k_foi_res_ten$incidence,spline_f_1k_foi_res_11$incidence,spline_f_1k_foi_res_12$incidence)
 
 n_1k_knot_compo_inc<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                             include_credible = T)
 
 ## 5000
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 5000")
-df_tot<-list(spline_f_5k_foi_res$incidence,spline_f_5k_foi_res_8$incidence,spline_f_5k_foi_res_9$incidence,spline_f_5k_foi_res_ten$incidence)
+df_tot<-list(spline_f_5k_foi_res$incidence,spline_f_5k_foi_res_8$incidence,spline_f_5k_foi_res_9$incidence,
+             spline_f_5k_foi_res_ten$incidence,spline_f_5k_foi_res_11$incidence,spline_f_5k_foi_res_12$incidence)
 
 n_5k_knot_compo_inc<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                             include_credible = T)
@@ -289,28 +341,32 @@ inc_compo_inc_plots
 
 ##' 2nd order ####
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 100 2nd Order")
-df_tot<-list(spline_s_100_foi_res$incidence,spline_s_100_foi_res_8$incidence,spline_s_100_foi_res_9$incidence,spline_s_100_foi_res_ten$incidence)
+df_tot<-list(spline_s_100_foi_res$incidence,spline_s_100_foi_res_8$incidence,spline_s_100_foi_res_9$incidence,spline_s_100_foi_res_ten$incidence,
+             spline_s_100_foi_res_11$incidence,spline_s_100_foi_res_12$incidence)
 
 n_100_knot_compo_inc_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                                  include_credible = T)
 
 ## 500
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 500 2nd Order")
-df_tot<-list(spline_s_500_foi_res$incidence,spline_s_500_foi_res_8$incidence,spline_s_500_foi_res_9$incidence,spline_s_500_foi_res_ten$incidence)
+df_tot<-list(spline_s_500_foi_res$incidence,spline_s_500_foi_res_8$incidence,spline_s_500_foi_res_9$incidence,spline_s_500_foi_res_ten$incidence,
+             spline_s_500_foi_res_11$incidence,spline_s_500_foi_res_12$incidence)
 
 n_500_knot_compo_inc_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                                  include_credible = T)
 
 ## 1000
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 1000 2nd Order")
-df_tot<-list(spline_s_1k_foi_res$incidence,spline_s_1k_foi_res_8$incidence,spline_s_1k_foi_res_9$incidence,spline_s_1k_foi_res_ten$incidence)
+df_tot<-list(spline_s_1k_foi_res$incidence,spline_s_1k_foi_res_8$incidence,spline_s_1k_foi_res_9$incidence,spline_s_1k_foi_res_ten$incidence,
+             spline_s_1k_foi_res_11$incidence,spline_s_1k_foi_res_12$incidence)
 
 n_1k_knot_compo_inc_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                                 include_credible = T)
 
 ## 5000
 graph_title<-c("inc","Comparison of number of knots predicting incidence n = 5000 2nd Order")
-df_tot<-list(spline_s_5k_foi_res$incidence,spline_s_5k_foi_res_8$incidence,spline_s_5k_foi_res_9$incidence,spline_s_5k_foi_res_ten$incidence)
+df_tot<-list(spline_s_5k_foi_res$incidence,spline_s_5k_foi_res_8$incidence,spline_s_5k_foi_res_9$incidence,spline_s_5k_foi_res_ten$incidence,
+             spline_s_5k_foi_res_11$incidence,spline_s_5k_foi_res_12$incidence)
 
 n_5k_knot_compo_inc_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$lambda,
                                                 include_credible = T)
@@ -336,28 +392,32 @@ inc_1_and_2_inc_compo
 #########################################################################################################################################
 
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 100")
-df_tot<-list(spline_f_100_foi_res$kappa,spline_f_100_foi_res_8$kappa,spline_f_100_foi_res_9$kappa,spline_f_100_foi_res_ten$kappa)
+df_tot<-list(spline_f_100_foi_res$kappa,spline_f_100_foi_res_8$kappa,spline_f_100_foi_res_9$kappa,spline_f_100_foi_res_ten$kappa,
+             spline_f_100_foi_res_11$kappa,spline_f_100_foi_res_12$kappa)
 
 n_100_knot_compo_kappa<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                  include_credible = T)
 
 ## 500
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 500")
-df_tot<-list(spline_f_500_foi_res$kappa,spline_f_500_foi_res_8$kappa,spline_f_500_foi_res_9$kappa,spline_f_500_foi_res_ten$kappa)
+df_tot<-list(spline_f_500_foi_res$kappa,spline_f_500_foi_res_8$kappa,spline_f_500_foi_res_9$kappa,spline_f_500_foi_res_ten$kappa,
+             spline_f_500_foi_res_11$kappa,spline_f_500_foi_res_12$kappa)
 
 n_500_knot_compo_kappa<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                  include_credible = T)
 
 ## 1000
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 1000")
-df_tot<-list(spline_f_1k_foi_res$kappa,spline_f_1k_foi_res_8$kappa,spline_f_1k_foi_res_9$kappa,spline_f_1k_foi_res_ten$kappa)
+df_tot<-list(spline_f_1k_foi_res$kappa,spline_f_1k_foi_res_8$kappa,spline_f_1k_foi_res_9$kappa,spline_f_1k_foi_res_ten$kappa,
+             spline_f_1k_foi_res_11$kappa,spline_f_1k_foi_res_12$kappa)
 
 n_1k_knot_compo_kappa<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                 include_credible = T)
 
 ## 5000
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 5000")
-df_tot<-list(spline_f_5k_foi_res$kappa,spline_f_5k_foi_res_8$kappa,spline_f_5k_foi_res_9$kappa,spline_f_5k_foi_res_ten$kappa)
+df_tot<-list(spline_f_5k_foi_res$kappa,spline_f_5k_foi_res_8$kappa,spline_f_5k_foi_res_9$kappa,spline_f_5k_foi_res_ten$kappa,
+             spline_f_5k_foi_res_11$kappa,spline_f_5k_foi_res_12$kappa)
 
 n_5k_knot_compo_kappa<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                 include_credible = T)
@@ -369,28 +429,32 @@ inc_compo_kappa_plots
 
 ##' 2nd order ####
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 100 2nd Order")
-df_tot<-list(spline_s_100_foi_res$kappa,spline_s_100_foi_res_8$kappa,spline_s_100_foi_res_9$kappa,spline_s_100_foi_res_ten$kappa)
+df_tot<-list(spline_s_100_foi_res$kappa,spline_s_100_foi_res_8$kappa,spline_s_100_foi_res_9$kappa,spline_s_100_foi_res_ten$kappa,
+             spline_s_100_foi_res_11$kappa,spline_s_100_foi_res_12$kappa)
 
 n_100_knot_compo_kappa_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                      include_credible = T)
 
 ## 500
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 500 2nd Order")
-df_tot<-list(spline_s_500_foi_res$kappa,spline_s_500_foi_res_8$kappa,spline_s_500_foi_res_9$kappa,spline_s_500_foi_res_ten$kappa)
+df_tot<-list(spline_s_500_foi_res$kappa,spline_s_500_foi_res_8$kappa,spline_s_500_foi_res_9$kappa,spline_s_500_foi_res_ten$kappa,
+             spline_s_500_foi_res_11$kappa,spline_s_500_foi_res_12$kappa)
 
 n_500_knot_compo_kappa_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                      include_credible = T)
 
 ## 1000
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 1000 2nd Order")
-df_tot<-list(spline_s_1k_foi_res$kappa,spline_s_1k_foi_res_8$kappa,spline_s_1k_foi_res_9$kappa,spline_s_1k_foi_res_ten$kappa)
+df_tot<-list(spline_s_1k_foi_res$kappa,spline_s_1k_foi_res_8$kappa,spline_s_1k_foi_res_9$kappa,spline_s_1k_foi_res_ten$kappa,
+             spline_s_1k_foi_res_11$kappa,spline_s_1k_foi_res_12$kappa)
 
 n_1k_knot_compo_kappa_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                     include_credible = T)
 
 ## 5000
 graph_title<-c("kappa","Comparison of number of knots predicting incidence n = 5000 2nd Order")
-df_tot<-list(spline_s_5k_foi_res$kappa,spline_s_5k_foi_res_8$kappa,spline_s_5k_foi_res_9$kappa,spline_s_5k_foi_res_ten$kappa)
+df_tot<-list(spline_s_5k_foi_res$kappa,spline_s_5k_foi_res_8$kappa,spline_s_5k_foi_res_9$kappa,spline_s_5k_foi_res_ten$kappa,
+             spline_s_5k_foi_res_11$kappa,spline_s_5k_foi_res_12$kappa)
 
 n_5k_knot_compo_kappa_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df = sim_model_foi$sim_df,true_col_id = sim_model_foi$sim_df$kappa,
                                                     include_credible = T)
@@ -398,7 +462,7 @@ n_5k_knot_compo_kappa_sec<-knotter_compo_after_2_hits(df_tot,graph_title,true_df
 
 kappa_compo_plots_sec<-ggarrange(n_100_knot_compo_kappa_sec$compo_plot,n_500_knot_compo_kappa_sec$compo_plot,
                                n_1k_knot_compo_kappa_sec$compo_plot,n_5k_knot_compo_kappa_sec$compo_plot,ncol = 2,nrow = 2)
-inc_compo_plots_sec
+kappa_compo_plots_sec
 
 kappa_1_and_2_kappa_compo<-ggarrange(n_100_knot_compo_kappa$compo_plot,n_100_knot_compo_kappa_sec$compo_plot,
                                  n_500_knot_compo_kappa$compo_plot,n_500_knot_compo_kappa_sec$compo_plot,

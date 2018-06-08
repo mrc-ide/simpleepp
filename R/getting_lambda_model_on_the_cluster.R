@@ -57,7 +57,7 @@ for(i in 1:100){
   }
   
   lines(sampled_n_5000_complete_data_foi_model[sampled_n_5000_complete_data_foi_model$iteration==i,2],col=colour)
-  Sys.sleep(0.5)
+  Sys.sleep(0.3)
   print(i)
 }
 
