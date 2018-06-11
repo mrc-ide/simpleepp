@@ -106,8 +106,8 @@ plot(plotted_sim$whole)
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-1982:2015
-sample_years<-34
+sample_range<-1990:2015
+sample_years<-length(sample_range)
 sample_n<-1000
   
   

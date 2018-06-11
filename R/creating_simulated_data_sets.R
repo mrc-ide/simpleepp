@@ -100,7 +100,7 @@ plot(plotted_sim$whole)
 ## Now lets form our loop to sample through and fit to stan data ######################################################################
 #######################################################################################################################################
 
-sample_range<-1984:2015
+sample_range<-2000:2015
 ## Need to change this to length of time_points_to_sample if sporadic
 sample_n<-5000
 
@@ -189,7 +189,6 @@ for(i in 1:iterations){
   
 }
 
-plot(sample_df_tot[sample_df_tot$iteration==19,2])
 plot(sample_df_tot[sample_df_tot$iteration==64,2])
 for(i in 1:100){
   colour="midnightblue"
@@ -212,8 +211,8 @@ for(i in 1:100){
 }
 
   
-sampled_n_5000_84_data<-sample_df_tot
+sampled_n_5000_00_data<-sample_df_tot
 
-save(sampled_n_5000_84_data,file = "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/data_from_1984_simpleepp/N_5000_samples")  
+save(sampled_n_5000_00_data,file = "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/data_from_2000_runs/N_5000_sampled_data")  
 save(sim_model_output,
-     file = "hiv_project/analysis_of_cluster_run_datasets/data_from_1984_simpleepp/true_epidemic")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/data_from_1990_runs/true_epidemic")

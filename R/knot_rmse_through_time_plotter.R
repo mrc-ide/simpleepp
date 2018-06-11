@@ -11,6 +11,16 @@ require(ggpubr)
 
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/true_epidemic",verbose = T)
 
+## 7 knotters ####
+
+path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/spline_results/"
+seven_knots<-list.files(path_name)
+seven_knots<-paste(path_name,seven_knots,sep = "")
+lapply(seven_knots,load)
+for(i in 1:length(seven_knots)){
+  load(seven_knots[i],verbose = T)
+}
+
 ## 8 knotters ###
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/8_knot_splines/results/"
@@ -41,12 +51,19 @@ path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/f
 eleven_knots<-list.files(path_name)
 eleven_knots<-paste(path_name,eleven_knots,sep = "")
 lapply(eleven_knots,load,verbose=T)
+for(i in 1:length(eleven_knots)){
+  load(eleven_knots[i],verbose = T)
+}
+
 
 ##12 Knotters
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/"
 twelve_knots<-list.files(path_name)
 twelve_knots<-paste(path_name,twelve_knots,sep = "")
 lapply(twelve_knots,load,verbose=T)
+for(i in 1:length(twelve_knots)){
+  load(twelve_knots[i],verbose = T)
+}
 
 ############################################################################################################################################
 ## NOw we will write our function to get the rmse to the true for each time point for all the spline data ##################################
@@ -134,19 +151,22 @@ rmse_per_time_knotters<-function(true_data,fitted_data,metric="prevalence",year_
   }
   
   knot_number<-NULL
-  if(grepl("8 knots"),mean_rmse_tot$type[1]==T){
+  if(grepl("7 knots",mean_rmse_tot$type[1])==T){
+    knot_number<-"7"
+  }
+  if(grepl("8 knots",mean_rmse_tot$type[1])==T){
     knot_number<-"8"
   }
-  if(grepl("9 knots"),mean_rmse_tot$type[1]==T){
+  if(grepl("9 knots",mean_rmse_tot$type[1])==T){
     knot_number<-"9"
   }
-  if(grepl("10 knots"),mean_rmse_tot$type[1]==T){
+  if(grepl("10 knots",mean_rmse_tot$type[1])==T){
     knot_number<-"10"
   }
-  if(grepl("11 knots"),mean_rmse_tot$type[1]==T){
+  if(grepl("11 knots",mean_rmse_tot$type[1])==T){
     knot_number<-"11"
   }
-  if(grepl("12 knots"),mean_rmse_tot$type[1]==T){
+  if(grepl("12 knots",mean_rmse_tot$type[1])==T){
     knot_number<-"12"
   }
   
@@ -162,7 +182,7 @@ rmse_per_time_knotters<-function(true_data,fitted_data,metric="prevalence",year_
   
 }
 
-plotter_function_rmse<-function(list_of_rmse_results_dfs,plot_title,colour_by_sample_size=F){
+plotter_function_rmse<-function(list_of_rmse_results_dfs,plot_title,colour_by_sample_size=F,knot_type_plot=F){
   total_data<-list_of_rmse_results_dfs[[1]][[2]]
   
   for(i in 2:length(list_of_rmse_results_dfs)){
@@ -181,7 +201,7 @@ plotter_function_rmse<-function(list_of_rmse_results_dfs,plot_title,colour_by_sa
   }
   
   if(knot_type_plot==T){
-    mean_plot<-ggplot(data = total_data,aes(x=time,y=RMSE,group=type))+geom_line(aes(colour=knots,linetype=sample_size,size=order_type))+
+    mean_plot<-ggplot(data = total_data,aes(x=time,y=RMSE,group=type))+geom_line(aes(colour=knots,linetype=sample_size),size=1.05)+
       labs(x="time",y="RMSE",title=plot_title)
   }
   error_plot<-ggplot(data = total_data,aes(x=time,y=median,group=type))+geom_line(aes(colour=type,linetype=order_type),size=1.2)+
@@ -198,6 +218,648 @@ plotter_function_rmse<-function(list_of_rmse_results_dfs,plot_title,colour_by_sa
 ########################################################################################################################################
 ## Now we will apply the functions to our datasets #####################################################################################
 ########################################################################################################################################
+
+## 7 knotters ####
+
+seven_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res,
+                                             type_of_data = "Spline first order 100 7 knots")
+seven_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res,
+                                             type_of_data = "Spline first order 500 7 knots")
+seven_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res,
+                                             type_of_data = "Spline first order 1000 7 knots")
+seven_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res,
+                                             type_of_data = "Spline first order 5000 7 knots")
+
+seven_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res,
+                                             type_of_data = "Spline second order 100 7 knots")
+seven_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res,
+                                             type_of_data = "Spline second order 500 7 knots")
+seven_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res,
+                                             type_of_data = "Spline second order 1000 7 knots")
+seven_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res,
+                                             type_of_data = "Spline second order 5000 7 knots")
+
+### 8 knotters ###
+
+eight_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_8,
+                                             type_of_data = "Spline first order 100 8 knots")
+eight_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_8,
+                                             type_of_data = "Spline first order 500 8 knots")
+eight_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_8,
+                                              type_of_data = "Spline first order 1000 8 knots")
+eight_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_8,
+                                              type_of_data = "Spline first order 5000 8 knots")
+
+
+eight_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_8,
+                                             type_of_data = "Spline second order 100 8 knots")
+eight_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_8,
+                                             type_of_data = "Spline second order 500 8 knots")
+eight_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_8,
+                                              type_of_data = "Spline second order 1000 8 knots")
+eight_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_8,
+                                              type_of_data = "Spline second order 5000 8 knots")
+
+### 9 knotters ####
+
+nine_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_9,
+                                             type_of_data = "Spline first order 100 9 knots")
+nine_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_9,
+                                             type_of_data = "Spline first order 500 9 knots")
+nine_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_9,
+                                              type_of_data = "Spline first order 1000 9 knots")
+nine_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_9,
+                                              type_of_data = "Spline first order 5000 9 knots")
+
+
+nine_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_9,
+                                             type_of_data = "Spline second order 100 9 knots")
+nine_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_9,
+                                             type_of_data = "Spline second order 500 9 knots")
+nine_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_9,
+                                              type_of_data = "Spline second order 1000 9 knots")
+nine_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_9,
+                                              type_of_data = "Spline second order 5000 9 knots")
+
+### 10 knotters ####
+
+ten_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_ten,
+                                            type_of_data = "Spline first order 100 10 knots")
+ten_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_ten,
+                                            type_of_data = "Spline first order 500 10 knots")
+ten_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_ten,
+                                             type_of_data = "Spline first order 1000 10 knots")
+ten_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_ten,
+                                             type_of_data = "Spline first order 5000 10 knots")
+
+
+ten_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_ten,
+                                            type_of_data = "Spline second order 100 10 knots")
+ten_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_ten,
+                                            type_of_data = "Spline second order 500 10 knots")
+ten_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_ten,
+                                             type_of_data = "Spline second order 1000 10 knots")
+ten_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_ten,
+                                             type_of_data = "Spline second order 5000 10 knots")
+
+### 11 knotters ###
+eleven_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_11,
+                                           type_of_data = "Spline first order 100 11 knots")
+eleven_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_11,
+                                           type_of_data = "Spline first order 500 11 knots")
+eleven_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_11,
+                                            type_of_data = "Spline first order 1000 11 knots")
+eleven_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_11,
+                                            type_of_data = "Spline first order 5000 11 knots")
+
+
+eleven_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_11,
+                                           type_of_data = "Spline second order 100 11 knots")
+eleven_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_11,
+                                           type_of_data = "Spline second order 500 11 knots")
+eleven_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_11,
+                                            type_of_data = "Spline second order 1000 11 knots")
+eleven_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_11,
+                                            type_of_data = "Spline second order 5000 11 knots")
+
+### 12 knotters ####
+
+twelve_knots_sp_1_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_12,
+                                              type_of_data = "Spline first order 100 12 knots")
+twelve_knots_sp_1_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_12,
+                                              type_of_data = "Spline first order 500 12 knots")
+twelve_knots_sp_1_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_12,
+                                               type_of_data = "Spline first order 1000 12 knots")
+twelve_knots_sp_1_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_12,
+                                               type_of_data = "Spline first order 5000 12 knots")
+
+
+twelve_knots_sp_2_100<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_12,
+                                              type_of_data = "Spline second order 100 12 knots")
+twelve_knots_sp_2_500<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_12,
+                                              type_of_data = "Spline second order 500 12 knots")
+twelve_knots_sp_2_1000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_12,
+                                               type_of_data = "Spline second order 1000 12 knots")
+twelve_knots_sp_2_5000<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_12,
+                                               type_of_data = "Spline second order 5000 12 knots")
+###!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!########
+### Now that we've loaded up the results and run them through our function to extract the RMSE for prevalence we can now plot the results #
+##### !!!!! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ##
+
+first_order_splines<-list(seven_knots_sp_1_100,seven_knots_sp_1_500,seven_knots_sp_1_1000,seven_knots_sp_1_5000,
+                          eight_knots_sp_1_100,eight_knots_sp_1_500,eight_knots_sp_1_1000,eight_knots_sp_1_5000,
+                          nine_knots_sp_1_100,nine_knots_sp_1_500,nine_knots_sp_1_1000,nine_knots_sp_1_5000,
+                          ten_knots_sp_1_100,ten_knots_sp_1_500,ten_knots_sp_1_1000,ten_knots_sp_1_5000,
+                          eleven_knots_sp_1_100,eleven_knots_sp_1_500,eleven_knots_sp_1_1000,eleven_knots_sp_1_5000,
+                          twelve_knots_sp_1_100,twelve_knots_sp_1_500,twelve_knots_sp_1_1000,twelve_knots_sp_1_5000)
+first_order_spline_plot<-plotter_function_rmse(list_of_rmse_results_dfs = first_order_splines,
+                                               plot_title = "Comparison of different knot numbers",knot_type_plot = T)
+first_order_spline_plot$mean_plot
+first_order_spline_plot$error_plot
+
+second_ord_splines<-list(seven_knots_sp_2_100,seven_knots_sp_2_500,seven_knots_sp_2_1000,seven_knots_sp_2_5000,
+                         eight_knots_sp_2_100,eight_knots_sp_2_500,eight_knots_sp_2_1000,eight_knots_sp_2_5000,
+                         nine_knots_sp_2_100,nine_knots_sp_2_500,nine_knots_sp_2_1000,nine_knots_sp_2_5000,
+                         ten_knots_sp_2_100,ten_knots_sp_2_500,ten_knots_sp_2_1000,ten_knots_sp_2_5000,
+                         eleven_knots_sp_2_100,eleven_knots_sp_2_500,eleven_knots_sp_2_1000,eleven_knots_sp_2_5000,
+                         twelve_knots_sp_2_100,twelve_knots_sp_2_500,twelve_knots_sp_2_1000,twelve_knots_sp_2_5000)
+sec_ord_spline_plot<-plotter_function_rmse(second_ord_splines,plot_title = "Second order splines comparison",
+                                           knot_type_plot = T)
+sec_ord_spline_plot$mean_plot + coord_cartesian(xlim = c(2015,2020),ylim = c(0,0.3))
+
+tot_splines<-list(seven_knots_sp_1_100,seven_knots_sp_1_500,seven_knots_sp_1_1000,seven_knots_sp_1_5000,
+                  eight_knots_sp_1_100,eight_knots_sp_1_500,eight_knots_sp_1_1000,eight_knots_sp_1_5000,
+                  nine_knots_sp_1_100,nine_knots_sp_1_500,nine_knots_sp_1_1000,nine_knots_sp_1_5000,
+                  ten_knots_sp_1_100,ten_knots_sp_1_500,ten_knots_sp_1_1000,ten_knots_sp_1_5000,
+                  eleven_knots_sp_1_100,eleven_knots_sp_1_500,eleven_knots_sp_1_1000,eleven_knots_sp_1_5000,
+                  twelve_knots_sp_1_100,twelve_knots_sp_1_500,twelve_knots_sp_1_1000,twelve_knots_sp_1_5000,
+                  seven_knots_sp_2_100,seven_knots_sp_2_500,seven_knots_sp_2_1000,seven_knots_sp_2_5000,
+                  eight_knots_sp_2_100,eight_knots_sp_2_500,eight_knots_sp_2_1000,eight_knots_sp_2_5000,
+                  nine_knots_sp_2_100,nine_knots_sp_2_500,nine_knots_sp_2_1000,nine_knots_sp_2_5000,
+                  ten_knots_sp_2_100,ten_knots_sp_2_500,ten_knots_sp_2_1000,ten_knots_sp_2_5000,
+                  eleven_knots_sp_2_100,eleven_knots_sp_2_500,eleven_knots_sp_2_1000,eleven_knots_sp_2_5000,
+                  twelve_knots_sp_2_100,twelve_knots_sp_2_500,twelve_knots_sp_2_1000,twelve_knots_sp_2_5000)
+tot_splino_ploto<-plotter_function_rmse(tot_splines,plot_title = "COmparison of spline results",
+                                        knot_type_plot = T)
+tot_splino_ploto$mean_plot + coord_cartesian(xlim = c(2015,2020),ylim = c(0,0.3))
+
+
+save(first_order_spline_plot,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/first_order_splines_compo_OBJECT") 
+
+save(sec_ord_spline_plot,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/sec_order_splines_compo_OBJECT")
+
+save(tot_splino_ploto,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/tot_splines_compo_OBJECT")
+
+##### n = 100 #####
+
+splines_n_100<-list(seven_knots_sp_1_100,seven_knots_sp_2_100,
+                    eight_knots_sp_1_100,eight_knots_sp_2_100,
+                    nine_knots_sp_1_100,nine_knots_sp_2_100,
+                    ten_knots_sp_1_100,ten_knots_sp_2_100,
+                    eleven_knots_sp_1_100,eleven_knots_sp_2_100,
+                    twelve_knots_sp_1_100,twelve_knots_sp_2_100)
+n_100_prev_plots<-plotter_function_rmse(splines_n_100,plot_title = "Prevalence fits at n 100",knot_type_plot = T)
+a<-n_100_prev_plots$mean_plot + coord_cartesian(ylim = c(0,0.3))
+
+##### n = 500 ######
+
+splines_n_500<-list(seven_knots_sp_1_500,seven_knots_sp_2_500,
+                    eight_knots_sp_1_500,eight_knots_sp_2_500,
+                    nine_knots_sp_1_500,nine_knots_sp_2_500,
+                    ten_knots_sp_1_500,ten_knots_sp_2_500,
+                    eleven_knots_sp_1_500,eleven_knots_sp_2_500,
+                    twelve_knots_sp_1_500,twelve_knots_sp_2_500)
+n_500_prev_plots<-plotter_function_rmse(splines_n_500,plot_title = "Prevalence fits at n 500", knot_type_plot = T)
+n_500_prev_plots$mean_plot
+b<-n_500_prev_plots$mean_plot + coord_cartesian(ylim = c(0,0.3))
+
+#### n = 1k #####
+
+splines_n_1000<-list(seven_knots_sp_1_1000,seven_knots_sp_2_1000,
+                     eight_knots_sp_1_1000,eight_knots_sp_2_1000,
+                     nine_knots_sp_1_1000,nine_knots_sp_2_1000,
+                     ten_knots_sp_1_1000,ten_knots_sp_2_1000,
+                     eleven_knots_sp_1_1000,eleven_knots_sp_2_1000,
+                     twelve_knots_sp_1_1000,twelve_knots_sp_2_1000)
+n_1000_prev_plots<-plotter_function_rmse(splines_n_1000,plot_title = "Prevalence fits at n 1000",knot_type_plot = T)
+n_1000_prev_plots$mean_plot
+c<-n_1000_prev_plots$mean_plot + coord_cartesian(ylim = c(0,0.3))
+
+##### n = 5k ######
+
+splines_n_5000<-list(seven_knots_sp_1_5000,seven_knots_sp_2_5000,
+                     eight_knots_sp_1_5000,eight_knots_sp_2_5000,
+                     nine_knots_sp_1_5000,nine_knots_sp_2_5000,
+                     ten_knots_sp_1_5000,ten_knots_sp_2_5000,
+                     eleven_knots_sp_1_5000,eleven_knots_sp_2_5000,
+                     twelve_knots_sp_1_5000,twelve_knots_sp_2_5000)
+n_5000_prev_plots<-plotter_function_rmse(splines_n_5000,plot_title = "Prevalence fits at n 5000",knot_type_plot = T)
+n_5000_prev_plots$mean_plot
+
+d<-n_5000_prev_plots$mean_plot + coord_cartesian(ylim = c(0,0.3))
+
+tot_plot_by_sample_size<-ggarrange(a,b,c,d,ncol = 1,nrow = 4,align = "hv")
+tot_plot_by_sample_size
+
+save(tot_plot_by_sample_size,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/by_sample_size_compo_plot_OBJECT")
+
+######## 11111!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!"!##########
+#### NOW WE WILL DO THE SAME FOR INCIDENCE, SEE HOW THAT IS AFFECTED BY THE KNOT NUMBER WE USED TO MODEL INCIDENCE WITH ####################
+#########()()()()()()()()()()()()()()()()()()()()()()()()()(()!()!()!()()!(!)(!)(!)()(!)(!)(!)(!)(!)(!)(!)(!)(!)!()!()!(!)(!)(!)!()!()######
+
+seven_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res,
+                                             type_of_data = "Spline first order 100 7 knots",metric = "incidence")
+seven_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res,
+                                             type_of_data = "Spline first order 500 7 knots",metric = "incidence")
+seven_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res,
+                                              type_of_data = "Spline first order 1000 7 knots",metric = "incidence")
+seven_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res,
+                                              type_of_data = "Spline first order 5000 7 knots",metric = "incidence")
+
+seven_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res,
+                                             type_of_data = "Spline second order 100 7 knots",metric = "incidence")
+seven_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res,
+                                             type_of_data = "Spline second order 500 7 knots",metric = "incidence")
+seven_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res,
+                                              type_of_data = "Spline second order 1000 7 knots",metric = "incidence")
+seven_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res,
+                                              type_of_data = "Spline second order 5000 7 knots",metric = "incidence")
+
+### 8 knotters ###
+
+eight_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_8,
+                                             type_of_data = "Spline first order 100 8 knots",metric = "incidence")
+eight_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_8,
+                                             type_of_data = "Spline first order 500 8 knots",metric = "incidence")
+eight_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_8,
+                                              type_of_data = "Spline first order 1000 8 knots",metric = "incidence")
+eight_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_8,
+                                              type_of_data = "Spline first order 5000 8 knots",metric = "incidence")
+
+
+eight_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_8,
+                                             type_of_data = "Spline second order 100 8 knots",metric = "incidence")
+eight_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_8,
+                                             type_of_data = "Spline second order 500 8 knots",metric = "incidence")
+eight_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_8,
+                                              type_of_data = "Spline second order 1000 8 knots",metric = "incidence")
+eight_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_8,
+                                              type_of_data = "Spline second order 5000 8 knots",metric = "incidence")
+
+### 9 knotters ####
+
+nine_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_9,
+                                            type_of_data = "Spline first order 100 9 knots",metric = "incidence")
+nine_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_9,
+                                            type_of_data = "Spline first order 500 9 knots",metric = "incidence")
+nine_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_9,
+                                             type_of_data = "Spline first order 1000 9 knots",metric = "incidence")
+nine_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_9,
+                                             type_of_data = "Spline first order 5000 9 knots",metric = "incidence")
+
+
+nine_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_9,
+                                            type_of_data = "Spline second order 100 9 knots",metric = "incidence")
+nine_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_9,
+                                            type_of_data = "Spline second order 500 9 knots",metric = "incidence")
+nine_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_9,
+                                             type_of_data = "Spline second order 1000 9 knots",metric = "incidence")
+nine_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_9,
+                                             type_of_data = "Spline second order 5000 9 knots",metric = "incidence")
+
+### 10 knotters ####
+
+ten_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_ten,
+                                           type_of_data = "Spline first order 100 10 knots",metric = "incidence")
+ten_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_ten,
+                                           type_of_data = "Spline first order 500 10 knots",metric = "incidence")
+ten_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_ten,
+                                            type_of_data = "Spline first order 1000 10 knots",metric = "incidence")
+ten_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_ten,
+                                            type_of_data = "Spline first order 5000 10 knots",metric = "incidence")
+
+
+ten_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_ten,
+                                           type_of_data = "Spline second order 100 10 knots",metric = "incidence")
+ten_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_ten,
+                                           type_of_data = "Spline second order 500 10 knots",metric = "incidence")
+ten_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_ten,
+                                            type_of_data = "Spline second order 1000 10 knots",metric = "incidence")
+ten_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_ten,
+                                            type_of_data = "Spline second order 5000 10 knots",metric = "incidence")
+
+### 11 knotters ###
+eleven_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_11,
+                                              type_of_data = "Spline first order 100 11 knots",metric = "incidence")
+eleven_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_11,
+                                              type_of_data = "Spline first order 500 11 knots",metric = "incidence")
+eleven_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_11,
+                                               type_of_data = "Spline first order 1000 11 knots",metric = "incidence")
+eleven_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_11,
+                                               type_of_data = "Spline first order 5000 11 knots",metric = "incidence")
+
+
+eleven_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_11,
+                                              type_of_data = "Spline second order 100 11 knots",metric = "incidence")
+eleven_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_11,
+                                              type_of_data = "Spline second order 500 11 knots",metric = "incidence")
+eleven_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_11,
+                                               type_of_data = "Spline second order 1000 11 knots",metric = "incidence")
+eleven_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_11,
+                                               type_of_data = "Spline second order 5000 11 knots",metric = "incidence")
+
+### 12 knotters ####
+
+twelve_knots_sp_1_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_12,
+                                              type_of_data = "Spline first order 100 12 knots",metric = "incidence")
+twelve_knots_sp_1_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_12,
+                                              type_of_data = "Spline first order 500 12 knots",metric = "incidence")
+twelve_knots_sp_1_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_12,
+                                               type_of_data = "Spline first order 1000 12 knots",metric = "incidence")
+twelve_knots_sp_1_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_12,
+                                               type_of_data = "Spline first order 5000 12 knots",metric = "incidence")
+
+
+twelve_knots_sp_2_100_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_12,
+                                              type_of_data = "Spline second order 100 12 knots",metric = "incidence")
+twelve_knots_sp_2_500_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_12,
+                                              type_of_data = "Spline second order 500 12 knots",metric = "incidence")
+twelve_knots_sp_2_1000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_12,
+                                               type_of_data = "Spline second order 1000 12 knots",metric = "incidence")
+twelve_knots_sp_2_5000_inc<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_12,
+                                               type_of_data = "Spline second order 5000 12 knots",metric = "incidence")
+
+#### tot inc plots ######
+
+first_ord_vals_inc<-list(seven_knots_sp_1_100_inc,seven_knots_sp_1_500_inc,seven_knots_sp_1_1000_inc,seven_knots_sp_1_5000_inc,
+                         eight_knots_sp_1_100_inc,eight_knots_sp_1_500_inc,eight_knots_sp_1_1000_inc,eight_knots_sp_1_5000_inc,
+                         nine_knots_sp_1_100_inc,nine_knots_sp_1_500_inc,nine_knots_sp_1_1000_inc,nine_knots_sp_1_5000_inc,
+                         ten_knots_sp_1_100_inc,ten_knots_sp_1_500_inc,ten_knots_sp_1_1000_inc,ten_knots_sp_1_5000_inc,
+                         eleven_knots_sp_1_100_inc,eleven_knots_sp_1_500_inc,eleven_knots_sp_1_1000_inc,eleven_knots_sp_1_5000_inc,
+                         twelve_knots_sp_1_100_inc,twelve_knots_sp_1_500_inc,twelve_knots_sp_1_1000_inc,twelve_knots_sp_1_5000_inc)
+first_order_inc_plots<-plotter_function_rmse(first_ord_vals_inc,plot_title = "Kappa comparison first order",knot_type_plot = T)
+first_order_inc_plots$mean_plot 
+a<-first_order_inc_plots$mean_plot + coord_cartesian(ylim = c(0,0.1))
+
+second_ord_vals_inc<-list(seven_knots_sp_2_100_inc,seven_knots_sp_2_500_inc,seven_knots_sp_2_1000_inc,seven_knots_sp_2_5000_inc,
+                          eight_knots_sp_2_100_inc,eight_knots_sp_2_500_inc,eight_knots_sp_2_1000_inc,eight_knots_sp_2_5000_inc,
+                          nine_knots_sp_2_100_inc,nine_knots_sp_2_500_inc,nine_knots_sp_2_1000_inc,nine_knots_sp_2_5000_inc,
+                          ten_knots_sp_2_100_inc,ten_knots_sp_2_500_inc,ten_knots_sp_2_1000_inc,ten_knots_sp_2_5000_inc,
+                          eleven_knots_sp_2_100_inc,eleven_knots_sp_2_500_inc,eleven_knots_sp_2_1000_inc,eleven_knots_sp_2_5000_inc,
+                          twelve_knots_sp_2_100_inc,twelve_knots_sp_2_500_inc,twelve_knots_sp_2_1000_inc,twelve_knots_sp_2_5000_inc)
+second_ord_inc_plots<-plotter_function_rmse(second_ord_vals_inc,plot_title = "Inicidence comparison second order",knot_type_plot = T)
+second_ord_inc_plots$mean_plot
+b<-second_ord_inc_plots$mean_plot + coord_cartesian(ylim=c(0,0.1))
+
+first_and_sec_inc<-ggarrange(a,b,ncol = 2,nrow = 1,align = "hv")
+
+save(first_and_sec_inc,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/INCIDNECE,first_and_sec_orde_compo_OBJECT")
+
+### 100 n ######
+
+splines_n_100_inc<-list(seven_knots_sp_1_100_inc,seven_knots_sp_2_100_inc,
+                    eight_knots_sp_1_100_inc,eight_knots_sp_2_100_inc,
+                    nine_knots_sp_1_100_inc,nine_knots_sp_2_100_inc,
+                    ten_knots_sp_1_100_inc,ten_knots_sp_2_100_inc,
+                    eleven_knots_sp_1_100_inc,eleven_knots_sp_2_100_inc,
+                    twelve_knots_sp_1_100_inc,twelve_knots_sp_2_100_inc)
+n_100_inc_plots<-plotter_function_rmse(splines_n_100_inc,plot_title = "Incidence fits at n 100",knot_type_plot = T)
+a<-n_100_inc_plots$mean_plot + coord_cartesian(ylim = c(0,0.1))
+
+##### n = 500 ######
+
+splines_n_500_inc<-list(seven_knots_sp_1_500_inc,seven_knots_sp_2_500_inc,
+                    eight_knots_sp_1_500_inc,eight_knots_sp_2_500_inc,
+                    nine_knots_sp_1_500_inc,nine_knots_sp_2_500_inc,
+                    ten_knots_sp_1_500_inc,ten_knots_sp_2_500_inc,
+                    eleven_knots_sp_1_500_inc,eleven_knots_sp_2_500_inc,
+                    twelve_knots_sp_1_500_inc,twelve_knots_sp_2_500_inc)
+n_500_inc_plots<-plotter_function_rmse(splines_n_500_inc,plot_title = "Incidence fits at n 500", knot_type_plot = T)
+n_500_inc_plots$mean_plot
+b<-n_500_inc_plots$mean_plot + coord_cartesian(ylim = c(0,0.1))
+
+#### n = 1k #####
+
+splines_n_1000_inc<-list(seven_knots_sp_1_1000_inc,seven_knots_sp_2_1000_inc,
+                     eight_knots_sp_1_1000_inc,eight_knots_sp_2_1000_inc,
+                     nine_knots_sp_1_1000_inc,nine_knots_sp_2_1000_inc,
+                     ten_knots_sp_1_1000_inc,ten_knots_sp_2_1000_inc,
+                     eleven_knots_sp_1_1000_inc,eleven_knots_sp_2_1000_inc,
+                     twelve_knots_sp_1_1000_inc,twelve_knots_sp_2_1000_inc)
+n_1000_inc_plots<-plotter_function_rmse(splines_n_1000_inc,plot_title = "Incidence fits at n 1000",knot_type_plot = T)
+n_1000_inc_plots$mean_plot
+c<-n_1000_inc_plots$mean_plot + coord_cartesian(ylim = c(0,0.1))
+
+##### n = 5k ######
+
+splines_n_5000_inc<-list(seven_knots_sp_1_5000_inc,seven_knots_sp_2_5000_inc,
+                     eight_knots_sp_1_5000_inc,eight_knots_sp_2_5000_inc,
+                     nine_knots_sp_1_5000_inc,nine_knots_sp_2_5000_inc,
+                     ten_knots_sp_1_5000_inc,ten_knots_sp_2_5000_inc,
+                     eleven_knots_sp_1_5000_inc,eleven_knots_sp_2_5000_inc,
+                     twelve_knots_sp_1_5000_inc,twelve_knots_sp_2_5000_inc)
+n_5000_inc_plots<-plotter_function_rmse(splines_n_5000_inc,plot_title = "Incidence fits at n 5000",knot_type_plot = T)
+n_5000_inc_plots$mean_plot
+
+d<-n_5000_inc_plots$mean_plot + coord_cartesian(ylim = c(0,0.1))
+
+tot_plot_by_sample_size<-ggarrange(a,b,c,d,ncol = 1,nrow = 4,align = "hv")
+tot_plot_by_sample_size
+
+save(tot_plot_by_sample_size,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/INCIDENCE_by_sample_size_compo_OBJECT")
+
+############################################################################################################################################
+## Now we will plot out the results for our kappa parameter ################################################################################
+############################################################################################################################################
+
+seven_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res,
+                                                 type_of_data = "Spline first order 100 7 knots",metric = "kappa")
+seven_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res,
+                                                 type_of_data = "Spline first order 500 7 knots",metric = "kappa")
+seven_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res,
+                                                  type_of_data = "Spline first order 1000 7 knots",metric = "kappa")
+seven_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res,
+                                                  type_of_data = "Spline first order 5000 7 knots",metric = "kappa")
+
+seven_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res,
+                                                 type_of_data = "Spline second order 100 7 knots",metric = "kappa")
+seven_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res,
+                                                 type_of_data = "Spline second order 500 7 knots",metric = "kappa")
+seven_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res,
+                                                  type_of_data = "Spline second order 1000 7 knots",metric = "kappa")
+seven_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res,
+                                                  type_of_data = "Spline second order 5000 7 knots",metric = "kappa")
+
+### 8 knotters ###
+
+eight_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_8,
+                                                 type_of_data = "Spline first order 100 8 knots",metric = "kappa")
+eight_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_8,
+                                                 type_of_data = "Spline first order 500 8 knots",metric = "kappa")
+eight_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_8,
+                                                  type_of_data = "Spline first order 1000 8 knots",metric = "kappa")
+eight_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_8,
+                                                  type_of_data = "Spline first order 5000 8 knots",metric = "kappa")
+
+
+eight_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_8,
+                                                 type_of_data = "Spline second order 100 8 knots",metric = "kappa")
+eight_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_8,
+                                                 type_of_data = "Spline second order 500 8 knots",metric = "kappa")
+eight_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_8,
+                                                  type_of_data = "Spline second order 1000 8 knots",metric = "kappa")
+eight_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_8,
+                                                  type_of_data = "Spline second order 5000 8 knots",metric = "kappa")
+
+### 9 knotters ####
+
+nine_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_9,
+                                                type_of_data = "Spline first order 100 9 knots",metric = "kappa")
+nine_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_9,
+                                                type_of_data = "Spline first order 500 9 knots",metric = "kappa")
+nine_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_9,
+                                                 type_of_data = "Spline first order 1000 9 knots",metric = "kappa")
+nine_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_9,
+                                                 type_of_data = "Spline first order 5000 9 knots",metric = "kappa")
+
+
+nine_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_9,
+                                                type_of_data = "Spline second order 100 9 knots",metric = "kappa")
+nine_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_9,
+                                                type_of_data = "Spline second order 500 9 knots",metric = "kappa")
+nine_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_9,
+                                                 type_of_data = "Spline second order 1000 9 knots",metric = "kappa")
+nine_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_9,
+                                                 type_of_data = "Spline second order 5000 9 knots",metric = "kappa")
+
+### 10 knotters ####
+
+ten_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_ten,
+                                               type_of_data = "Spline first order 100 10 knots",metric = "kappa")
+ten_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_ten,
+                                               type_of_data = "Spline first order 500 10 knots",metric = "kappa")
+ten_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_ten,
+                                                type_of_data = "Spline first order 1000 10 knots",metric = "kappa")
+ten_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_ten,
+                                                type_of_data = "Spline first order 5000 10 knots",metric = "kappa")
+
+
+ten_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_ten,
+                                               type_of_data = "Spline second order 100 10 knots",metric = "kappa")
+ten_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_ten,
+                                               type_of_data = "Spline second order 500 10 knots",metric = "kappa")
+ten_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_ten,
+                                                type_of_data = "Spline second order 1000 10 knots",metric = "kappa")
+ten_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_ten,
+                                                type_of_data = "Spline second order 5000 10 knots",metric = "kappa")
+
+### 11 knotters ###
+eleven_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_11,
+                                                  type_of_data = "Spline first order 100 11 knots",metric = "kappa")
+eleven_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_11,
+                                                  type_of_data = "Spline first order 500 11 knots",metric = "kappa")
+eleven_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_11,
+                                                   type_of_data = "Spline first order 1000 11 knots",metric = "kappa")
+eleven_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_11,
+                                                   type_of_data = "Spline first order 5000 11 knots",metric = "kappa")
+
+
+eleven_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_11,
+                                                  type_of_data = "Spline second order 100 11 knots",metric = "kappa")
+eleven_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_11,
+                                                  type_of_data = "Spline second order 500 11 knots",metric = "kappa")
+eleven_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_11,
+                                                   type_of_data = "Spline second order 1000 11 knots",metric = "kappa")
+eleven_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_11,
+                                                   type_of_data = "Spline second order 5000 11 knots",metric = "kappa")
+
+### 12 knotters ####
+
+twelve_knots_sp_1_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_100_foi_res_12,
+                                                  type_of_data = "Spline first order 100 12 knots",metric = "kappa")
+twelve_knots_sp_1_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_500_foi_res_12,
+                                                  type_of_data = "Spline first order 500 12 knots",metric = "kappa")
+twelve_knots_sp_1_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_1k_foi_res_12,
+                                                   type_of_data = "Spline first order 1000 12 knots",metric = "kappa")
+twelve_knots_sp_1_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_f_5k_foi_res_12,
+                                                   type_of_data = "Spline first order 5000 12 knots",metric = "kappa")
+
+
+twelve_knots_sp_2_100_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_100_foi_res_12,
+                                                  type_of_data = "Spline second order 100 12 knots",metric = "kappa")
+twelve_knots_sp_2_500_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_500_foi_res_12,
+                                                  type_of_data = "Spline second order 500 12 knots",metric = "kappa")
+twelve_knots_sp_2_1000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_1k_foi_res_12,
+                                                   type_of_data = "Spline second order 1000 12 knots",metric = "kappa")
+twelve_knots_sp_2_5000_kappa<-rmse_per_time_knotters(sim_model_foi$sim_df,fitted_data = spline_s_5k_foi_res_12,
+                                                   type_of_data = "Spline second order 5000 12 knots",metric = "kappa")
+
+#### tot inc plots ######
+
+first_ord_vals_kappa<-list(seven_knots_sp_1_100_kappa,seven_knots_sp_1_500_kappa,seven_knots_sp_1_1000_kappa,seven_knots_sp_1_5000_kappa,
+                         eight_knots_sp_1_100_kappa,eight_knots_sp_1_500_kappa,eight_knots_sp_1_1000_kappa,eight_knots_sp_1_5000_kappa,
+                         nine_knots_sp_1_100_kappa,nine_knots_sp_1_500_kappa,nine_knots_sp_1_1000_kappa,nine_knots_sp_1_5000_kappa,
+                         ten_knots_sp_1_100_kappa,ten_knots_sp_1_500_kappa,ten_knots_sp_1_1000_kappa,ten_knots_sp_1_5000_kappa,
+                         eleven_knots_sp_1_100_kappa,eleven_knots_sp_1_500_kappa,eleven_knots_sp_1_1000_kappa,eleven_knots_sp_1_5000_kappa,
+                         twelve_knots_sp_1_100_kappa,twelve_knots_sp_1_500_kappa,twelve_knots_sp_1_1000_kappa,twelve_knots_sp_1_5000_kappa)
+first_order_kappa_plots<-plotter_function_rmse(first_ord_vals_kappa,plot_title = "Kappa comparison first order",knot_type_plot = T)
+first_order_kappa_plots$mean_plot 
+a<-first_order_kappa_plots$mean_plot + coord_cartesian(ylim = c(0,0.4))
+
+second_ord_vals_kappa<-list(seven_knots_sp_2_100_kappa,seven_knots_sp_2_500_kappa,seven_knots_sp_2_1000_kappa,seven_knots_sp_2_5000_kappa,
+                          eight_knots_sp_2_100_kappa,eight_knots_sp_2_500_kappa,eight_knots_sp_2_1000_kappa,eight_knots_sp_2_5000_kappa,
+                          nine_knots_sp_2_100_kappa,nine_knots_sp_2_500_kappa,nine_knots_sp_2_1000_kappa,nine_knots_sp_2_5000_kappa,
+                          ten_knots_sp_2_100_kappa,ten_knots_sp_2_500_kappa,ten_knots_sp_2_1000_kappa,ten_knots_sp_2_5000_kappa,
+                          eleven_knots_sp_2_100_kappa,eleven_knots_sp_2_500_kappa,eleven_knots_sp_2_1000_kappa,eleven_knots_sp_2_5000_kappa,
+                          twelve_knots_sp_2_100_kappa,twelve_knots_sp_2_500_kappa,twelve_knots_sp_2_1000_kappa,twelve_knots_sp_2_5000_kappa)
+second_ord_kappa_plots<-plotter_function_rmse(second_ord_vals_kappa,plot_title = "Inicidence comparison second order",knot_type_plot = T)
+second_ord_kappa_plots$mean_plot
+b<-second_ord_kappa_plots$mean_plot + coord_cartesian(ylim=c(0,0.4))
+
+first_and_sec_kappa<-ggarrange(a,b,ncol = 2,nrow = 1,align = "hv")
+
+save(first_and_sec_kappa,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/KAPPA_first_and_sec_orde_compo_OBJECT")
+
+### 100 n ######
+
+splines_n_100_kappa<-list(seven_knots_sp_1_100_kappa,seven_knots_sp_2_100_kappa,
+                        eight_knots_sp_1_100_kappa,eight_knots_sp_2_100_kappa,
+                        nine_knots_sp_1_100_kappa,nine_knots_sp_2_100_kappa,
+                        ten_knots_sp_1_100_kappa,ten_knots_sp_2_100_kappa,
+                        eleven_knots_sp_1_100_kappa,eleven_knots_sp_2_100_kappa,
+                        twelve_knots_sp_1_100_kappa,twelve_knots_sp_2_100_kappa)
+n_100_kappa_plots<-plotter_function_rmse(splines_n_100_kappa,plot_title = "Kappa fits at n 100",knot_type_plot = T)
+a<-n_100_kappa_plots$mean_plot + coord_cartesian(ylim = c(0,0.4))
+
+##### n = 500 ######
+
+splines_n_500_kappa<-list(seven_knots_sp_1_500_kappa,seven_knots_sp_2_500_kappa,
+                        eight_knots_sp_1_500_kappa,eight_knots_sp_2_500_kappa,
+                        nine_knots_sp_1_500_kappa,nine_knots_sp_2_500_kappa,
+                        ten_knots_sp_1_500_kappa,ten_knots_sp_2_500_kappa,
+                        eleven_knots_sp_1_500_kappa,eleven_knots_sp_2_500_kappa,
+                        twelve_knots_sp_1_500_kappa,twelve_knots_sp_2_500)
+n_500_kappa_plots<-plotter_function_rmse(splines_n_500_kappa,plot_title = "Kappa fits at n 500", knot_type_plot = T)
+n_500_kappa_plots$mean_plot
+b<-n_500_kappa_plots$mean_plot + coord_cartesian(ylim = c(0,0.4))
+
+#### n = 1k #####
+
+splines_n_1000_kappa<-list(seven_knots_sp_1_1000_kappa,seven_knots_sp_2_1000_kappa,
+                         eight_knots_sp_1_1000_kappa,eight_knots_sp_2_1000_kappa,
+                         nine_knots_sp_1_1000_kappa,nine_knots_sp_2_1000_kappa,
+                         ten_knots_sp_1_1000_kappa,ten_knots_sp_2_1000_kappa,
+                         eleven_knots_sp_1_1000_kappa,eleven_knots_sp_2_1000_kappa,
+                         twelve_knots_sp_1_1000_kappa,twelve_knots_sp_2_1000)
+n_1000_kappa_plots<-plotter_function_rmse(splines_n_1000_kappa,plot_title = "Kappa fits at n 1000",knot_type_plot = T)
+n_1000_kappa_plots$mean_plot
+c<-n_1000_kappa_plots$mean_plot + coord_cartesian(ylim = c(0,0.4))
+
+##### n = 5k ######
+
+splines_n_5000_kappa<-list(seven_knots_sp_1_5000_kappa,seven_knots_sp_2_5000_kappa,
+                         eight_knots_sp_1_5000_kappa,eight_knots_sp_2_5000_kappa,
+                         nine_knots_sp_1_5000_kappa,nine_knots_sp_2_5000_kappa,
+                         ten_knots_sp_1_5000_kappa,ten_knots_sp_2_5000_kappa,
+                         eleven_knots_sp_1_5000_kappa,eleven_knots_sp_2_5000_kappa,
+                         twelve_knots_sp_1_5000_kappa,twelve_knots_sp_2_5000)
+n_5000_kappa_plots<-plotter_function_rmse(splines_n_5000_kappa,plot_title = "Kappa fits at n 5000",knot_type_plot = T)
+n_5000_kappa_plots$mean_plot
+
+d<-n_5000_kappa_plots$mean_plot + coord_cartesian(ylim = c(0,0.4))
+
+tot_plot_by_sample_size<-ggarrange(a,b,c,d,ncol = 1,nrow = 4,align = "hv")
+tot_plot_by_sample_size
+
+save(tot_plot_by_sample_size,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/rmse_over_course_of_epi/knot_value_splines/KAPPA_by_sample_size_compo_OBJECT")
 
 
 
