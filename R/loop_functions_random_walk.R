@@ -297,6 +297,7 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
   kappa_df_tot<-NULL
   iota_values_tot<-NULL
   
+  sample_start<-samples_data_frame$sample_time_hiv[1] - 1970
   
   
   for( i in 1:iteration_number){
@@ -311,7 +312,7 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
     y = as.array(sample_df_100_random_second$sample_y_hiv_prev),
     time_steps_euler = 501,
     penalty_order = data_about_sampling$penalty_order,
-    estimate_period = 5,
+    estimate_period = 5 + sample_start,
     time_steps_year = 51,
     X_design = spline_matrix,
     D_penalty = penalty_matrix,
@@ -360,6 +361,9 @@ fitting_data_function_loop<-function(samples_data_frame,iteration_number,data_ab
   incidence_df_tot <- rbind(incidence_df_tot,incidence_df)
   kappa_df_tot <- rbind(kappa_df_tot,kappa_df)
   iota_values_tot <- rbind(iota_values_tot,iota_value)
+  
+  print((i/iteration_number)*100)
+  
   }
   
   data_about_sampling$simul_type<-"Random_Walk"
@@ -376,11 +380,12 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
   
   steppy<-seq(1970.1,by=0.1,length.out = 500)
   
+  
   splines_creator<-function(knot_number,penalty_order,step_vector){
     
     nk <- knot_number # number of knots
     dk <- diff(range(xout))/(nk-3)
-    knots <- samples_data_frame$sample_time_hiv[1] + -3:nk*dk
+    knots <- step_vector[1] + -3:nk*dk
     spline_matrix<- splineDesign(knots, step_vector, ord=4)
     penalty_matrix <- diff(diag(nk), diff=penalty_order)
     
@@ -479,7 +484,7 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
     
   }       ## Extracts the results from stan fit
   
-  
+  sample_start<-samples_data_frame$sample_time_hiv[1] - 1970
   
   prev_df_tot <- NULL                                                                         ## INitialize the data frames to take loop results into
   incidence_df_tot <- NULL                                                                   
@@ -498,7 +503,7 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
     time_steps_euler = length(xout),
     penalty_order = data_about_sampling$penalty_order ,
     knot_number = knot_number,
-    estimate_years = 5,
+    estimate_years = 5 + sample_start,
     time_steps_year = 51,
     X_design = splines_matrices$spline_matrix,
     D_penalty = splines_matrices$penalty_matrix,
@@ -548,6 +553,8 @@ fitting_data_function_spline_loop<-function(samples_data_frame,iteration_number,
   kappa_df_tot <- rbind(kappa_df_tot,kappa_df)
   iota_values_tot <- rbind(iota_values_tot,iota_value)
   beta_values_tot <- rbind(beta_values_tot, beta_values)
+  
+  print((i/iteration_number)*100)
   }
   
   data_about_sampling$simul_type<-"Spline"

@@ -106,7 +106,7 @@ plot(plotted_sim$whole)
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-1990:2015
+sample_range<-2000:2015
 sample_years<-length(sample_range)
 sample_n<-1000
   
@@ -178,9 +178,6 @@ knot_number= 7
 penalty_order= 2
 
 splines_matrices<-splines_creator(knot_number,penalty_order)
-beta_vals<-first_order_spline_n_100$beta_vals[2,1:7]
-beta_vals<-as.numeric(beta_vals)
-beta_vals[7]<-beta_vals[6]
 #spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
 #penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
 sample_start<-sample_range[1]-1970
