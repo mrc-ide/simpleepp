@@ -163,7 +163,7 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
   }
   
   plot_colours<-c("dodgerblue","red","blueviolet","forestgreen","yellow",
-                  "indianred4","springgreen2","chocolate4","azure2","midnightblue")
+                  "orange","springgreen2","chocolate4","azure2","midnightblue")
   
   random_colour<-round(runif(1,min = 1,max = length(plot_colours)))
   
@@ -181,9 +181,12 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
   size_values<-rep(1.05,length(list_of_total_data_sets))
   names(size_values)<-knot_vals
   
+  type_values<-rep("solid",length(list_of_total_data_sets))
+  names(type_values)<-knot_vals
+  
   if(include_credible == T){
  total_plot<-ggplot(data = tot_df_values, aes(x=tot_df_values$time,y=tot_df_values$median,group=tot_df_values$knot))+
-   geom_line(aes(colour=tot_df_values$knot,size=tot_df_values$knot))+
+   geom_line(aes(colour=tot_df_values$knot,size=tot_df_values$knot,linetype=tot_df_values$knot))+
    geom_ribbon(aes(x=tot_df_values$time,
                    ymin=tot_df_values$low,
                    ymax=tot_df_values$high,
@@ -197,7 +200,9 @@ knotter_compo_after_2_hits<-function(list_of_total_data_sets,graph_titles,true_d
    scale_fill_manual("Knot Number",
                      values = c("true"="black",colour_values))+
    scale_size_manual("Knot Number",
-                     values = c("true"=1.5,size_values))
+                     values = c("true"=1.2,size_values))+
+   scale_linetype_manual("Knot Number",
+                         values = c("true"="longdash",type_values))
 
   }else{
     total_plot<-ggplot(data = tot_df_values, aes(x=tot_df_values$time,y=tot_df_values$median,group=tot_df_values$knot))+
@@ -294,12 +299,12 @@ prev_compo_plots_sec<-ggarrange(n_100_knot_compo_sec$compo_plot,n_500_knot_compo
                                 n_1k_knot_compo_sec$compo_plot,n_5k_knot_compo_sec$compo_plot,ncol = 2,nrow = 2)
 prev_compo_plots_sec
 
-prev_1_and_2_prev_compo<-ggarrange(n_100_knot_compo$compo_plot,n_100_knot_compo_sec$compo_plot,
-                                   n_500_knot_compo$compo_plot,n_500_knot_compo_sec$compo_plot,
-                                   n_1k_knot_compo$compo_plot,n_1k_knot_compo_sec$compo_plot,
-                                   n_5k_knot_compo$compo_plot,n_5k_knot_compo_sec$compo_plot,
+prev_1_and_2_prev_compo<-ggarrange(n_100_knot_compo$compo_plot+coord_cartesian(ylim = c(0,55)),n_100_knot_compo_sec$compo_plot+coord_cartesian(ylim = c(0,55)),
+                                   n_500_knot_compo$compo_plot+coord_cartesian(ylim = c(0,55)),n_500_knot_compo_sec$compo_plot+coord_cartesian(ylim = c(0,55)),
+                                   n_1k_knot_compo$compo_plot+coord_cartesian(ylim = c(0,55)),n_1k_knot_compo_sec$compo_plot+coord_cartesian(ylim = c(0,55)),
+                                   n_5k_knot_compo$compo_plot+coord_cartesian(ylim = c(0,55)),n_5k_knot_compo_sec$compo_plot+coord_cartesian(ylim = c(0,55)),
                                    ncol = 2,nrow = 4)
-
+prev_1_and_2_prev_compo
 ########################################################################################################################################
 ## INC now #############################################################################################################################
 ########################################################################################################################################
@@ -376,10 +381,10 @@ inc_compo_plots_sec<-ggarrange(n_100_knot_compo_inc_sec$compo_plot,n_500_knot_co
                                 n_1k_knot_compo_inc_sec$compo_plot,n_5k_knot_compo_inc_sec$compo_plot,ncol = 2,nrow = 2)
 inc_compo_plots_sec
 
-inc_1_and_2_inc_compo<-ggarrange(n_100_knot_compo_inc$compo_plot,n_100_knot_compo_inc_sec$compo_plot,
-                                   n_500_knot_compo_inc$compo_plot,n_500_knot_compo_inc_sec$compo_plot,
-                                   n_1k_knot_compo_inc$compo_plot,n_1k_knot_compo_inc_sec$compo_plot,
-                                   n_5k_knot_compo_inc$compo_plot,n_5k_knot_compo_inc_sec$compo_plot,
+inc_1_and_2_inc_compo<-ggarrange(n_100_knot_compo_inc$compo_plot+coord_cartesian(ylim = c(0,0.15)),n_100_knot_compo_inc_sec$compo_plot+coord_cartesian(ylim = c(0,0.15)),
+                                   n_500_knot_compo_inc$compo_plot+coord_cartesian(ylim = c(0,0.15)),n_500_knot_compo_inc_sec$compo_plot+coord_cartesian(ylim = c(0,0.15)),
+                                   n_1k_knot_compo_inc$compo_plot+coord_cartesian(ylim = c(0,0.15)),n_1k_knot_compo_inc_sec$compo_plot+coord_cartesian(ylim = c(0,0.15)),
+                                   n_5k_knot_compo_inc$compo_plot+coord_cartesian(ylim = c(0,0.15)),n_5k_knot_compo_inc_sec$compo_plot+coord_cartesian(ylim = c(0,0.15)),
                                    ncol = 2,nrow = 4)
 inc_1_and_2_inc_compo
 
@@ -464,10 +469,10 @@ kappa_compo_plots_sec<-ggarrange(n_100_knot_compo_kappa_sec$compo_plot,n_500_kno
                                n_1k_knot_compo_kappa_sec$compo_plot,n_5k_knot_compo_kappa_sec$compo_plot,ncol = 2,nrow = 2)
 kappa_compo_plots_sec
 
-kappa_1_and_2_kappa_compo<-ggarrange(n_100_knot_compo_kappa$compo_plot,n_100_knot_compo_kappa_sec$compo_plot,
-                                 n_500_knot_compo_kappa$compo_plot,n_500_knot_compo_kappa_sec$compo_plot,
-                                 n_1k_knot_compo_kappa$compo_plot,n_1k_knot_compo_kappa_sec$compo_plot,
-                                 n_5k_knot_compo_kappa$compo_plot,n_5k_knot_compo_kappa_sec$compo_plot,
+kappa_1_and_2_kappa_compo<-ggarrange(n_100_knot_compo_kappa$compo_plot+coord_cartesian(ylim = c(0,1)),n_100_knot_compo_kappa_sec$compo_plot+coord_cartesian(ylim = c(0,1)),
+                                 n_500_knot_compo_kappa$compo_plot+coord_cartesian(ylim = c(0,1)),n_500_knot_compo_kappa_sec$compo_plot+coord_cartesian(ylim = c(0,1)),
+                                 n_1k_knot_compo_kappa$compo_plot+coord_cartesian(ylim = c(0,1)),n_1k_knot_compo_kappa_sec$compo_plot+coord_cartesian(ylim = c(0,1)),
+                                 n_5k_knot_compo_kappa$compo_plot+coord_cartesian(ylim = c(0,1)),n_5k_knot_compo_kappa_sec$compo_plot+coord_cartesian(ylim = c(0,1)),
                                  ncol = 2,nrow = 4)
 kappa_1_and_2_kappa_compo
 

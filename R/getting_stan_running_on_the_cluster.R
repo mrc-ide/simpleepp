@@ -389,10 +389,10 @@ rw_500_2_90<-obj$task_get(n_500_RW_sec_order_loop_id)
 rw_1000_2_90<-obj$task_get(n_1000_RW_sec_order_loop_id)
 rw_5000_2_90<-obj$task_get(n_5000_RW_sec_order_loop_id)
 
-sp_100_1_90<-obj$task_get(spline_first_order_n_100_id)
-sp_500_1_90<-obj$task_get(spline_first_order_n_500_id)
-sp_1000_1_90<-obj$task_get(spline_first_order_n_1000_id)
-sp_5000_1_90<-obj$task_get(spline_first_order_n_5000_id)
+sp_100_1_90<-obj$task_get(spline_first_order_n_100)
+sp_500_1_90<-obj$task_get(spline_first_order_n_500)
+sp_1000_1_90<-obj$task_get(spline_first_order_n_1000)
+sp_5000_1_90<-obj$task_get(spline_first_order_n_5000)
 
 sp_100_2_90<-obj$task_get(spline_second_order_n_100_id)
 sp_500_2_90<-obj$task_get(spline_second_order_n_500_id)
@@ -1146,7 +1146,8 @@ sp_500_2_00_res<-sp_500_2_00$result()
 sp_1000_2_00_res<-sp_1000_2_00$result()
 sp_5000_2_00_res<-sp_5000_2_00$result()
 
-sp_5000_2_00_res$data_about_sampling
+sp_5000_2_00_res$data_about_run
+
 
 save(rw_100_1_00_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/data_from_2000_runs/results/RW_100_FIRSt_ORDER")
@@ -1186,6 +1187,9 @@ save(sp_5000_2_00_res,
 
 
 
-
+plot(sp_5000_1_00_res$prev$median[1:501])
+plot(sp_5000_2_00_res$prev$median[1:501])
+plot(rw_5000_1_00_res$prev$median[1:501])
+plot(rw_5000_2_00_res$prev$median[1:501])
 
 

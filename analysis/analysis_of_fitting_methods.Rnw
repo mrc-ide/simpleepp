@@ -438,6 +438,77 @@ names(overfit_tests$ratio)<-c("Sample size","Spline first order","Spline second 
 kable(overfit_tests$ratio,caption = "Ratio of RMSE to sample points against ratio to true epidemic for four different fitting methods",booktab =T, format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
 @
 
+
+\subsection{FOI as modelled parameter}
+\subsubsection{Mean results graphs}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_16_prev_plots}
+\caption{Prevalence plot when modelling the foi as a spline or RW, averaged over 100 different sample runs}
+\label{fig:foi_prev}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_16_inc_plots}
+\caption{Incidence plots when modelling the foi as a spline or RW, averaged over 100 different sample runs}
+\label{fig:foi_inc}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_16_kappa_plots}
+\caption{Kappa plots when modelling the foi as a Spline or RW, averaged over 100 different sample runs}
+\label{fig:foi_kappa}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_multiple_knots_prevalence}
+\caption{Prevalence values when modelled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modelled parameter}
+\label{fig:foi_multi_prev}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_multiple_knots_incidence}
+\caption{Incidence values when modelled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modelled parameter}
+\label{fig:foi_multi_inc}
+\end{figure}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{./foi_multiple_knots_kappa}
+\caption{Kappa values when modelled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modelled parameter}
+\label{fig:foi_multi_kappa}
+\end{figure}
+
+
+\subsubsection{RMSE to true values}
+
+<<foi_rmse_prev,echo=FALSE,fig.lp='tab:'>>=
+load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/7_knot_analysis_results/RMSE_results/complete_rmse_mean_results")
+complete_rmse_data$prev$samp<-c(100,500,1000,5000)
+complete_rmse_data$prev<-complete_rmse_data$prev[,c(5,1,2,3,4)]
+names(complete_rmse_data$prev)<-c("Sample size","First order spline","Second order spline","First order RW","Second order RW")
+
+kable(complete_rmse_data$prev,caption = "RMSE of true to fitted prevalence values across four different fitting methods ",booktab =T, format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
+
+<<foi_rmse_inc,echo=FALSE,fig.lp='tab:'>>=
+complete_rmse_data$inc$samp<-c(100,500,1000,5000)
+complete_rmse_data$inc<-complete_rmse_data$inc[,c(5,1,2,3,4)]
+names(complete_rmse_data$inc)<-c("Sample size","First order spline","Second order spline","First order RW","Second order RW")
+
+kable(complete_rmse_data$inc,caption = "RMSE of true to fitted Incidence values across four different fitting methods ",booktab =T, format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+@
+
+<<foi_rmse_kappa,echo=FALSE,fig.lp='tab:'>>=
+complete_rmse_data$kappa$samp<-c(100,500,1000,5000)
+complete_rmse_data$kappa<-complete_rmse_data$kappa[,c(5,1,2,3,4)]
+names(complete_rmse_data$kappa)<-c("Sample size","First order spline","Second order spline","First order RW","Second order RW")
+
+kable(complete_rmse_data$kappa,caption = "RMSE of true to fitted Kappa values across four different fitting methods ",booktab =T, format="latex",align = "c") %>% kable_styling(latex_options=c("striped","hover","hold_position")) %>% column_spec(1, border_right = T)
+
+@
+
+
 \section{Conclusions and further work}
 From our results for this epidemic we can conclude that for modelling the Kappa parameter through the course of the epidemic, using a Gaussian RW is more likely to recreate the true epidemic parameters of prevalence, incidence and the kappa parameter. For predicting the future course of an epidemic a first order penalized RW produces the closest fit to this form of epidemic's trajectory. While when recapturing the peak of this epidemic, a second order penalized RW matches closest to the true values. The 95\% credible intervals produced by the RW modelling are also much more relaible than the intervals produced via modelling with a Spline. 
 \par
