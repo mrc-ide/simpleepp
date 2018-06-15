@@ -626,7 +626,7 @@ plot(total_plots_by_n_kappa)
 ##############################################################################################################################
 
 RMSE_full_data_spline_first_order_n_100_prev<-root_mean_error_function(sim_model_output$sim_df,
-                                                                       sp_100_1_84_res)
+                                                                       spline_f_100_foi_res)
 RMSE_full_data_spline_first_order_n_100_inc<-root_mean_error_function(sim_model_output$sim_df,metric = "incidence",
                                                                       fitted_data = sp_100_1_84_res)
 RMSE_full_data_spline_first_order_n_100_kappa<-root_mean_error_function(sim_model_output$sim_df,metric = "kappa",

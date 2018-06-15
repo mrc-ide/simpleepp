@@ -16,36 +16,48 @@ load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/spline_results/"
 seven_knots<-list.files(path_name,full.names = T)
-lapply(seven_knots,load,verbose=T)
+for(i in 1:length(seven_knots)){
+  load(seven_knots[i],verbose = T)
+}
 
 ## 8 knotters 
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/8_knot_splines/results/"
 eight_knots<-list.files(path_name,full.names = T)
-lapply(eight_knots,load,verbose=T)
+for(i in 1:length(eight_knots)){
+  load(eight_knots[i],verbose = T)
+}
 
 ## 9 knotters 
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/9_knot_splines/results/"
 nine_knots<-list.files(path_name,full.names = T)
-lapply(nine_knots,load,verbose=T)
+for(i in 1:length(nine_knots)){
+  load(nine_knots[i],verbose = T)
+}
 
 ## 10 knotters 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/10_knots/results/"
 ten_knots<-list.files(path_name,full.names = T)
-lapply(ten_knots,load,verbose=T)
+for(i in 1:length(ten_knots)){
+  load(ten_knots[i],verbose = T)
+}
 
 ## 11 knotters
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/11_knots/results/"
 eleven_knots<-list.files(path_name,full.names = T)
-lapply(eleven_knots,load,verbose=T)
+for(i in 1:length(eleven_knots)){
+  load(eleven_knots[i],verbose = T)
+}
 
 ## 12 knotters
 
 path_name<-"C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/12_knots/results/"
 twelve_knots<-list.files(path_name,full.names = T)
-a<-lapply(twelve_knots,load,verbose=T)
+for(i in 1:length(twelve_knots)){
+  load(twelve_knots[i],verbose = T)
+}
 
 ###########################################################################################################################################
 ###########################################################################################################################################
@@ -384,3 +396,148 @@ save(inc_95,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/multi_knot_analysis/95_conf_anlaysis/incidence_95_multi")
 save(kappa_95,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/multi_knot_analysis/95_conf_anlaysis/kappa_95_multi")
+
+###########################################################################################################################################
+## Now we will prepare the overfit analysis of these fits #################################################################################
+###########################################################################################################################################
+
+path_name<-"C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/foi_as_modelled_parameter/"
+sampled_data<-list.files(path_name,full.names = T)
+for(i in 1:4){
+  load(sampled_data[i],verbose = T)
+}
+
+
+overfit_function_list<-function(fit_list,sample_df,true_df){
+  
+  sample_true_rmse_tot<-NULL
+  true_fitted_rmse_tot<-NULL
+  overfit_stat_tot<-NULL
+  overfit_ratio_tot<- NULL
+  fit_df<-fit_list$prev
+  
+  for (i in 1:100){
+    sample_df_test<- sample_df[sample_df$iteration == i,]
+    fitted_df_test<- fit_df[fit_df$iteration == i,]
+    
+    sample_true_error<- sample_df_test$sample_prev_hiv_percentage - true_df$prev_percent[0:45*10+1]
+    true_fit_error<- true_df$prev_percent[0:45*10+1] - fitted_df_test$median[0:45*10+1]
+    sample_fit_error<- sample_df_test$sample_prev_hiv_percentage - fitted_df_test$median[0:45*10+1]
+    
+    
+    sample_true_rmse<-sqrt(mean(sample_true_error^2))
+    true_fitted_rmse<-sqrt(mean(true_fit_error^2))
+    sample_fitted_rmse<-sqrt(mean(sample_fit_error^2))
+    
+    overfit_ratio<- true_fitted_rmse / sample_fitted_rmse
+    overfit_test<- (sample_true_rmse - true_fitted_rmse) / (sample_true_rmse)
+    
+    sample_true_rmse_tot<-c(sample_true_rmse_tot,sample_true_rmse)
+    true_fitted_rmse_tot<-c(true_fitted_rmse_tot,true_fitted_rmse)
+    overfit_stat_tot<-c(overfit_stat_tot,overfit_test)
+    overfit_ratio_tot<-c(overfit_ratio_tot,overfit_ratio)
+  }
+  out_df<-cbind.data.frame(sample_true_rmse_tot,true_fitted_rmse_tot,overfit_stat_tot)
+  names(out_df)<-c("sample true rmse","true fitted rmse", "overfit test")
+  out_df$iteration<-1:100
+  
+  mean_overfit<-mean(overfit_stat_tot)
+  mean_ratio<-mean(overfit_ratio_tot)
+  
+  return(list(df=out_df,overfit=mean_overfit,ovefit_ratio=mean_ratio))
+  
+}
+
+plotter_and_table_giver_overfit<-function(total_list_of_results,start_knot_number=7,end_knot_number=12,plot_title){
+  knot_values<-as.character(start_knot_number:end_knot_number)
+  tot_vals<-NULL
+  tot_plot_vals<-NULL
+  for(i in 1:length(knot_values)){
+    vals_to_check<-c(((i*2)-1),(i*2))
+    new_line<-c(total_list_of_results[[1]][[vals_to_check[1]]][[3]],
+                total_list_of_results[[2]][[vals_to_check[1]]][[3]],
+                total_list_of_results[[3]][[vals_to_check[1]]][[3]],
+                total_list_of_results[[4]][[vals_to_check[1]]][[3]],
+                total_list_of_results[[1]][[vals_to_check[2]]][[3]],
+                total_list_of_results[[2]][[vals_to_check[2]]][[3]],
+                total_list_of_results[[3]][[vals_to_check[2]]][[3]],
+                total_list_of_results[[4]][[vals_to_check[2]]][[3]])
+    new_df<-cbind.data.frame(new_line,rep(knot_values[i],length(new_line)))
+    tot_vals<-cbind(tot_vals,new_line)
+    tot_plot_vals<-rbind(tot_plot_vals,new_df)
+    
+  }
+  tot_vals<-data.frame(tot_vals)
+  row.names(tot_vals)<-paste(c(rep("first",4),rep("second",4)),rep(c(100,500,1000,5000),2),sep = " ")
+  
+  tot_plot_vals<-data.frame(tot_plot_vals)
+  names(tot_vals)<-paste("Knot_number",knot_values,sep = "_")
+  names(tot_plot_vals)<-c("overfit","knot_number")
+  tot_plot_vals$sample_size<-rep(c(100,500,1000,5000),nrow(tot_plot_vals)/4)
+  tot_plot_vals$order<-rep(c(rep("first",4),rep("second",4)),nrow(tot_plot_vals)/8)
+  tot_plot_vals$type<-paste(tot_plot_vals$knot_number,tot_plot_vals$order)
+  
+  rmse_plotto<-ggplot(data = tot_plot_vals,aes(x=sample_size,y=overfit,group=type))+
+    geom_line(aes(colour=knot_number,linetype=order),size=1.05)+labs(x="Sample size",y="Ratio of RMSE from fitted to true and fitted to sample",title=plot_title)+
+    geom_point(aes(shape=order,fill=knot_number,colour=knot_number),fill="white",size=3)+
+    scale_shape_manual("Order",values = c("first"=21,"second"=23))+
+    scale_linetype_manual("Order",
+                          values = c("first"="solid","second"="dotdash"))
+  
+  
+  return(list(df_overfit=tot_vals,plot_df=tot_plot_vals,plotto=rmse_plotto))
+  
+  
+}
+
+
+### sample n 100 ####
+n_100_results<-list(spline_f_100_foi_res,spline_s_100_foi_res,
+                    spline_f_100_foi_res_8,spline_s_100_foi_res_8,
+                    spline_f_100_foi_res_9,spline_s_100_foi_res_9,
+                    spline_f_100_foi_res_ten,spline_s_100_foi_res_ten,
+                    spline_f_100_foi_res_11,spline_s_100_foi_res_11,
+                    spline_f_100_foi_res_12,spline_s_100_foi_res_12)
+n_100_overfit_analysis<-lapply(n_100_results,overfit_function_list,sample_df=sampled_n_100_complete_data_foi_model,
+                               true_df=sim_model_foi$sim_df)
+
+### sample n 500 ####
+
+n_500_results<-list(spline_f_500_foi_res,spline_s_500_foi_res,
+                    spline_f_500_foi_res_8,spline_s_500_foi_res_8,
+                    spline_f_500_foi_res_9,spline_s_500_foi_res_9,
+                    spline_f_500_foi_res_ten,spline_s_500_foi_res_ten,
+                    spline_f_500_foi_res_11,spline_s_500_foi_res_11,
+                    spline_f_500_foi_res_12,spline_s_100_foi_res_12)
+n_500_overfit_analysis<-lapply(n_500_results,overfit_function_list,sample_df=sampled_n_500_complete_data_foi_model,
+                               true_df=sim_model_foi$sim_df)
+
+### sample n 1k ####
+
+n_1k_results<-list(spline_f_1k_foi_res,spline_s_1k_foi_res,
+                   spline_f_1k_foi_res_8,spline_s_1k_foi_res_8,
+                   spline_f_1k_foi_res_9,spline_s_100_foi_res_9,
+                   spline_f_1k_foi_res_ten,spline_s_1k_foi_res_ten,
+                   spline_f_1k_foi_res_11,spline_s_1k_foi_res_11,
+                   spline_f_1k_foi_res_12,spline_s_1k_foi_res_12)
+n_1k_overfit_analysis<-lapply(n_1k_results,overfit_function_list,sample_df=sampled_n_1000_complete_data_foi_model,
+                              true_df=sim_model_foi$sim_df)
+### sample n 5k ####
+
+n_5k_results<-list(spline_f_5k_foi_res,spline_s_5k_foi_res,
+                   spline_f_5k_foi_res_8,spline_s_5k_foi_res_8,
+                   spline_f_5k_foi_res_9,spline_s_5k_foi_res_9,
+                   spline_f_5k_foi_res_ten,spline_s_5k_foi_res_ten,
+                   spline_f_5k_foi_res_11,spline_s_5k_foi_res_11,
+                   spline_f_5k_foi_res_12,spline_s_5k_foi_res_12)
+n_5k_overfit_analysis<-lapply(n_5k_results,overfit_function_list,sample_df=sampled_n_5000_complete_data_foi_model,
+                              true_df=sim_model_foi$sim_df)
+
+tot_overfit_results<-list(n_100_overfit_analysis,n_500_overfit_analysis,
+                          n_1k_overfit_analysis,n_5k_overfit_analysis)
+overfit_results<-plotter_and_table_giver_overfit(tot_overfit_results,plot_title = "Overfit analysis across different knot lengths")
+overfit_results$plotto
+overfit_results$df_overfit
+
+save(overfit_results,
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/foi_as_modelled/multi_knot_analysis/overfit_analysis/overfit_results_multi_analysis")
