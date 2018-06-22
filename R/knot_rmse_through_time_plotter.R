@@ -69,7 +69,7 @@ for(i in 1:length(twelve_knots)){
 ## NOw we will write our function to get the rmse to the true for each time point for all the spline data ##################################
 ############################################################################################################################################
 
-rmse_per_time_knotters<-function(true_data,fitted_data,metric="prevalence",year_time_series=seq(1970,2020,0.36),type_of_data){
+rmse_per_time_knotters<-function(true_data,fitted_data,metric="prevalence",year_time_series=seq(1970,2020,0.1),type_of_data){
   
   if(metric=="prevalence"){
     true_metric <- true_data$prevalence

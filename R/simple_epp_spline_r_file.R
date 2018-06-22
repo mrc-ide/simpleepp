@@ -106,7 +106,7 @@ plot(plotted_sim$whole)
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-1990:2015
+sample_range<-1970:2015
 sample_years<-length(sample_range)
 sample_n<-1000
   
@@ -216,8 +216,10 @@ mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chu
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
                      control = list(adapt_delta = 0.85))
 
-
-
+rstan::summary(mod_hiv_prev)
+util <- new.env()
+source('stan_course/material/material/day1/1 - workflow/stan_utility.R', local=util)
+util$check_all_diagnostics(mod_hiv_prev)
 
 plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output){
   
@@ -330,6 +332,8 @@ from_1995_data<-plot_stan_model_fit(model_output = mod_hiv_prev,
 ## Now we'll start plotting the output from these stan runs ###########################################################################
 #######################################################################################################################################
 plot(from_1995_data$prevalence_plot)
+plot(from_1995_data$incidence_plot)
+plot(from_1995_data$r_plot)
 plot(from_2000_data$prevalence_plot)
 plot(stan_output_second_order_n_1000$incidence_plot)
 plot(stan_output_second_order_n_1000$r_plot)

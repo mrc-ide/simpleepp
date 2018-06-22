@@ -11,7 +11,7 @@ require(gridExtra)
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-expose_stan_functions("stan_files/chunks/cd4_matrix_random_walk.stan")
+expose_stan_functions("hiv_project/simpleepp/stan_files/chunks/cd4_matrix_random_walk.stan")
 require(grid)
 
 
@@ -102,7 +102,7 @@ plot(plotted_sim$whole)
 
 sample_range<-1970:2015
 sample_years<-46
-sample_n<-100
+sample_n<-1000
 
 
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
@@ -155,7 +155,7 @@ ggplot(data = sample_df_100_random_second,aes(x=sample_time_hiv,y=sample_prev_hi
 ###################################################################################################################################
 ## Now we have our sample from the simulated data we can call the stan script to sample from this data ############################
 ###################################################################################################################################
-xout<-seq(1970,2020,0.1)
+xout<-seq(1970,2019.9,0.1)
 spline_matrix<-splineDesign(1969:2021,xout,ord = 2)            ## This matrix is the spline design one 
 penalty_matrix<-diff(diag(ncol(spline_matrix)), diff=2)        ## This matrix creates the differences between your kappa values 
 rows_to_evaluate<-0:45*10+1
@@ -182,17 +182,17 @@ stan_data_discrete<-list(
   
 params_monitor_hiv<-c("y_hat","iota","fitted_output","beta","sigma_pen")  
   
-test_stan_hiv<- stan("stan_files/chunks/cd4_matrix_random_walk.stan",
+test_stan_hiv<- stan("hiv_project/simpleepp/stan_files/chunks/cd4_matrix_random_walk.stan",
                                         data = stan_data_discrete,
                                         pars = params_monitor_hiv,
                                         chains = 1, iter = 10)  
   
 
-mod_hiv_prev <- stan("stan_files/chunks/cd4_matrix_random_walk.stan", data = stan_data_discrete,
+mod_hiv_prev <- stan("hiv_project/simpleepp/stan_files/chunks/cd4_matrix_random_walk.stan", data = stan_data_discrete,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                    control = list(adapt_delta = 0.85))
+                    control = list(adapt_delta = 0.99))
 
-
+print(mod_hiv_prev)[1:54,]
 
 plot_stan_model_fit<-function(model_output,sim_sample,sim_output,plot_name,xout){
   
@@ -284,12 +284,16 @@ plot_stan_model_fit<-function(model_output,sim_sample,sim_output,plot_name,xout)
   
 }
 
-xout<-seq(1970,2020.1,0.1)
+xout<-seq(1970,2020,0.1)
 
 
-stan_output_random_walk_second_n_100<-plot_stan_model_fit(model_output = mod_hiv_prev,sim_sample = sample_df_100_random_second,
+test_peno<-plot_stan_model_fit(model_output = mod_hiv_prev,sim_sample = sample_df_100_random_second,
                                                          plot_name = "Random walk second order, n = 100",xout = xout,
                                                          sim_output = sim_model_output$sim_df)
+
+test_peno$prevalence_plot
+test_peno$incidence_plot
+test_peno$r_plot
 
 plot(stan_output_random_walk_first_n_100$prevalence_plot)
 plot(stan_output_random_walk_first_n_500$prevalence_plot)
@@ -298,6 +302,7 @@ plot(stan_output_random_walk_first_n_1000$prevalence_plot)
 plot(stan_output_random_walk_second_n_1000$prevalence_plot)
 plot(stan_output_random_walk_second_n_500$prevalence_plot)
 plot(stan_output_random_walk_second_n_100$prevalence_plot)
+
 plot(stan_output$r_plot)
 
 plot(stan_output$incidence_plot)

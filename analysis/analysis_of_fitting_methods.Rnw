@@ -65,19 +65,19 @@
 \section{Introduction}
 UNAIDS currently uses the Estimation and projection package (EPP) to evaluate and predict trends in HIV incidence and prevalence within countries. This model has evolved markedly over the years, incorporating Bayesian melding for parameter estimation and using various techniques to estimate the transmission parameter kappa.
 \par
- In this report we aim to compare two of the most commonly used methods for modelling the kappa parameter and incidence: penalized B splines and the gaussian random walk (RW). We systematically evaluate how each technique performs under different data configurations, to better inform future modelling directions for the EPP package.
+ In this report we aim to compare two of the most commonly used methods for modelling the kappa parameter and incidence: penalized B splines and the Gaussian random walk (RW). We systematically evaluate how each technique performs under different data configurations, to better inform future modelling directions for the EPP package.
 
 \section{Methods}
 
 We will simulate data for a HIV epidemic from our deterministic simple EPP model. This models the transmission parameter as a logistic curve through time and we can incorporate ART treatment into this framework. 
 \par
-We will initially test the goodness of fit to simulated data, from our deterministic model, of both first order and second penalized splines, and first and second order penalized RW, with complete data for prevalence from the beginning of the epidemic. This will be performed over a set of different sample sizes from the population: 100, 500, 1,000 and 5,000 people. These random samples from the population will be repeated 100 times in each case and each of the four technqiues wil fit to the same set of four samples. 
+We will initially test the goodness of fit to simulated data, from our deterministic model, of both first order and second penalized splines, and first and second order penalized RW, with complete data for prevalence from the beginning of the epidemic. This will be performed over a set of different sample sizes from the population: 100, 500, 1,000 and 5,000 people. These random samples from the population will be repeated 100 times in each case and each of the four techniques wile fit to the same set of four samples. 
 \par
-We will test how well our modelled fitted values match the true epidemic curve via a comparison of the root mean sqaured error (RMSE) of the true epidemic to the fitted values. This will be compared for the three output curves from our model representing: prevalence, incidence and kappa. We will compare this over the whole time period of the epidemic and specifically in the last 5 years of the epidemic when we have no sample data, to assess which modelling technqiue is best for predicting future trends, and we will look at the fit during the peak epidemic years, to gauge which technqiue can assess this peak and decline best. 
+We will test how well our modeled fitted values match the true epidemic curve via a comparison of the root mean squared error (RMSE) of the true epidemic to the fitted values. This will be compared for the three output curves from our model representing: prevalence, incidence and kappa. We will compare this over the whole time period of the epidemic and specifically in the last 5 years of the epidemic when we have no sample data, to assess which modelling technique is best for predicting future trends, and we will look at the fit during the peak epidemic years, to gauge which technique can assess this peak and decline best. 
 \par
 Furthermore we will evaluate how often the true values for the epidemic parameters fall within our 95\% confidence interval produced from the model fitting, again this will be performed for each of the three parameters: Prevalence, incidence and the kappa parameter.
 \par
-Finally we will also assess how the four different models maybe overfitting to the data. We attempt to understand this via a comparison of the RMSE between the model fitted values and the true epidemic values, and the RMSE between the model fitted values and the values of the prevalence used in the sample to fit the data with. 
+Finally we will also assess how the four different models maybe over fitting to the data. We attempt to understand this via a comparison of the RMSE between the model fitted values and the true epidemic values, and the RMSE between the model fitted values and the values of the prevalence used in the sample to fit the data with. 
 
 \section{Results}
 \subsection{Single peak epidemic}
@@ -90,7 +90,7 @@ First we will plot the mean output over the 100 runs of the sampled data for eac
 \label{fig:prev_plots}
 \end{figure}
 
-From figure(\ref{fig:prev_plots}) we can initially see that all the different fitting methods capture the prevalence of the true epidemic very well during the phase from 1970 to 2015 when we have data to fit to. All models also have a narrowing of their credibility bounds as the sample size goes up from left to right. During the prediction period however the models differ in how well they seem to match the true epidemic. Both spline models seem to predict a levelling off of the prevalence or a slight uptick depending on their sample sizes, whereas in reality the prevalence is seen to decrease during this period. The RW models begin to more closely match the epidemic qualitatively with larger sample sizes, with the RW second order model at sample size 5000 very similar indeed. 
+From figure(\ref{fig:prev_plots}) we can initially see that all the different fitting methods capture the prevalence of the true epidemic very well during the phase from 1970 to 2015 when we have data to fit to. All models also have a narrowing of their credibility bounds as the sample size goes up from left to right. During the prediction period however the models differ in how well they seem to match the true epidemic. Both spline models seem to predict a leveling off of the prevalence or a slight uptick depending on their sample sizes, whereas in reality the prevalence is seen to decrease during this period. The RW models begin to more closely match the epidemic qualitatively with larger sample sizes, with the RW second order model at sample size 5000 very similar indeed. 
 \par
 The mean values over the 100 runs on the different data sets are depicted below in figure(\ref{fig:inc_plots}), again the blue line is the fitted data while the red line indicates the true value from the simulated epidemic.
 
@@ -102,7 +102,7 @@ The mean values over the 100 runs on the different data sets are depicted below 
 
 From this we see that all four methods generally fit well to the true epidemic. Both spline methods however seem to underestimate the peak incidence reached during the early to mid 1990s. The credibility intervals for the RW methods also remain fairly constant, especially for the first order RW, despite an increase in sample size from the population. Once again the RW methods also seem to more closely match the true epidemic incidence during our prediction period from 2015 to 2020. The Second order RW again matches most closely the slight decline seen in the true simulated epidemic. 
 \par
-Finally the mean kappa values are seen in figure (\ref{fig:kappa_plots}) below. Again the red line indicates the true value and the blue line the fitted value with assoicated shaded region the 95\% credible interval.
+Finally the mean kappa values are seen in figure (\ref{fig:kappa_plots}) below. Again the red line indicates the true value and the blue line the fitted value with associated shaded region the 95\% credible interval.
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./kappa_no_art_16_plots.png}
@@ -110,7 +110,7 @@ Finally the mean kappa values are seen in figure (\ref{fig:kappa_plots}) below. 
 \label{fig:kappa_plots}
 \end{figure}
 
-The fitted values from the model produced for kappa are much less accurate than our previous two parameters. All methods are seen to underestimate the initial kappa value, with first order splines and in particular RW second order fitting to a sample size of 100 very low estimates. All techniques though fit well during the decline phase of kappa from the late 1980s to the early 2000s. During the prediction period, both spline methods predict an uptick in kappa, with this being most pronounced in smaller sample sizes. The RW methods are seen to predict a levelling off of the kappa during this period, with the RW second order fitting particularly well at sample size 5000. 
+The fitted values from the model produced for kappa are much less accurate than our previous two parameters. All methods are seen to underestimate the initial kappa value, with first order splines and in particular RW second order fitting to a sample size of 100 very low estimates. All techniques though fit well during the decline phase of kappa from the late 1980s to the early 2000s. During the prediction period, both spline methods predict an uptick in kappa, with this being most pronounced in smaller sample sizes. The RW methods are seen to predict a leveling off of the kappa during this period, with the RW second order fitting particularly well at sample size 5000. 
 
 \subsubsection{RMSE to true values}
 
@@ -171,7 +171,7 @@ kable(prediction_period_rmse$prevalence,caption = "RMSE of Prevalence for fitted
 
 @
 
-Incidence predictions during 2015:2020 are seen in table (\ref{tab:rmse_inc_pred}). Here once again we see that the RW fitting technique produces a closer fit across the different sample sizes than the equivalent penalized spline. Additionally the first order penalized RW produces the best fit to the true data among the different fitting techniques across the range of sample sizes during this five year prediction period. It is interesting to note that the first order penalized methods in this scenario always outperform their second order counterparts. This could be due to the fact that in the absence of data a first order penalty will mean the value plateaus, something which we see the incidence parameter of the true epidemic begins to do during this prediction period. Further testing with different epidemic trajectories will allow us to test whether this better fitting of first order methods is merely an artefact from this true epidemic curve.  
+Incidence predictions during 2015:2020 are seen in table (\ref{tab:rmse_inc_pred}). Here once again we see that the RW fitting technique produces a closer fit across the different sample sizes than the equivalent penalized spline. Additionally the first order penalized RW produces the best fit to the true data among the different fitting techniques across the range of sample sizes during this five year prediction period. It is interesting to note that the first order penalized methods in this scenario always outperform their second order counterparts. This could be due to the fact that in the absence of data a first order penalty will mean the value plateaus, something which we see the incidence parameter of the true epidemic begins to do during this prediction period. Further testing with different epidemic trajectories will allow us to test whether this better fitting of first order methods is merely an artifact from this true epidemic curve.  
 
 <<rmse_inc_pred, echo=FALSE,fig.lp='tab:'>>=
 
@@ -181,7 +181,7 @@ kable(prediction_period_rmse$incidence,caption = "RMSE of Incidence for fitted a
 
 @
 
-For the kappa paramter, the average RMSE values during this prediction period are displayed in table (\ref{tab:rmse_kappa_pred}). These results are similar to the results for prevalence and incidence during this prediction period, in that at each sample size the best fitting technique is the first order penalized random walk, while the first order techniques also outperform their respective second order penalized versions. The improvement with increasing sample size isn't as clear cut as the previous two parameters, with all RMSE values the same order of magnitude for each of the sample sizes in this case. 
+For the kappa parameter, the average RMSE values during this prediction period are displayed in table (\ref{tab:rmse_kappa_pred}). These results are similar to the results for prevalence and incidence during this prediction period, in that at each sample size the best fitting technique is the first order penalized random walk, while the first order techniques also outperform their respective second order penalized versions. The improvement with increasing sample size isn't as clear cut as the previous two parameters, with all RMSE values the same order of magnitude for each of the sample sizes in this case. 
 
 <<rmse_kappa_pred, echo=FALSE,fig.lp='tab:'>>=
 
@@ -264,19 +264,19 @@ kable(overall_95_stats$kappa,caption = "Percentage of time the true epidemic Kap
 
 @
 
-These are interesting results, seemingly depicting that RW methods of fitting are more reliable in estimating the true epidemic values. With the second order peanlized RW, all the produced credible intervals contain the true value at least 96\% of the time, while first order penalized RWs perform best for including the true values of incidence and the kappa parameter. The Splines perform adequately at the lowest sample size of 100, but as the sample size increases, and subsequently their produced credible intervals contract, they end up holding the true value within their bounds far less frequently than they should. This is most pronounced when estimating the Kappa parameter, with the frequency at which the true kappa value lies within the credible bounds of the first order penalized Spline when the population sample size is 5,000 being only 48.6\%, almost half the frequency it should be. 
+These are interesting results, seemingly depicting that RW methods of fitting are more reliable in estimating the true epidemic values. With the second order penalized RW, all the produced credible intervals contain the true value at least 96\% of the time, while first order penalized RWs perform best for including the true values of incidence and the kappa parameter. The Splines perform adequately at the lowest sample size of 100, but as the sample size increases, and subsequently their produced credible intervals contract, they end up holding the true value within their bounds far less frequently than they should. This is most pronounced when estimating the Kappa parameter, with the frequency at which the true kappa value lies within the credible bounds of the first order penalized Spline when the population sample size is 5,000 being only 48.6\%, almost half the frequency it should be. 
 \par
-These results, at least for this epidemic, suggest that the RW methods for modelling the kappa parameter are far more reliable in assesing the true epidemic parameters than the Spline methods. 
+These results, at least for this epidemic, suggest that the RW methods for modelling the kappa parameter are far more reliable in assessing the true epidemic parameters than the Spline methods. 
 
-\subsubsection{Overfitting and bias}
-To try and understand how systematically biased data may affect each model's ability to infer the true epidemic, we came up with a simple test statistic to determine if fitted prevalence estimates were overfitting to the sampled prevalence points each year: 
+\subsubsection{Over fitting and bias}
+To try and understand how systematically biased data may affect each model's ability to infer the true epidemic, we came up with a simple test statistic to determine if fitted prevalence estimates were over fitting to the sampled prevalence points each year: 
 $$ \frac{RMSE_{fitted-true}}{RMSE_{fitted-sample}} $$
 
 When the fitted prevalence more closely matches the true epidemic prevalence, this statistic tends to 0, while when the fitted prevalence matches the sampled prevalence more closely than the true prevalence this will tend to positive \infty.
 \par
-The results of our analysis of the potential overfitting of the model are seen in table (\ref{tab:overfit}). These are somewhat in line with our expectations, as we see that generally the RW models, which estimate more parameters when recreating the curve of the kappa parameter, are tending to overfit more to the prevalence data than the spline models. These RW values are higher, indicating they match closer to the sampled values than the spline models do. However these are in many cases only small differences and the second order penalized RW at sample size 5,000 actually fits closer to the true prevalence than the three other modelling techniques do. 
+The results of our analysis of the potential over fitting of the model are seen in table (\ref{tab:overfit}). These are somewhat in line with our expectations, as we see that generally the RW models, which estimate more parameters when recreating the curve of the kappa parameter, are tending to over fit more to the prevalence data than the spline models. These RW values are higher, indicating they match closer to the sampled values than the spline models do. However these are in many cases only small differences and the second order penalized RW at sample size 5,000 actually fits closer to the true prevalence than the three other modelling techniques do. 
 \par
-Given these results, with a biased dataset, splines may be able to better predict the true epidemic values, although further work testing with biased datasets will be needed to test this theory more rigorously 
+Given these results, with a biased data set, splines may be able to better predict the true epidemic values, although further work testing with biased data sets will be needed to test this theory more rigorously 
 
 <<overfit,echo=FALSE,fig.lp='tab:'>>=
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/no_art_simpleepp/overfit_analyses/overfit_list")
@@ -290,7 +290,7 @@ kable(overfit_tests$ratio,caption="Analysis of overfitting to prevalence sampled
 @
 
 \subsection{Double peak epidemic}
-Given that there is evidence for more complex epidemic trajectories existing for HIV, especailly within Western Europe where a second peak of incidence has been observed during the 2000s, we sought test how the different modelling approaches capture an epidemic with a double peak in incidence. We simulated this by modeling kappa as a spline with 7 knot points. We simulated Kappa declining initially up to the late 1990s, this decline was then followed by an increase and subsequent plateau of kappa by the early 2010s. This decline and rise matches the narrative that increasing awareness of AIDS and HIV as a deadly disease up to the mid 1990s caused transmission rates to decline, however following the advent of effective drugs for managing HIV infection, attitudes laxed concerning its spread, allowing for a modest uptick in incidence.
+Given that there is evidence for more complex epidemic trajectories existing for HIV, especially within Western Europe where a second peak of incidence has been observed during the 2000s, we sought test how the different modelling approaches capture an epidemic with a double peak in incidence. We simulated this by modeling kappa as a spline with 7 knot points. We simulated Kappa declining initially up to the late 1990s, this decline was then followed by an increase and subsequent plateau of kappa by the early 2010s. This decline and rise matches the narrative that increasing awareness of AIDS and HIV as a deadly disease up to the mid 1990s caused transmission rates to decline, however following the advent of effective drugs for managing HIV infection, attitudes laxed concerning its spread, allowing for a modest uptick in incidence.
 \par
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./double_peak_prevalence_16_plots.png}
@@ -306,7 +306,7 @@ Figure (\ref{fig:dp_prev}) depicts the average predicted prevalence from our 100
 \label{fig:dp_inc}
 \end{figure}
 
-In figure (\ref{fig:dp_inc}) we have plotted the average fitted incidence values from our 100 samples taken from the true epidemic. Similar to prevalence we see a good fit during the period for which we have data in the epidemic, from 1970-2015. However towards the end of this period we see more diveregnce between the fitted median value and the true epidemic curve. This divergence is most pronounced in second order penalized fitting methods, especially at lower sample sizes. 
+In figure (\ref{fig:dp_inc}) we have plotted the average fitted incidence values from our 100 samples taken from the true epidemic. Similar to prevalence we see a good fit during the period for which we have data in the epidemic, from 1970-2015. However towards the end of this period we see more divergence between the fitted median value and the true epidemic curve. This divergence is most pronounced in second order penalized fitting methods, especially at lower sample sizes. 
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./double_peak_kappa_16_plots.png}
@@ -314,9 +314,9 @@ In figure (\ref{fig:dp_inc}) we have plotted the average fitted incidence values
 \label{fig:dp_kappa}
 \end{figure}
 
-Finally in figure (\ref{fig:dp_kappa}) the average fitted results for kappa are displayed over 100 different samples from our true epidemic. These results further what we have seen previously, that in this epidemic first order penalized methods produce closer fits to the true epidemic, especially during the prediction period of 2015-2020. This is due to the kappa parameter rising and then levelling off during the later period. First order penalized methods, in the absence of data, will by default produce a flat line, which is what this epidemic naturally falls to. Second order penalized methods, in the absence of data, maintain the gradient from previous data points. In this case, leading up to 2015 the kappa parameter increases slightly, in this case second order penalized methods continue this trend into the prediction period.
+Finally in figure (\ref{fig:dp_kappa}) the average fitted results for kappa are displayed over 100 different samples from our true epidemic. These results further what we have seen previously, that in this epidemic first order penalized methods produce closer fits to the true epidemic, especially during the prediction period of 2015-2020. This is due to the kappa parameter rising and then leveling off during the later period. First order penalized methods, in the absence of data, will by default produce a flat line, which is what this epidemic naturally falls to. Second order penalized methods, in the absence of data, maintain the gradient from previous data points. In this case, leading up to 2015 the kappa parameter increases slightly, in this case second order penalized methods continue this trend into the prediction period.
 \par
-This serves to highlight how the different asssumptions of the modelling techniques affect predictions in the absence of data. Previously we had seen in a declining epidemic how second order penalized methods teneded to produce closer fits to the true epidemic than first order penalized methods. In this scenario the reverse is true, perhaps indicating how the choice of model is an arbitrary one, and any reliance on future predictions should be held in respect to the modelling technique choosen. 
+This serves to highlight how the different assumptions of the modelling techniques affect predictions in the absence of data. Previously we had seen in a declining epidemic how second order penalized methods tended to produce closer fits to the true epidemic than first order penalized methods. In this scenario the reverse is true, perhaps indicating how the choice of model is an arbitrary one, and any reliance on future predictions should be held in respect to the modelling technique chosen. 
 
 \subsubsection{RMSE to double peak epidemic}
 In table (\ref{tab:dp_prev_tot}) we see the mean RMSE of the produced fits for each sample size for each of the four different modelling techniques, compared to the true epidemic values of prevalence. We see in this case the first order modelling methods outperforming their respective second order counterparts. In contrast to previous results, splines are closer to the true epidemic's prevalence values than the RW methods are, with the 5,000 sample size of the first order splines giving the closest match of any of the techniques to the true epidemics values.
@@ -393,7 +393,7 @@ kable(prediction_period_rmse$kappa,caption = "Mean RMSE values over 100 differen
 
 
 \subsubsection{Credible interval analysis}
-To test how relaiable the produced 95\% credible intervals were we analysed how often the true epidemic values fell within these ranges for the four different modelling techniques we used. The results are depicted in tables (\ref{tab:dp_95_prev} : \ref{tab:dp_95_kappa})
+To test how reliable the produced 95\% credible intervals were we analysed how often the true epidemic values fell within these ranges for the four different modelling techniques we used. The results are depicted in tables (\ref{tab:dp_95_prev} : \ref{tab:dp_95_kappa})
 
 <<dp_95_prev, echo=FALSE,fig.lp='tab:'>>=
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/95_percent_conf_analysis/overall_95")
@@ -427,7 +427,7 @@ kable(overall_95_stats$kappa,caption = "Percentage of time the true epidemic val
 @
 
 
-\subsubsection{Overfit analysis}
+\subsubsection{Over fit analysis}
 
 <<overfit_dp,echo=FALSE,fig.lp='tab:'>>=
 load("C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/overfit_analysis/overall_overfit")
@@ -439,7 +439,7 @@ kable(overfit_tests$ratio,caption = "Ratio of RMSE to sample points against rati
 @
 
 
-\subsection{FOI as modelled parameter}
+\subsection{FOI as modeled parameter}
 \subsubsection{Mean results graphs}
 
 \begin{figure}[h!]
@@ -468,13 +468,13 @@ kable(overfit_tests$ratio,caption = "Ratio of RMSE to sample points against rati
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./foi_multiple_knots_incidence}
-\caption{Incidence values when modelled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modelled parameter}
+\caption{Incidence values when modeled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modeled parameter}
 \label{fig:foi_multi_inc}
 \end{figure}
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{./foi_multiple_knots_kappa}
-\caption{Kappa values when modelled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modelled parameter}
+\caption{Kappa values when modeled with different numbers of knots for a spline, averaged over 100 different samples, with incidence as modeled parameter}
 \label{fig:foi_multi_kappa}
 \end{figure}
 
@@ -557,15 +557,15 @@ kable(overall_95_stats_foi$kappa,caption = "Percent of time the true value of Ka
 @
 
 \section{Conclusions and further work}
-From our results for this epidemic we can conclude that for modelling the Kappa parameter through the course of the epidemic, using a Gaussian RW is more likely to recreate the true epidemic parameters of prevalence, incidence and the kappa parameter. For predicting the future course of an epidemic a first order penalized RW produces the closest fit to this form of epidemic's trajectory. While when recapturing the peak of this epidemic, a second order penalized RW matches closest to the true values. The 95\% credible intervals produced by the RW modelling are also much more relaible than the intervals produced via modelling with a Spline. 
+From our results for this epidemic we can conclude that for modelling the Kappa parameter through the course of the epidemic, using a Gaussian RW is more likely to recreate the true epidemic parameters of prevalence, incidence and the kappa parameter. For predicting the future course of an epidemic a first order penalized RW produces the closest fit to this form of epidemic's trajectory. While when recapturing the peak of this epidemic, a second order penalized RW matches closest to the true values. The 95\% credible intervals produced by the RW modelling are also much more reliable than the intervals produced via modelling with a Spline. 
 \par
-Our work tentatively suggests though that RW may overfit to the data compared to spline methods, further testing of this for a range of epidemic trajectories and data types is needed for a better understanding of this relationship. Indeed further work is needed within this framework to understand the effects of: 
+Our work tentatively suggests though that RW may over fit to the data compared to spline methods, further testing of this for a range of epidemic trajectories and data types is needed for a better understanding of this relationship. Indeed further work is needed within this framework to understand the effects of: 
 \begin{itemize}
 \item Modelling the incidence/Force of infection rather than the transmission parameter kappa.
-\item Different epidemeic trajectories on the accuracy of the different modelling techniques.
+\item Different epidemic trajectories on the accuracy of the different modelling techniques.
 \item Different data structures, fewer sampling, biased sampling and different data types on the fits produced.
 \item More flexible spline modelling.
-\item The effect of ART and improved diagnosis on epidemic trajecotry and estimation.
+\item The effect of ART and improved diagnosis on epidemic trajectory and estimation.
 \end{itemize}
 Completing this will allows us to provide robust feedback to the modelling community, informing them of the best methods to be used in each of the possible scenarios. 
 
