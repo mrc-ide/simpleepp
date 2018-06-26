@@ -102,9 +102,9 @@ parameters{
 
 transformed parameters{
 
- matrix[size(rows_to_interpret), 3] y_hat;
+ vector[size(rows_to_interpret)] y_hat;
 
- y_hat = simpleepp_no_art( exp(X_design * beta) , iota, mu, sigma, mu_i, dt_2)[rows_to_interpret, ];
+ y_hat = simpleepp_no_art( exp(X_design * beta) , iota, mu, sigma, mu_i, dt_2)[rows_to_interpret, 3];
 }
 
 
@@ -112,11 +112,11 @@ model {
 
 
 
- iota ~ normal(0, 0.5);                                                  // This models our initial population size
+ iota ~ normal(0, 0.25);                                                  // This models our initial population size
 
  target += normal_lpdf( D_penalty * beta | 0, sigma_pen);                // So this models our penalized spline with a slightly altered distribution command
 
- y ~ binomial(n_sample, y_hat[ , 3]);                               // This fits it to the binomially sampled data
+ y ~ binomial(n_sample, y_hat);                                          // This fits it to the binomially sampled data
 
 
 }
@@ -124,7 +124,9 @@ model {
 generated quantities{
 
 matrix[time_steps_euler , 3] fitted_output;
+vector[rows(X_design)] fitted_kappa;
 
-fitted_output = simpleepp_no_art(exp(X_design * beta), iota, mu, sigma, mu_i, dt_2);       // This models the data after our fitting procedure
+fitted_kappa = exp(X_design * beta);
+fitted_output = simpleepp_no_art(fitted_kappa, iota, mu, sigma, mu_i, dt_2);       // This models the data after our fitting procedure
 
 }

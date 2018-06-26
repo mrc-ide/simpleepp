@@ -75,7 +75,7 @@ xout <- c(xstart, step_vector)                #the vector of steps in total
 params_sim<-list(mu=mu,sigma=sigma,mu_i=mu_i,kappa=kappa,iota=iota)
 times_sim<-list(dt=dt,years=50,start=xstart)
 
-sim_model_output_changed_to_bell_curve<-run_simulated_model(params_sim,times_sim)
+sim_model_output<-run_simulated_model(params_sim,times_sim)
 
 sim_plot<-function(sim_df){
   
@@ -99,16 +99,16 @@ sim_plot<-function(sim_df){
   
 }
 
-plotted_sim<-sim_plot(sim_model_output_changed_to_bell_curve$sim_df)
+plotted_sim<-sim_plot(sim_model_output$sim_df)
 plot(plotted_sim$whole)
 
 ###################################################################################################################################
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-1970:2015
+sample_range<-2000:2015
 sample_years<-length(sample_range)
-sample_n<-1000
+sample_n<-100
   
   
 sample_function<-function(year_range,number_of_years_to_sample,people_t0_sample,simulated_df,prevalence_column_id){
@@ -166,7 +166,7 @@ splines_creator<-function(knot_number,penalty_order){
 
 nk <- knot_number # number of knots
 dk <- diff(range(xout))/(nk-3)
-knots <- xstart + -3:nk*dk
+knots <- 1970 + -3:nk*dk
 spline_matrix<- splineDesign(knots, step_vector, ord=4)
 penalty_matrix <- diff(diag(nk), diff=penalty_order)
 
@@ -212,13 +212,12 @@ test_stan_hiv<- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chu
 
 
 mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
-                     
-                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 1500,
-                     control = list(adapt_delta = 0.85))
+                     pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 2000,
+                     control = list(adapt_delta = 0.99))
 
 rstan::summary(mod_hiv_prev)
 util <- new.env()
-source('stan_course/material/material/day1/1 - workflow/stan_utility.R', local=util)
+source('C:/Users/josh/Dropbox/stan_course/material/material/day1/1 - workflow/stan_utility.R', local=util)
 util$check_all_diagnostics(mod_hiv_prev)
 
 plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output){
@@ -313,7 +312,7 @@ plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output)
     geom_line(data = sim_output,aes(x=time,y=kappa),colour="yellow",size=1)
     labs(x="Time",y="r value through time",title="R logistic through time")
   
-  return(list(prevalence_plot=(plotter),inits=inits,df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
+  return(list(prevalence_plot=(plotter),df_output=df_fit_prevalence,incidence_df=df_fit_incidence,
               r_fit_df=r_fit,incidence_plot=incidence_plot,r_plot=r_plot,sigma_pen_values=sigma_df,iota_value=params_df,
               iota_dist=iota_dist,sigma_pen_dist=sigma_pen_dist,beta_values=beta_df))
   
@@ -323,10 +322,13 @@ plot_stan_model_fit<-function(model_output,sim_sample,plot_name,xout,sim_output)
 xout<-seq(1970,2020,0.1)
 
 
-from_1995_data<-plot_stan_model_fit(model_output = mod_hiv_prev,
+from_2000_data<-plot_stan_model_fit(model_output = mod_hiv_prev,
                                                    sim_sample = sample_df_1000_second,plot_name = "Spline Second order, n = 1000",xout = xout,
                                                    sim_output = sim_model_output$sim_df)
 
+from_2000_data$prevalence_plot
+from_2000_data$incidence_plot + coord_cartesian(ylim=c(0,1))
+from_2000_data$r_plot + coord_cartesian(ylim = c(0,1))
 
 #######################################################################################################################################
 ## Now we'll start plotting the output from these stan runs ###########################################################################
@@ -402,3 +404,68 @@ plot(incidence_first_and_second_order)
 r_transmission_first_and_second<-ggarrange(stan_output_first_order$r_plot,stan_output_second_order$r_plot,
                                            ncol=2)
 plot(r_transmission_first_and_second)
+
+
+##########################################################################################################################
+## Testing out the different sample functions on here locally to reproduce the errors ###################################
+##########################################################################################################################
+
+source("X:/simpleepp/R/loop_functions_random_walk.R")
+path_name <- "C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/data_from_2000_runs/"
+y2k_data <- list.files(path_name, full.names = T)
+for(i in 1:length(y2k_data))
+  load(y2k_data[i],verbose = T)
+
+sample_range<-2000:2015
+knot_number <- 7
+sample_n<-100                            ##### !!!!!!!!!!!!!!!!!!!!!! Remember to change this for when you sample
+penalty_order<-1
+sample_start<-sample_range[1]-1970
+rows_to_evaluate<- sample_start:45*10+1   #(time_points_to_sample - 1970) * 10 + 1                 ## If using all data points must use 0:45*10+1
+
+data_about_sampling<-list(penalty_order=penalty_order,sample_years=length(sample_range),
+                          sample_n=sample_n,rows_to_evaluate=rows_to_evaluate,knot_number = knot_number)
+mu <- 1/35                               # Non HIV mortality / exit from population
+sigma <- 1/c(3.16, 2.13, 3.20)           # Progression from stages of infection
+mu_i <- c(0.003, 0.008, 0.035, 0.27)     # Mortality by stage, no ART
+kappa<-c(0.5,0.1,0.3,1995)
+iota<-0.0001
+
+params<-list(mu=mu,mu_i=mu_i,sigma=sigma)
+params
+
+test_y2k_100_data_spline_1st <- fitting_data_function_spline_loop(samples_data_frame = sampled_n_100_00_data,
+                                                                  iteration_number = 100,
+                                                                  data_about_sampling = data_about_sampling,
+                                                                  params = params)
+
+
+tricky_data <- sampled_n_100_00_data[sampled_n_100_00_data$iteration == 10,]
+step_vector <- seq(1970.1,2020,0.1)
+splines_matrices<-splines_creator(data_about_sampling$knot_number,data_about_sampling$penalty_order)
+
+stan_data_discrete<-list(
+  n_obs = data_about_sampling$sample_years,
+  n_sample = data_about_sampling$sample_n,
+  y = as.array(tricky_data$sample_y_hiv_prev),
+  time_steps_euler = length(xout),
+  penalty_order = penalty_order,
+  knot_number = knot_number,
+  estimate_years = 5+sample_start,
+  time_steps_year = 51,
+  X_design = splines_matrices$spline_matrix,
+  D_penalty = splines_matrices$penalty_matrix,
+  mu = mu,
+  sigma = sigma,
+  mu_i = mu_i,
+  dt = 1,
+  dt_2 = 0.1,
+  rows_to_interpret = as.array(data_about_sampling$rows_to_evaluate)
+)
+
+mod_hiv_prev_2000_1500 <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan",
+                          data = stan_data_discrete,
+                          pars = params_monitor_hiv,
+                          warmup = 500, iter = 2000, chains = 3,
+                          control = list(adapt_delta=0.99))
+
