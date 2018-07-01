@@ -10,8 +10,17 @@ require(ggpubr)
 #######################################################################################################################################
 ## Load the results and the true epidemic #############################################################################################
 #######################################################################################################################################
+load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/true_epidemic_data",verbose = T)
+path_name <- "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/"
+seventies_results <- list.files(path_name,full.names = T)
+for(i in 1:length(seventies_results)){
+  load(seventies_results[i],verbose = T)
+}
 
-
+load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_100_complete_data_no_art",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_500_complete_data_no_art",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_1000_complete_data_no_art",verbose = T)
+load("C:/Users/josh/Dropbox/hiv_project/simulated_data_sets/complete_data_simpleepp_no_art/n_5000_complete_data_no_art",verbose = T)
 
 #######################################################################################
 ## Now we'll get the mean value plots #################################################
@@ -80,7 +89,62 @@ mean_value_plotter<-function(list_of_results,plot_titles,simul_datam,metric="pre
   
 }
 
-#######################################################################################
+splines_mean_value <- list(sp_70_1_100_res,sp_70_1_500_res,sp_70_1_1000_res,sp_70_1_5000_res,
+                           sp_70_2_100_res,sp_70_2_500_res,sp_70_2_1000_res,sp_70_2_5000_res)
+sp_mu_val <- lapply(splines_mean_value,mean_value_function,iteration=100,nrow_per_iteration=501)
+plot_titles_sp <- c("Spline 1st order n 100 1970","Spline 1st order n 500 1970","Spline 1st order n 1000 1970",
+                 "Spline 1st order n 5000 1970",
+                 "Spline 2nd order n 100 1970","Spline 2nd order n 500 1970","Spline 2nd order n 1000 1970",
+                 "Spline 2nd order n 5000 1970")
+
+sp_mu_val_plot <- mean_value_plotter(list_of_results = sp_mu_val,plot_titles = plot_titles,simul_datam = sim_model_output$sim_df)
+sp_mu_val_plot$arranged_plots
+
+rw_mean_value <- list(rw_70_1_100_res,rw_70_1_500_res,rw_70_1_1000_res,rw_70_1_5000_res,
+                      rw_70_2_100_res,rw_70_2_500_res,rw_70_2_1000_res,rw_70_2_5000_res)
+rw_mu_val <- lapply(rw_mean_value,mean_value_function,iteration=100,nrow_per_iteration=501)
+plot_titles_rw <- c("RW 1st order n 100 1970","RW 1st order n 500 1970","RW 1st order n 1000 1970",
+                 "RW 1st order n 5000 1970",
+                 "RW 2nd order n 100 1970","RW 2nd order n 500 1970","RW 2nd order n 1000 1970",
+                 "RW 2nd order n 5000 1970")
+rw_mean_val_plot <- mean_value_plotter(rw_mu_val,plot_titles,sim_model_output$sim_df)
+rw_mean_val_plot$arranged_plots
+
+tot_prev_plot <- ggarrange(sp_mu_val_plot$arranged_plots,rw_mean_val_plot$arranged_plots,ncol = 1,nrow = 2)
+tot_prev_plot 
+
+## Incidence
+
+sp_mu_inc_val <- lapply(splines_mean_value,mean_value_function,nrow_per_iteration=501,iterations=100,metric="incidence")
+sp_mu_inc_plot <- mean_value_plotter(sp_mu_inc_val,plot_titles = plot_titles_sp,simul_datam = sim_model_output$sim_df,
+                                     metric = "incidence",limits_to_y = c(0,0.5))
+sp_mu_inc_plot$arranged_plots
+
+rw_mu_inc_val <- lapply(rw_mean_value,mean_value_function,nrow_per_iteration=501,iterations=100,metric="incidence")
+rw_mu_inc_plot <- mean_value_plotter(rw_mu_inc_val,plot_titles = plot_titles_rw,simul_datam = sim_model_output$sim_df,
+                                     metric = "incidence",limits_to_y = c(0,0.5))
+rw_mu_inc_plot$arranged_plots
+
+tot_inc_plots <- ggarrange(sp_mu_inc_plot$arranged_plots,rw_mu_inc_plot$arranged_plots,nrow = 2)
+tot_inc_plots
+
+
+## kappa
+
+sp_mu_kappa_val <- lapply(splines_mean_value,mean_value_function,nrow_per_iteration=501,iterations=100,metric="kappa")
+sp_mu_kappa_plot <- mean_value_plotter(sp_mu_kappa_val,plot_titles = plot_titles_sp,simul_datam = sim_model_output$sim_df,
+                                       metric = "kappa",limits_to_y = c(0,0.8))
+sp_mu_kappa_plot$arranged_plots
+
+rw_mu_kappa_val <- lapply(rw_mean_value, mean_value_function,nrow_per_iteration = 501, iterations = 100, metric ="kappa")
+rw_mu_kappa_plot <- mean_value_plotter(rw_mu_kappa_val,plot_titles = plot_titles_rw,sim_model_output$sim_df,"kappa",
+                                       limits_to_y = c(0,0.8))
+rw_mu_kappa_plot$arranged_plots
+
+tot_kappa_plots <- ggarrange(sp_mu_kappa_plot$arranged_plots,rw_mu_kappa_plot$arranged_plots,nrow = 2)
+tot_kappa_plots
+
+########################################################################################
 ## Now we'll get the rmse through time plots ##########################################
 #######################################################################################
 rmse_per_time<-function(true_data,fitted_data,metric="prevalence",year_time_series=seq(1970,2020,0.36),type_of_data){

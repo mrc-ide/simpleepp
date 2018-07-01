@@ -344,9 +344,9 @@ rw_70_1_1000 <- obj$task_get(n_1000_RW_first_order_loop_id)
 rw_70_1_5000 <- obj$task_get(n_5000_RW_first_order_loop_id)
 
 rw_70_2_100 <- obj$task_get(n_100_RW_sec_order_loop_id)
-rw_70_2_500 <- obj$task_get(n_100_RW_sec_order_loop_id)
-rw_70_2_1000 <- obj$task_get(n_100_RW_sec_order_loop_id)
-rw_70_2_5000 <- obj$task_get(n_100_RW_sec_order_loop_id)
+rw_70_2_500 <- obj$task_get(n_500_RW_sec_order_loop_id)
+rw_70_2_1000 <- obj$task_get(n_1000_RW_sec_order_loop_id)
+rw_70_2_5000 <- obj$task_get(n_5000_RW_sec_order_loop_id)
 
 rw_70_1_100_res <- rw_70_1_100$result()
 rw_70_1_500_res <- rw_70_1_500$result()
@@ -357,6 +357,14 @@ rw_70_2_100_res <- rw_70_2_100$result()
 rw_70_2_500_res <- rw_70_2_500$result()
 rw_70_2_1000_res <- rw_70_2_1000$result()
 rw_70_2_5000_res <- rw_70_2_5000$result()
+
+list_of_results <- list(rw_70_1_100_res,rw_70_1_500_res,rw_70_1_1000_res,rw_70_1_5000_res,
+                        rw_70_2_100_res,rw_70_2_500_res,rw_70_2_1000_res,rw_70_2_5000_res)
+for(i in 1:length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  
+  Sys.sleep(1.5)
+}
 
 save(rw_70_1_100_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/RW_70_1st_n_100")
@@ -378,7 +386,7 @@ save(rw_70_2_5000_res,
 
 ## Now for the splines
 
-sp_70_1_100 <- obj$task_get(spline_first_order_n_100)
+sp_70_1_100 <- obj$task_get(spline_first_order_n_100_id)
 sp_70_1_500 <- obj$task_get(spline_first_order_n_500_id)
 sp_70_1_1000 <- obj$task_get(spline_first_order_n_1000_id)
 sp_70_1_5000 <- obj$task_get(spline_first_order_n_5000_id)
@@ -397,6 +405,13 @@ sp_70_2_100_res <- sp_70_2_100$result()
 sp_70_2_500_res <- sp_70_2_500$result()
 sp_70_2_1000_res <- sp_70_2_1000$result()
 sp_70_2_5000_res <- sp_70_2_5000$result()
+
+list_of_results <- list(sp_70_1_100_res,sp_70_1_500_res,sp_70_1_5000_res,
+                        sp_70_2_100_res,sp_70_2_500_res,sp_70_2_1000_res,sp_70_2_5000_res)
+for(i in 1:length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  Sys.sleep(1.5)
+}
 
 save(sp_70_1_100_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_1st_70_n_100")
@@ -720,6 +735,14 @@ rw_2_500_84_res <- rw_2_500_84$result()
 rw_2_1000_84_res <- rw_2_1000_84$result()
 rw_2_5000_84_res <- rw_2_5000_84$result()
 
+list_of_results <- list(rw_1_100_84_res,rw_1_500_84_res,rw_1_1000_84_res,rw_1_5000_84_res,
+                        rw_2_100_84_res,rw_2_1000_84_res,rw_2_5000_84_res)
+
+for(i in 1: length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  Sys.sleep(1.4)
+}
+
 save(rw_1_100_84_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/varying_data_start/cluster_results/1984/RW_1st_84_n_100")
 save(rw_1_500_84_res,
@@ -762,6 +785,13 @@ sp_2_100_84_res <- sp_2_100_84$result()
 sp_2_500_84_res <- sp_2_500_84$result()
 sp_2_1000_84_res <- sp_2_1000_84$result()
 sp_2_5000_84_res <- sp_2_5000_84$result()
+
+list_of_results <- list(sp_1_100_84_res,sp_1_500_84_res,sp_1_1000_84_res,sp_1_5000_84_res,
+                        sp_2_100_84_res,sp_2_500_84_res,sp_2_1000_84_res,sp_2_5000_84_res)
+for(i in 1:length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  Sys.sleep(1.4)
+}
 
 
 save(sp_1_100_84_res,
@@ -1105,6 +1135,16 @@ sp_500_2_90_res<-sp_500_2_90$result()
 sp_1000_2_90_res<-sp_1000_2_90$result()
 sp_5000_2_90_res<-sp_5000_2_90$result()
 
+
+list_of_results <- list(rw_100_1_90_res,rw_500_1_90_res,rw_1000_1_90_res,rw_5000_1_90_res,
+                        rw_100_2_90_res,rw_500_2_90_res,rw_1000_2_90_res,rw_5000_2_90_res,
+                        sp_100_1_90_res,sp_500_1_90_res,sp_1000_1_90_res,sp_5000_1_90_res,
+                        sp_100_2_90_res,sp_500_2_90_res,sp_1000_2_90_res,sp_5000_2_90_res)
+
+for(i in 1:length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  Sys.sleep(1.4)
+}
 
 save(rw_100_1_90_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/varying_data_start/cluster_results/1990/RW_1st_90_100")
@@ -1468,6 +1508,17 @@ sp_100_2_95_res<-sp_100_2_95$result()
 sp_500_2_95_res<-sp_500_2_95$result()
 sp_1000_2_95_res<-sp_1000_2_95$result()
 sp_5000_2_95_res<-sp_5000_2_95$result()
+
+list_of_results <- list(rw_100_1_95_res,rw_500_1_95_res,rw_1000_1_95_res,rw_5000_1_95_res,
+                        rw_100_2_95_res,rw_500_2_95_res,rw_1000_2_95_res,rw_5000_2_95_res,
+                        sp_100_1_95_res,sp_500_1_95_res,sp_1000_1_95_res,sp_5000_1_95_res,
+                        sp_100_2_95_res,sp_500_2_95_res,sp_1000_2_95_res,sp_5000_2_95_res)
+
+for(i in 1:length(list_of_results)){
+  print(list_of_results[[i]]$data_about_run)
+  Sys.sleep(1.4)
+}
+
 
 save(rw_100_1_95_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/varying_data_start/cluster_results/1995/RW_1st_95_100")
