@@ -425,11 +425,11 @@ save(sp_70_1_5000_res,
 save(sp_70_2_100_res,
      file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_100")
 save(sp_70_2_500_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_500")
 save(sp_70_2_1000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_1000")
 save(sp_70_2_5000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/simplepp_early_sampling/cluster_results/SP_2nd_70_n_5000")
 
 ##################################################################################################################################
 ## Data form 1984 onwards ########################################################################################################
