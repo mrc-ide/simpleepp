@@ -106,7 +106,7 @@ plot(plotted_sim$whole)
 ## Now we have simulated through our model we can extract some samples form it ####################################################
 ###################################################################################################################################
 
-sample_range<-2000:2015
+sample_range<-1970:2015
 sample_years<-length(sample_range)
 sample_n<-100
   
@@ -211,7 +211,8 @@ test_stan_hiv<- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chu
                      chains = 1, iter = 10)  
 
 
-mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan", data = stan_data_discrete,
+mod_hiv_prev <- stan("C:/Users/josh/Dropbox/hiv_project/simpleepp/stan_files/chunks/cd4_spline_model.stan", 
+                     data = stan_data_discrete,
                      pars = params_monitor_hiv,chains = 3,warmup = 500,iter = 2000,
                      control = list(adapt_delta = 0.99))
 

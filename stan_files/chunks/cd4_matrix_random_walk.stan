@@ -94,7 +94,7 @@ parameters{
 
  vector[cols(X_design)] beta;                                  // This is the knot point values
 
- real<lower = 0> sigma_pen;                                    // This is the penalty to apply to the spline to make it smooth
+ real<lower = 0, upper =1> sigma_pen;                                    // This is the penalty to apply to the spline to make it smooth
 
 
  }

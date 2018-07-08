@@ -195,7 +195,7 @@ n_100_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_f
 n_100_RW_first_order_loop$status()
 n_100_RW_first_order_id<-n_100_RW_first_order_loop$id
 save(n_100_RW_first_order_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_100_FIRST_11_49_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_100_FIRST_11_49_MAY_29")
 
 
 sample_n<-500
@@ -210,7 +210,7 @@ n_500_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_f
 n_500_RW_first_order_loop$status()
 n_500_RW_first_order_loop_id<-n_500_RW_first_order_loop$id
 save(n_500_RW_first_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_500_FIRST_11_50_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_500_FIRST_11_50_MAY_29")
 
 sample_n<-1000
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -224,7 +224,7 @@ n_1000_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_
 n_1000_RW_first_order_loop$status()
 n_1000_RW_first_order_loop_id<-n_1000_RW_first_order_loop$id
 save(n_1000_RW_first_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_1000_FIRST_11_51_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_1000_FIRST_11_51_MAY_29")
 
 sample_n<-5000
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -238,7 +238,7 @@ n_5000_RW_first_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_
 n_5000_RW_first_order_loop$status()
 n_5000_RW_first_order_loop_id<-n_5000_RW_first_order_loop$id
 save(n_5000_RW_first_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_5000_FIRST_11_51_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_5000_FIRST_11_51_MAY_29")
 
 ##############################################################################################################################
 ## Now we will put on the second order spline data ###########################################################################
@@ -257,7 +257,7 @@ n_100_RW_second_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_
 n_100_RW_second_order_loop$status()
 n_100_RW_second_order_loop_id<-n_100_RW_second_order_loop$id
 save(n_100_RW_second_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_100_SECOND_11_52_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_100_SECOND_11_52_MAY_29")
 
 sample_n<-500
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -271,7 +271,7 @@ n_500_RW_second_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data_
 n_500_RW_second_order_loop$status()
 n_500_RW_second_order_loop_id<-n_500_RW_second_order_loop$id
 save(n_500_RW_second_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_500_SECOND_11_53_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_500_SECOND_11_53_MAY_29")
 
 sample_n<-1000
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -285,7 +285,7 @@ n_1000_rw_second_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data
 n_1000_rw_second_order_loop$status()
 n_1000_rw_second_order_loop_id<-n_1000_rw_second_order_loop$id
 save(n_1000_rw_second_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_1000_SECOND_11_53_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_1000_SECOND_11_53_MAY_29")
 
 sample_n<-5000
 data_about_sampling<-list(penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -299,7 +299,7 @@ n_5000_rw_second_order_loop<-obj$enqueue(fitting_data_function_loop(samples_data
 n_5000_rw_second_order_loop$status()
 n_5000_rw_second_order_loop_id<-n_5000_rw_second_order_loop$id
 save(n_5000_rw_second_order_loop_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/RW_5000_SECOND_11_54_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/RW_5000_SECOND_11_54_MAY_29")
 
 ##############################################################################################################################
 ## Now we'll put the spline fitting on the cluster ###########################################################################
@@ -319,7 +319,7 @@ spline_first_order_n_100<-obj$enqueue(fitting_data_function_spline_loop(samples_
 spline_first_order_n_100$status()
 spline_first_order_n_100_id<-spline_first_order_n_100$id
 save(spline_first_order_n_100_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_100_FIRST_11_55_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_100_FIRST_11_55_MAY_29")
 
 sample_n<-500
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -334,7 +334,7 @@ spline_first_order_n_500<-obj$enqueue(fitting_data_function_spline_loop(samples_
 spline_first_order_n_500$status()
 spline_first_order_n_500_id<-spline_first_order_n_500$id
 save(spline_first_order_n_500_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_500_FIRST_11_56_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_500_FIRST_11_56_MAY_29")
 
 sample_n<-1000
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -348,7 +348,7 @@ spline_first_order_n_1000<-obj$enqueue(fitting_data_function_spline_loop(samples
 spline_first_order_n_1000$status()
 spline_first_order_n_1000_id<-spline_first_order_n_1000$id
 save(spline_first_order_n_1000_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_1000_FIRST_11_57_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_1000_FIRST_11_57_MAY_29")
 
 sample_n<-5000
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -362,7 +362,7 @@ spline_first_order_n_5000<-obj$enqueue(fitting_data_function_spline_loop(samples
 spline_first_order_n_5000$status()
 spline_first_order_n_5000_id<-spline_first_order_n_5000$id
 save(spline_first_order_n_5000_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_5000_FIRST_11_57_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_5000_FIRST_11_57_MAY_29")
 
 ##############################################################################################################################
 ## Now for the second order splines ##########################################################################################
@@ -381,7 +381,7 @@ spline_second_order_n_100<-obj$enqueue(fitting_data_function_spline_loop(samples
 spline_second_order_n_100$status()
 spline_second_order_n_100_id<-spline_second_order_n_100$id
 save(spline_second_order_n_100_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_100_SECOND_11_58_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_100_SECOND_11_58_MAY_29")
 
 sample_n<-500
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -395,7 +395,7 @@ spline_second_order_500<-obj$enqueue(fitting_data_function_spline_loop(samples_d
 spline_second_order_500$status()
 spline_second_order_500_id<-spline_second_order_500$id
 save(spline_second_order_500_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_500_SECOND_11_58_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_500_SECOND_11_58_MAY_29")
 
 sample_n<-1000
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -410,7 +410,7 @@ spline_second_order_1000<-obj$enqueue(fitting_data_function_spline_loop(samples_
 spline_second_order_1000$status()
 spline_second_order_1000_id<-spline_second_order_1000$id
 save(spline_second_order_1000_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_1000_SECOND_11_58_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_1000_SECOND_11_58_MAY_29")
 
 sample_n<-5000
 data_about_sampling<-list(knot_number = knot_number,penalty_order=penalty_order,sample_years=46,sample_n=sample_n,rows_to_evaluate=rows_to_evaluate)
@@ -424,7 +424,7 @@ spline_second_order_5000<-obj$enqueue(fitting_data_function_spline_loop(samples_
 spline_second_order_5000$status()
 spline_second_order_5000_id<-spline_second_order_5000$id
 save(spline_second_order_5000_id,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/SPLINE_5000_SECOND_11_59_MAY_29")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/SPLINE_5000_SECOND_11_59_MAY_29")
 
 
 ###############################################################################################################################
@@ -433,7 +433,7 @@ save(spline_second_order_5000_id,
 
 ##RW 1st and 2nd 
 
-path_name <- "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_penalized/double_peak/cluster_ids/"
+path_name <- "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_ids/"
 double_peak_ids <- list.files(path_name,full.names = T)
 for(i in 1:length(double_peak_ids)){
   load(double_peak_ids[i],verbose = T)
@@ -487,40 +487,40 @@ obj$cluster_load()
 
 
 save(rw_first_100_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_FIRST_ORDER_N_100")
 save(rw_first_500_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_500")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_FIRST_ORDER_N_500")
 save(rw_first_1000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_1000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_FIRST_ORDER_N_1000")
 save(rw_first_5000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_FIRST_ORDER_N_5000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_FIRST_ORDER_N_5000")
 
 save(rw_sec_100_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_SECOND_ORDER_N_100")
 save(rw_sec_500_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_500")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_SECOND_ORDER_N_500")
 save(rw_sec_1000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_1000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_SECOND_ORDER_N_1000")
 save(rw_sec_5000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/RW_SECOND_ORDER_N_5000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/RW_SECOND_ORDER_N_5000")
 
 save(spline_first_100_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_FIRST_ORDER_N_100")
 save(spline_first_500_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_500")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_FIRST_ORDER_N_500")
 save(spline_first_1000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_1000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_FIRST_ORDER_N_1000")
 save(spline_first_5000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_FIRST_ORDER_N_5000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_FIRST_ORDER_N_5000")
 
 save(spline_sec_100_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_100")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_SECOND_ORDER_N_100")
 save(spline_sec_500_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_500")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_SECOND_ORDER_N_500")
 save(spline_sec_1000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_1000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_SECOND_ORDER_N_1000")
 save(spline_sec_5000_res,
-     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/double_peak_simple_epp/results/SPLINE_SECOND_ORDER_N_5000")
+     file = "C:/Users/josh/Dropbox/hiv_project/analysis_of_cluster_run_datasets/log_narrow_sigma/double_peak/cluster_results/SPLINE_SECOND_ORDER_N_5000")
 
 
 

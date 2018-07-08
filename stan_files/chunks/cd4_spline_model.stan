@@ -79,7 +79,7 @@ parameters{
 
  real<lower = 0, upper=1> iota;                                         // The proportion of the population initially infected
  vector[knot_number] beta;                                              // This is the knot point values
- real<lower = 0> sigma_pen;                                             // This is the penalty to apply to the spline to make it smooth
+ real<lower = 0, upper = 1> sigma_pen;                                             // This is the penalty to apply to the spline to make it smooth
 
 
 }
